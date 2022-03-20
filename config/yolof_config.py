@@ -52,10 +52,16 @@ yolof_config = {
         # anchor box
         'anchor_size': [[32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
         # matcher
+        'matcher': 'uniform_matcher',
         'topk': 4,
         'iou_t': 0.15,
         'igt': 0.7,
         'ctr_clamp': 32,
+        # loss
+        'alpha': 0.25,
+        'gamma': 2.0,
+        'loss_cls_weight': 1.0,
+        'loss_reg_weight': 1.0,
         # optimizer
         'optimizer': 'sgd',
         'momentum': 0.9,
@@ -69,10 +75,10 @@ yolof_config = {
                     'multi_scale': None},
             '2x': {'max_epoch': 24, 
                     'lr_epoch': [16, 22], 
-                    'multi_scale': [480, 544, 608, 672, 736, 800]},
+                    'multi_scale': [400, 500, 600, 700, 800]},
             '3x': {'max_epoch': 36, 
                     'lr_epoch': [24, 33], 
-                    'multi_scale': [480, 544, 608, 672, 736, 800]},
+                    'multi_scale': [400, 500, 600, 700, 800]},
         },
     },
 
@@ -126,10 +132,16 @@ yolof_config = {
         # anchor box
         'anchor_size': [[32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
         # matcher
+        'matcher': 'uniform_matcher',
         'topk': 4,
         'iou_t': 0.15,
         'igt': 0.7,
         'ctr_clamp': 32,
+        # loss
+        'alpha': 0.25,
+        'gamma': 2.0,
+        'loss_cls_weight': 1.0,
+        'loss_reg_weight': 1.0,
         # optimizer
         'optimizer': 'sgd',
         'momentum': 0.9,
@@ -143,10 +155,10 @@ yolof_config = {
                     'multi_scale': None},
             '2x': {'max_epoch': 24, 
                     'lr_epoch': [16, 22], 
-                    'multi_scale': [480, 544, 608, 672, 736, 800]},
+                    'multi_scale': [400, 500, 600, 700, 800]},
             '3x': {'max_epoch': 36, 
                     'lr_epoch': [24, 33], 
-                    'multi_scale': [480, 544, 608, 672, 736, 800]},
+                    'multi_scale': [400, 500, 600, 700, 800]},
         },
     },
 
@@ -200,10 +212,16 @@ yolof_config = {
         # anchor box
         'anchor_size': [[16, 16], [32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
         # matcher
+        'matcher': 'uniform_matcher',
         'topk': 4,
         'iou_t': 0.15,
         'igt': 0.7,
         'ctr_clamp': 32,
+        # loss
+        'alpha': 0.25,
+        'gamma': 2.0,
+        'loss_cls_weight': 1.0,
+        'loss_reg_weight': 1.0,
         # optimizer
         'optimizer': 'sgd',
         'momentum': 0.9,
@@ -217,10 +235,10 @@ yolof_config = {
                     'multi_scale': None},
             '2x': {'max_epoch': 24, 
                     'lr_epoch': [16, 22], 
-                    'multi_scale': [480, 544, 608, 672, 736, 800]},
+                    'multi_scale': [400, 500, 600, 700, 800]},
             '3x': {'max_epoch': 36, 
                     'lr_epoch': [24, 33], 
-                    'multi_scale': [480, 544, 608, 672, 736, 800]},
+                    'multi_scale': [400, 500, 600, 700, 800]},
         },
     },
 
@@ -274,10 +292,16 @@ yolof_config = {
         # anchor box
         'anchor_size': [[32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
         # matcher
+        'matcher': 'uniform_matcher',
         'topk': 4,
         'iou_t': 0.15,
         'igt': 0.7,
         'ctr_clamp': 32,
+        # loss
+        'alpha': 0.25,
+        'gamma': 2.0,
+        'loss_cls_weight': 1.0,
+        'loss_reg_weight': 1.0,
         # optimizer
         'optimizer': 'sgd',
         'momentum': 0.9,
@@ -291,10 +315,10 @@ yolof_config = {
                     'multi_scale': None},
             '2x': {'max_epoch': 24, 
                     'lr_epoch': [16, 22], 
-                    'multi_scale': [480, 544, 608, 672, 736, 800]},
+                    'multi_scale': [400, 500, 600, 700, 800]},
             '3x': {'max_epoch': 36, 
                     'lr_epoch': [24, 33], 
-                    'multi_scale': [480, 544, 608, 672, 736, 800]},
+                    'multi_scale': [400, 500, 600, 700, 800]},
         },
     },
 
@@ -348,10 +372,16 @@ yolof_config = {
         # anchor box
         'anchor_size': [[16, 16], [32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
         # matcher
+        'matcher': 'uniform_matcher',
         'topk': 4,
         'iou_t': 0.15,
         'igt': 0.7,
         'ctr_clamp': 32,
+        # loss
+        'alpha': 0.25,
+        'gamma': 2.0,
+        'loss_cls_weight': 1.0,
+        'loss_reg_weight': 1.0,
         # optimizer
         'optimizer': 'sgd',
         'momentum': 0.9,
@@ -365,10 +395,10 @@ yolof_config = {
                     'multi_scale': None},
             '2x': {'max_epoch': 24, 
                     'lr_epoch': [16, 22], 
-                    'multi_scale': [480, 544, 608, 672, 736, 800]},
+                    'multi_scale': [400, 500, 600, 700, 800]},
             '3x': {'max_epoch': 36, 
                     'lr_epoch': [24, 33], 
-                    'multi_scale': [480, 544, 608, 672, 736, 800]},
+                    'multi_scale': [400, 500, 600, 700, 800]},
         },
     },
 
@@ -422,10 +452,16 @@ yolof_config = {
         # anchor box
         'anchor_size': [[16, 16], [32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
         # matcher
+        'matcher': 'uniform_matcher',
         'topk': 4,
         'iou_t': 0.15,
         'igt': 0.7,
         'ctr_clamp': 32,
+        # loss
+        'alpha': 0.25,
+        'gamma': 2.0,
+        'loss_cls_weight': 1.0,
+        'loss_reg_weight': 1.0,
         # optimizer
         'optimizer': 'sgd',
         'momentum': 0.9,
@@ -439,10 +475,10 @@ yolof_config = {
                     'multi_scale': None},
             '2x': {'max_epoch': 24, 
                     'lr_epoch': [16, 22], 
-                    'multi_scale': [480, 544, 608, 672, 736, 800]},
+                    'multi_scale': [480, 512, 544, 576, 608, 640]},
             '3x': {'max_epoch': 36, 
                     'lr_epoch': [24, 33], 
-                    'multi_scale': [480, 544, 608, 672, 736, 800]},
+                    'multi_scale': [480, 512, 544, 576, 608, 640]},
         },
     },
 

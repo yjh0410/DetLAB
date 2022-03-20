@@ -1,11 +1,11 @@
 import numpy as np
 import math
-import time
 import torch
 import torch.nn as nn
 from ...backbone import build_backbone
 from ...neck import build_neck
 from ...head.decoupled_head import DecoupledHead
+from .loss import Criterion
 
 
 DEFAULT_SCALE_CLAMP = math.log(1000.0 / 16)
@@ -50,8 +50,7 @@ class YOLOF(nn.Module):
                                   num_classes=num_classes,
                                   act_type=cfg['act_type'])
 
-
-        # prediction stage
+        # pred
         self.obj_pred = nn.Conv2d(cfg['head_dim'], 1 * self.num_anchors, kernel_size=3, padding=1)
         self.cls_pred = nn.Conv2d(cfg['head_dim'], self.num_classes * self.num_anchors, kernel_size=3, padding=1)
         self.reg_pred = nn.Conv2d(cfg['head_dim'], 4 * self.num_anchors, kernel_size=3, padding=1)
@@ -59,6 +58,16 @@ class YOLOF(nn.Module):
         if trainable:
             # init bias
             self._init_pred_layers()
+
+        # criterion
+        if self.trainable:
+            self.criterion = Criterion(cfg=cfg,
+                                       device=device,
+                                       alpha=cfg['alpha'],
+                                       gamma=cfg['gamma'],
+                                       loss_cls_weight=cfg['loss_cls_weight'],
+                                       loss_reg_weight=cfg['loss_reg_weight'],
+                                       num_classes=num_classes)
 
 
     def _init_pred_layers(self):  
@@ -281,7 +290,7 @@ class YOLOF(nn.Module):
         return bboxes, scores, labels
 
 
-    def forward(self, x, mask=None):
+    def forward(self, x, mask=None, targets=None):
         if not self.trainable:
             return self.inference_single_image(x)
         else:
@@ -330,4 +339,15 @@ class YOLOF(nn.Module):
                        "pred_box": box_pred,
                        "mask": mask}
 
-            return outputs 
+            # loss
+            loss_labels, loss_bboxes, losses = self.criterion(outputs=outputs, 
+                                                              targets=targets, 
+                                                              anchor_boxes=self.anchor_boxes)
+
+            loss_dict=dict(
+                loss_labels = loss_labels,
+                loss_bboxes = loss_bboxes,
+                losses = losses
+            )
+
+            return loss_dict 

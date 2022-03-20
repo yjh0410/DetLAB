@@ -8,7 +8,6 @@ from .retinanet.retinanet import RetinaNet
 
 # build object detector
 def build_model(args, 
-                cfg, 
                 device, 
                 num_classes=80, 
                 trainable=False, 
@@ -34,6 +33,9 @@ def build_model(args,
                           conf_thresh=cfg['conf_thresh'],
                           nms_thresh=cfg['nms_thresh'],
                           topk=args.topk)
+
+    print('==============================')
+    print('Model Configuration: \n', cfg)
 
     # Load COCO pretrained weight
     if coco_pretrained is not None:

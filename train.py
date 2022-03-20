@@ -1,4 +1,5 @@
 from __future__ import division
+from cmath import e
 
 import os
 import argparse
@@ -37,8 +38,8 @@ def parse_args():
                         help='use cuda.')
     parser.add_argument('--batch_size', default=16, type=int, 
                         help='Batch size for training')
-    parser.add_argument('--schedule', type=str, default='1x', choices=['1x', '2x', '3x', '9x'],
-                        help='training schedule. Attention, 9x is designed for YOLOF53-DC5.')
+    parser.add_argument('--schedule', type=str, default='1x', choices=['1x', '2x', '3x'],
+                        help='training schedule.')
     parser.add_argument('-lr', '--base_lr', type=float, default=0.03,
                         help='base learning rate')
     parser.add_argument('-lr_bk', '--backbone_lr', type=float, default=0.01,
@@ -55,16 +56,6 @@ def parse_args():
                         help='use tensorboard')
     parser.add_argument('--save_folder', default='weights/', type=str, 
                         help='path to save weight')
-
-    # input image size               
-    parser.add_argument('--train_min_size', type=int, default=800,
-                        help='The shorter train size of the input image')
-    parser.add_argument('--train_max_size', type=int, default=1333,
-                        help='The longer train size of the input image')
-    parser.add_argument('--val_min_size', type=int, default=800,
-                        help='The shorter val size of the input image')
-    parser.add_argument('--val_max_size', type=int, default=1333,
-                        help='The longer val size of the input image')
 
     # model
     parser.add_argument('-v', '--version', default='yolof50', type=str,
@@ -83,16 +74,6 @@ def parse_args():
                         help='data root')
     parser.add_argument('-d', '--dataset', default='coco',
                         help='coco, voc, widerface, crowdhuman')
-    
-    # Loss
-    parser.add_argument('--alpha', default=0.25, type=float,
-                        help='focal loss alpha')
-    parser.add_argument('--gamma', default=2.0, type=float,
-                        help='focal loss gamma')
-    parser.add_argument('--loss_cls_weight', default=1.0, type=float,
-                        help='weight of cls loss')
-    parser.add_argument('--loss_reg_weight', default=1.0, type=float,
-                        help='weight of reg loss')
     
     # train trick
     parser.add_argument('--mosaic', action='store_true', default=False,
@@ -135,33 +116,18 @@ def train():
     else:
         device = torch.device("cpu")
 
-    # YOLOF Config
-    cfg = yolof_config[args.version]
-    print('==============================')
-    print('Model Configuration: \n', cfg)
-
-    # multi scale trick
-    multi_scale = None
-    if cfg['epoch'][args.schedule]['multi_scale'] is not None:
-        multi_scale = cfg['epoch'][args.schedule]['multi_scale']
-        print('Multi scale training: {}'. format(multi_scale))
-
     # dataset and evaluator
     dataset, evaluator, num_classes = build_dataset(cfg, args, device)
 
     # dataloader
     dataloader = build_dataloader(args, dataset, CollateFunc())
 
-    # criterion
-    criterion = build_criterion(args=args, device=device, cfg=cfg, num_classes=num_classes)
-    
     # build model
-    net = build_model(args=args, 
-                      cfg=cfg,
-                      device=device, 
-                      num_classes=num_classes, 
-                      trainable=True,
-                      coco_pretrained=args.coco_pretrained)
+    net, cfg = build_model(args=args, 
+                            device=device, 
+                            num_classes=num_classes, 
+                            trainable=True,
+                            coco_pretrained=args.coco_pretrained)
     model = net
     model = model.to(device).train()
 
@@ -176,7 +142,7 @@ def train():
         model_without_ddp.eval()
         FLOPs_and_Params(model=model_without_ddp, 
                          min_size=args.train_min_size, 
-                         max_size=args.train_max_size, 
+                         max_size=cfg['min_size'], 
                          device=device)
         model_without_ddp.trainable = True
         model_without_ddp.train()
@@ -204,7 +170,7 @@ def train():
 
     # training configuration
     max_epoch = cfg['epoch'][args.schedule]['max_epoch']
-    epoch_size = len(dataset) // (args.batch_size * args.num_gpu)
+    epoch_size = len(dataloader) # // (args.batch_size * args.num_gpu)
     best_map = -1.
     warmup = not args.no_warmup
 
@@ -232,27 +198,19 @@ def train():
             masks = masks.to(device)
 
             # inference
-            outputs = model_without_ddp(images, mask=masks)
+            loss_dict = model_without_ddp(images, mask=masks, targets=targets)
+            losses = loss_dict['losses']
 
-            # compute loss
-            cls_loss, reg_loss, total_loss = criterion(outputs = outputs,
-                                                       targets = targets,
-                                                       anchor_boxes = model_without_ddp.anchor_boxes)
-            
-            loss_dict = dict(
-                cls_loss=cls_loss,
-                reg_loss=reg_loss,
-                total_loss=total_loss
-            )
+            # reduce            
             loss_dict_reduced = distributed_utils.reduce_dict(loss_dict)
 
             # check loss
-            if torch.isnan(total_loss):
+            if torch.isnan(losses):
                 print('loss is NAN !!')
                 continue
 
             # Backward and Optimize
-            total_loss.backward()
+            losses.backward()
             if args.grad_clip_norm > 0.:
                 total_norm = torch.nn.utils.clip_grad_norm_(model_without_ddp.parameters(), args.grad_clip_norm)
             else:
@@ -261,24 +219,28 @@ def train():
             optimizer.zero_grad()
 
             # display
-            if distributed_utils.is_main_process() and iter_i % 10 == 0:
+            if distributed_utils.is_main_process() and iter_i % 50 == 0:
                 t1 = time.time()
                 cur_lr = [param_group['lr']  for param_group in optimizer.param_groups]
                 cur_lr_dict = {'lr': cur_lr[0], 'lr_bk': cur_lr[1]}
-                print('[Epoch %d/%d][Iter %d/%d][lr: %.6f][lr_bk: %.6f][Loss: cls %.2f || reg %.2f || gnorm: %.2f || size [%d, %d] || time: %.2f]'
-                        % (epoch+1, 
-                           max_epoch, 
-                           iter_i, 
-                           epoch_size, 
-                           cur_lr_dict['lr'],
-                           cur_lr_dict['lr_bk'],
-                           loss_dict_reduced['cls_loss'].item(), 
-                           loss_dict_reduced['reg_loss'].item(), 
-                           total_norm,
-                           args.train_min_size, args.train_max_size, 
-                           t1-t0),
-                        flush=True)
-
+                log = dict(
+                    lr=round(cur_lr_dict['lr'], 6),
+                    lr_bk=round(cur_lr_dict['lr_bk'], 6)
+                )
+                # add loss into log
+                for k, v in loss_dict:
+                    log[k] = round(v, 2)
+                # add iter time
+                log['time'] = t1 - t0
+                log['gnorm'] = round(total_norm, 2)
+                log['size'] = [cfg['min_size'], cfg['max_size']]
+                print('======== [Epoch {}/{}][Iter {}/{}] ========'.format(epoch+1, 
+                                                                           max_epoch,
+                                                                           iter_i,
+                                                                           epoch_size))
+                for k, v in log:
+                    print('-- {}: {}'.format(k, v))
+                
                 t0 = time.time()
 
         lr_scheduler.step()
@@ -332,18 +294,20 @@ def build_dataset(cfg, args, device):
     print('==============================')
     print('TrainTransforms: {}'.format(trans_config))
     train_transform = TrainTransforms(trans_config=trans_config,
-                                      min_size=args.train_min_size,
-                                      max_size=args.train_max_size,
+                                      min_size=cfg['min_size'],
+                                      max_size=cfg['max_size'],
+                                      random_size=cfg['epoch'][args.schedule]['multi_scale'],
                                       pixel_mean=cfg['pixel_mean'],
                                       pixel_std=cfg['pixel_std'],
                                       format=cfg['format'])
-    val_transform = ValTransforms(min_size=args.val_min_size,
-                                  max_size=args.val_max_size,
+    val_transform = ValTransforms(min_size=cfg['min_size'],
+                                  max_size=cfg['max_size'],
                                   pixel_mean=cfg['pixel_mean'],
                                   pixel_std=cfg['pixel_std'],
                                   format=cfg['format'])
-    color_augment = BaseTransforms(min_size=args.train_max_size,
-                                   max_size=args.train_max_size,
+    color_augment = BaseTransforms(min_size=cfg['min_size'],
+                                   max_size=cfg['max_size'],
+                                   random_size=cfg['epoch'][args.schedule]['multi_scale'],
                                    pixel_mean=cfg['pixel_mean'],
                                    pixel_std=cfg['pixel_std'],
                                    format=cfg['format'])
@@ -353,7 +317,7 @@ def build_dataset(cfg, args, device):
         data_dir = os.path.join(args.root, 'VOCdevkit')
         num_classes = 20
         # dataset
-        dataset = VOCDetection(img_size=args.train_max_size,
+        dataset = VOCDetection(img_size=cfg['min_size'],
                                data_dir=data_dir, 
                                transform=train_transform,
                                color_augment=color_augment,
@@ -367,7 +331,7 @@ def build_dataset(cfg, args, device):
         data_dir = os.path.join(args.root, 'COCO')
         num_classes = 80
         # dataset
-        dataset = COCODataset(img_size=args.train_max_size,
+        dataset = COCODataset(img_size=cfg['min_size'],
                               data_dir=data_dir,
                               image_set='train2017',
                               transform=train_transform,
