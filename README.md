@@ -31,16 +31,16 @@ We suggest that PyTorch should be higher than 1.9.0 and Torchvision should be hi
 ## RetinaNet
 | Model                                       |  scale     |   mAP   | Weight|
 |---------------------------------------------|------------|---------|-------|
-| RetinaNet_R_18_C5_1x                        |  800,1333  |         |       |
-| RetinaNet_R_50_C5_1x                        |  800,1333  |         |       |
-| RetinaNet_R_50_DC5_640_3x                   |  640,640   |         |       |
+| RetinaNet_R_18_1x                           |  800,1333  |         |       |
+| RetinaNet_R_50_1x                           |  800,1333  |         |       |
+| RetinaNet_R_50_640_3x                       |  640,640   |         |       |
 
 ## FCOS
 | Model                                       |  scale     |   mAP   | Weight|
 |---------------------------------------------|------------|---------|-------|
-| FCOS_R_18_C5_1x                             |  800,1333  |         |       |
-| FCOS_R_50_C5_1x                             |  800,1333  |         |       |
-| FCOS_R_50_DC5_640_3x                        |  640,640   |         |       |
+| FCOS_R_18_1x                                |  800,1333  |         |       |
+| FCOS_R_50_1x                                |  800,1333  |         |       |
+| FCOS_R_50_640_3x                            |  640,640   |         |       |
 
 
 # Train
