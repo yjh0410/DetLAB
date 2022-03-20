@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 from torch import nn
-from .box_ops import *
+from ..box_ops import *
 
 
 class UniformMatcher(nn.Module):

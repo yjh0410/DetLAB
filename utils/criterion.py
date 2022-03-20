@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from .box_ops import *
-from utils.matcher import UniformMatcher
+from utils.matcher.uniform_matcher import UniformMatcher
 from utils.distributed_utils import get_world_size, is_dist_avail_and_initialized
 
 
