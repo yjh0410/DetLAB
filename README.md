@@ -23,10 +23,9 @@ We suggest that PyTorch should be higher than 1.9.0 and Torchvision should be hi
 
 | Model                                       |  scale     |   mAP   | Weight|
 |---------------------------------------------|------------|---------|-------|
-| YOLOF_R_18_C5_1x                            |  800,1333  |  31.9   | [github](https://github.com/yjh0410/PyTorch_YOLOF/releases/download/YOLOF-weight/yolof_R_18_C5_1x_31.9.pth) |
-| YOLOF_R_50_C5_1x                            |  800,1333  |  37.3   | [github](https://github.com/yjh0410/PyTorch_YOLOF/releases/download/YOLOF-weight/yolof_R_50_C5_1x_37.3.pth) |
+| YOLOF_R_18_C5_1x                            |  800,1333  |         | [github](https://github.com/yjh0410/PyTorch_YOLOF/releases/download/YOLOF-weight/yolof_R_18_C5_1x_31.9.pth) |
+| YOLOF_R_50_C5_1x                            |  800,1333  |         | [github](https://github.com/yjh0410/PyTorch_YOLOF/releases/download/YOLOF-weight/yolof_R_50_C5_1x_37.3.pth) |
 | YOLOF_R_50_DC5_640_3x                       |  640,640   |         |       |
-| YOLOF_R_50_DC5_640_3x_Mosaic                |  640,640   |         |       |
 
 ## RetinaNet
 | Model                                       |  scale     |   mAP   | Weight|

@@ -4,7 +4,7 @@ import torch.nn as nn
 from ..basic.conv import Conv
 
 
-class DecoupledHead(nn.Module):
+class CoupledHead(nn.Module):
     def __init__(self, 
                  head_dim=256,
                  num_cls_head=4,
@@ -12,14 +12,15 @@ class DecoupledHead(nn.Module):
                  num_classes=80, 
                  act_type='relu'):
         super().__init__()
+        assert num_cls_head == num_reg_head, \
+                print('For Coupled Head, <num_cls_head> should be equal to <num_reg_head> !!')
         self.num_classes = num_classes
         self.head_dim = head_dim
 
         print('==============================')
         print('Head: Decoupled Head')
 
-        self.cls_feats = nn.Sequential(*[Conv(head_dim, head_dim, k=3, p=1, s=1, act_type=act_type) for _ in range(num_cls_head)])
-        self.reg_feats = nn.Sequential(*[Conv(head_dim, head_dim, k=3, p=1, s=1, act_type=act_type) for _ in range(num_reg_head)])
+        self.feats = nn.Sequential(*[Conv(head_dim, head_dim, k=3, p=1, s=1, act_type=act_type) for _ in range(num_cls_head)])
 
         self._init_weight()
 
@@ -41,7 +42,6 @@ class DecoupledHead(nn.Module):
         """
             in_feats: (Tensor) [B, C, H, W]
         """
-        cls_feats = self.cls_feats(x)
-        reg_feats = self.reg_feats(x)
+        cls_feats = reg_feats = self.feats(x)
 
         return cls_feats, reg_feats

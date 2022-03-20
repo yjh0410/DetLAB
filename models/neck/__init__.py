@@ -1,4 +1,5 @@
 from .dilated_encoder import DilatedEncoder
+from .fpn import BasicFPN
 
 
 def build_neck(cfg, in_dim, out_dim):
@@ -14,3 +15,15 @@ def build_neck(cfg, in_dim, out_dim):
                               act_type=cfg['act_type'])
 
     return neck
+
+
+def build_fpn(cfg, in_dims, out_dim):
+    model = cfg['fpn']
+    print('==============================')
+    print('FPN: {}'.format(model))
+    # build neck
+    if model == 'basic_fpn':
+        fpn_net = BasicFPN(in_dims=in_dims, out_dim=out_dim)
+
+    return fpn_net
+

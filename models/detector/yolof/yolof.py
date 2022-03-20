@@ -3,9 +3,9 @@ import math
 import time
 import torch
 import torch.nn as nn
-from ..backbone import build_backbone
-from ..neck import build_neck
-from ..head.decoupled_head import DecoupledHead
+from ...backbone import build_backbone
+from ...neck import build_neck
+from ...head.decoupled_head import DecoupledHead
 
 
 DEFAULT_SCALE_CLAMP = math.log(1000.0 / 16)
@@ -44,14 +44,35 @@ class YOLOF(nn.Module):
                                out_dim=cfg['head_dim'])
                                      
         # head
-        self.head = DecoupledHead(head=cfg['head'],
-                                  head_dim=cfg['head_dim'],
-                                  kernel_size=3,
-                                  padding=1,
+        self.head = DecoupledHead(head_dim=cfg['head_dim'],
+                                  num_cls_head=cfg['num_cls_head'],
+                                  num_reg_head=cfg['num_reg_head'],
                                   num_classes=num_classes,
-                                  trainable=trainable,
-                                  num_anchors=self.num_anchors,
                                   act_type=cfg['act_type'])
+
+
+        # prediction stage
+        self.obj_pred = nn.Conv2d(cfg['head_dim'], 1 * self.num_anchors, kernel_size=3, padding=1)
+        self.cls_pred = nn.Conv2d(cfg['head_dim'], self.num_classes * self.num_anchors, kernel_size=3, padding=1)
+        self.reg_pred = nn.Conv2d(cfg['head_dim'], 4 * self.num_anchors, kernel_size=3, padding=1)
+
+        if trainable:
+            # init bias
+            self._init_pred_layers()
+
+
+    def _init_pred_layers(self):  
+        # init cls pred
+        nn.init.normal_(self.cls_pred.weight, mean=0, std=0.01)
+        init_prob = 0.01
+        bias_value = -torch.log(torch.tensor((1. - init_prob) / init_prob))
+        nn.init.constant_(self.cls_pred.bias, bias_value)
+        # init reg pred
+        nn.init.normal_(self.reg_pred.weight, mean=0, std=0.01)
+        nn.init.constant_(self.reg_pred.bias, 0.0)
+        # init obj pred
+        nn.init.normal_(self.obj_pred.weight, mean=0, std=0.01)
+        nn.init.constant_(self.obj_pred.bias, 0.0)
 
 
     def generate_anchors(self, fmp_size):
@@ -189,12 +210,31 @@ class YOLOF(nn.Module):
         H, W = x.shape[2:]
 
         # head
-        cls_pred, reg_pred = self.head(x)
+        cls_feats, reg_feats = self.head(x)
+
+        obj_pred = self.obj_pred(reg_feats)
+        cls_pred = self.cls_pred(cls_feats)
+        reg_pred = self.reg_pred(reg_feats)
+
+        # implicit objectness
+        B, _, H, W = obj_pred.size()
+        obj_pred = obj_pred.view(B, -1, 1, H, W)
+        cls_pred = cls_pred.view(B, -1, self.num_classes, H, W)
+        normalized_cls_pred = cls_pred + obj_pred - torch.log(
+            1. + torch.clamp(cls_pred.exp(), max=1e8) + torch.clamp(
+                obj_pred.exp(), max=1e8))
+        # [B, KA, C, H, W] -> [B, H, W, KA, C] -> [B, M, C], M = HxWxKA
+        normalized_cls_pred = normalized_cls_pred.permute(0, 3, 4, 1, 2).contiguous()
+        normalized_cls_pred = normalized_cls_pred.view(B, -1, self.num_classes)
+
+        # [B, KA*4, H, W] -> [B, KA, 4, H, W] -> [B, H, W, KA, 4] -> [B, M, 4]
+        reg_pred =reg_pred.view(B, -1, 4, H, W).permute(0, 3, 4, 1, 2).contiguous()
+        reg_pred = reg_pred.view(B, -1, 4)
 
         # decode box
         anchor_boxes = self.generate_anchors(fmp_size=[H, W]) # [M, 4]
         # scores
-        scores, labels = torch.max(cls_pred.sigmoid(), dim=-1)
+        scores, labels = torch.max(normalized_cls_pred.sigmoid(), dim=-1)
 
         # topk
         if scores.shape[0] > self.topk:
@@ -253,7 +293,26 @@ class YOLOF(nn.Module):
             H, W = x.shape[2:]
 
             # head
-            cls_pred, reg_pred = self.head(x)
+            cls_feats, reg_feats = self.head(x)
+
+            obj_pred = self.obj_pred(reg_feats)
+            cls_pred = self.cls_pred(cls_feats)
+            reg_pred = self.reg_pred(reg_feats)
+
+            # implicit objectness
+            B, _, H, W = obj_pred.size()
+            obj_pred = obj_pred.view(B, -1, 1, H, W)
+            cls_pred = cls_pred.view(B, -1, self.num_classes, H, W)
+            normalized_cls_pred = cls_pred + obj_pred - torch.log(
+                1. + torch.clamp(cls_pred.exp(), max=1e8) + torch.clamp(
+                    obj_pred.exp(), max=1e8))
+            # [B, KA, C, H, W] -> [B, H, W, KA, C] -> [B, M, C], M = HxWxKA
+            normalized_cls_pred = normalized_cls_pred.permute(0, 3, 4, 1, 2).contiguous()
+            normalized_cls_pred = normalized_cls_pred.view(B, -1, self.num_classes)
+
+            # [B, KA*4, H, W] -> [B, KA, 4, H, W] -> [B, H, W, KA, 4] -> [B, M, 4]
+            reg_pred =reg_pred.view(B, -1, 4, H, W).permute(0, 3, 4, 1, 2).contiguous()
+            reg_pred = reg_pred.view(B, -1, 4)
 
             # decode box
             anchor_boxes = self.generate_anchors(fmp_size=[H, W]) # [M, 4]
@@ -267,7 +326,7 @@ class YOLOF(nn.Module):
                 # [B, HW] -> [B, HW, KA] -> [BM,], M= HW x KA
                 mask = mask[..., None].repeat(1, 1, self.num_anchors).flatten()
 
-            outputs = {"pred_cls": cls_pred,
+            outputs = {"pred_cls": normalized_cls_pred,
                        "pred_box": box_pred,
                        "mask": mask}
 

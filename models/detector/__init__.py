@@ -1,8 +1,12 @@
 import torch
-from .yolof import YOLOF
+from config.yolof_config import yolof_config
+from config.retinanet_config import retinanet_config
+
+from .yolof.yolof import YOLOF
+from .retinanet.retinanet import RetinaNet
 
 
-# build YOLOF detector
+# build object detector
 def build_model(args, 
                 cfg, 
                 device, 
@@ -11,13 +15,25 @@ def build_model(args,
                 coco_pretrained=None):
     print('==============================')
     print('Build {} ...'.format(args.version.upper()))
-    model = YOLOF(cfg=cfg,
-                  device=device, 
-                  num_classes=num_classes, 
-                  trainable=trainable,
-                  conf_thresh=args.conf_thresh,
-                  nms_thresh=args.nms_thresh,
-                  topk=args.topk)
+    
+    if 'yolof' in args.version:
+        cfg = yolof_config[args.version]
+        model = YOLOF(cfg=cfg,
+                      device=device, 
+                      num_classes=num_classes, 
+                      trainable=trainable,
+                      conf_thresh=cfg['conf_thresh'],
+                      nms_thresh=cfg['nms_thresh'],
+                      topk=args.topk)
+    elif 'retinanet' in args.version:
+        cfg = retinanet_config[args.version]
+        model = RetinaNet(cfg=cfg,
+                          device=device, 
+                          num_classes=num_classes, 
+                          trainable=trainable,
+                          conf_thresh=cfg['conf_thresh'],
+                          nms_thresh=cfg['nms_thresh'],
+                          topk=args.topk)
 
     # Load COCO pretrained weight
     if coco_pretrained is not None:
@@ -39,4 +55,4 @@ def build_model(args,
 
         model.load_state_dict(checkpoint_state_dict, strict=False)
                         
-    return model
+    return model, cfg
