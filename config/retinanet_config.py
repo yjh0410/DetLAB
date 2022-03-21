@@ -55,6 +55,7 @@ retinanet_config = {
                           'aspect_ratio': [0.5, 1.0, 2.0],
                           'area_scale': [2 ** 0, 2 ** (1. / 3.), 2 ** (2. / 3.)]},
         # matcher
+        'matcher': 'basic_matcher',
         'iou_t': [0.4, 0.5],
         # optimizer
         'optimizer': 'sgd',
@@ -129,6 +130,7 @@ retinanet_config = {
                           'aspect_ratio': [0.5, 1.0, 2.0],
                           'area_scale': [2 ** 0, 2 ** (1. / 3.), 2 ** (2. / 3.)]},
         # matcher
+        'matcher': 'basic_matcher',
         'iou_t': [0.4, 0.5],
         # optimizer
         'optimizer': 'sgd',
@@ -203,6 +205,7 @@ retinanet_config = {
                           'aspect_ratio': [0.5, 1.0, 2.0],
                           'area_scale': [2 ** 0, 2 ** (1. / 3.), 2 ** (2. / 3.)]},
         # matcher
+        'matcher': 'basic_matcher',
         'iou_t': [0.4, 0.5],
         # optimizer
         'optimizer': 'sgd',
@@ -277,6 +280,7 @@ retinanet_config = {
                           'aspect_ratio': [0.5, 1.0, 2.0],
                           'area_scale': [2 ** 0, 2 ** (1. / 3.), 2 ** (2. / 3.)]},
         # matcher
+        'matcher': 'basic_matcher',
         'iou_t': [0.4, 0.5],
         # optimizer
         'optimizer': 'sgd',
