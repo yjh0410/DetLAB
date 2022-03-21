@@ -39,23 +39,23 @@ We suggest that PyTorch should be higher than 1.9.0 and Torchvision should be hi
 
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| YOLOF_R_18_C5_1x               |  800,1333  |         | [github](https://github.com/yjh0410/PyTorch_YOLOF/releases/download/YOLOF-weight/yolof_R_18_C5_1x_31.9.pth) |
-| YOLOF_R_50_C5_1x               |  800,1333  |         | [github](https://github.com/yjh0410/PyTorch_YOLOF/releases/download/YOLOF-weight/yolof_R_50_C5_1x_37.3.pth) |
+| YOLOF_R_18_C5_1x               |  800,1333  |         |       |
+| YOLOF_R_50_C5_1x               |  800,1333  |         |       |
 | YOLOF_RT                       |  640,640   |         |       |
 
 ## RetinaNet
-| Model                              |  scale     |   mAP   | Weight|
-|------------------------------------|------------|---------|-------|
-| RetinaNet_R_18_1x                  |  800,1333  |         |       |
-| RetinaNet_R_50_1x                  |  800,1333  |         |       |
-| RetinaNet_RT                       |  640,640   |         |       |
+| Model                          |  scale     |   mAP   | Weight|
+|--------------------------------|------------|---------|-------|
+| RetinaNet_R_18_1x              |  800,1333  |         |       |
+| RetinaNet_R_50_1x              |  800,1333  |         |       |
+| RetinaNet_RT                   |  640,640   |         |       |
 
 ## FCOS
-| Model                              |  scale     |   mAP   | Weight|
-|------------------------------------|------------|---------|-------|
-| FCOS_R_18_1x                       |  800,1333  |         |       |
-| FCOS_R_50_1x                       |  800,1333  |         |       |
-| FCOS_RT                            |  640,640   |         |       |
+| Model                          |  scale     |   mAP   | Weight|
+|--------------------------------|------------|---------|-------|
+| FCOS_R_18_1x                   |  800,1333  |         |       |
+| FCOS_R_50_1x                   |  800,1333  |         |       |
+| FCOS_RT                        |  640,640   |         |       |
 
 
 # Train
