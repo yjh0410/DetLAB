@@ -39,7 +39,7 @@ def parse_args():
                         help='Batch size for training')
     parser.add_argument('--schedule', type=str, default='1x', choices=['1x', '2x', '3x'],
                         help='training schedule.')
-    parser.add_argument('-lr', '--base_lr', type=float, default=0.03,
+    parser.add_argument('-lr', '--base_lr', type=float, default=0.01,
                         help='base learning rate')
     parser.add_argument('-lr_bk', '--backbone_lr', type=float, default=0.01,
                         help='backbone learning rate')

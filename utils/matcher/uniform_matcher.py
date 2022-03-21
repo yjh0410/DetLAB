@@ -4,7 +4,7 @@ from torch import nn
 from ..box_ops import *
 
 
-class UniformMatcher(nn.Module):
+class UniformMatcher(object):
     """
     Uniform Matching between the anchors and gt boxes, which can achieve
     balance in positive anchors.
@@ -14,11 +14,10 @@ class UniformMatcher(nn.Module):
     """
 
     def __init__(self, match_times: int = 4):
-        super().__init__()
         self.match_times = match_times
 
     @torch.no_grad()
-    def forward(self, pred_boxes, anchor_boxes, targets):
+    def __call__(self, pred_boxes, anchor_boxes, targets):
         """
             pred_boxes: (Tensor)   [B, num_queries, 4]
             anchor_boxes: (Tensor) [num_queries, 4]

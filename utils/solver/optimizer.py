@@ -12,16 +12,13 @@ def build_optimizer(model,
     print('--momentum: {}'.format(momentum))
     print('--weight_decay: {}'.format(weight_decay))
 
-    if base_lr == backbone_lr:
-        param_dicts = model.parameters()
-    else:
-        param_dicts = [
-            {"params": [p for n, p in model.named_parameters() if "backbone" not in n and p.requires_grad]},
-            {
-                "params": [p for n, p in model.named_parameters() if "backbone" in n and p.requires_grad],
-                "lr": backbone_lr,
-            },
-        ]
+    param_dicts = [
+        {"params": [p for n, p in model.named_parameters() if "backbone" not in n and p.requires_grad]},
+        {
+            "params": [p for n, p in model.named_parameters() if "backbone" in n and p.requires_grad],
+            "lr": backbone_lr,
+        },
+    ]
 
     if name == 'sgd':
         optimizer = optim.SGD(param_dicts, 

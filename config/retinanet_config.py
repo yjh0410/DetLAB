@@ -38,10 +38,13 @@ retinanet_config = {
         # model
         'backbone': 'resnet18',
         'norm_type': 'FrozeBN',
-        'stride': [128, 64, 32, 16, 8],  # P7, P6, P5, P4, P3
+        'stride': [8, 16, 32, 64, 128],  # P3, P4, P5, P6, P7
         'act_type': 'relu',
         # neck
         'fpn': 'basic_fpn',
+        'from_c5': True,
+        'p6_feat': True,
+        'p7_feat': True,
         # head
         'head_dim': 256,
         'head': 'decoupled_head',
@@ -51,12 +54,20 @@ retinanet_config = {
         'conf_thresh': 0.05,
         'nms_thresh': 0.6,
         # anchor box
-        'anchor_config': {'basic_size': [[512, 512], [256, 256], [128, 128], [64, 64], [32, 32]],
+        'anchor_config': {'basic_size': [[32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
                           'aspect_ratio': [0.5, 1.0, 2.0],
                           'area_scale': [2 ** 0, 2 ** (1. / 3.), 2 ** (2. / 3.)]},
         # matcher
         'matcher': 'basic_matcher',
         'iou_t': [0.4, 0.5],
+        'iou_labels': [0, -1, 1], # [negative sample, ignored sample, positive sample]
+        'allow_low_quality_matches': False,
+        'ctr_clamp': 32,
+        # loss
+        'alpha': 0.25,
+        'gamma': 2.0,
+        'loss_cls_weight': 1.0,
+        'loss_reg_weight': 1.0,
         # optimizer
         'optimizer': 'sgd',
         'momentum': 0.9,
@@ -113,10 +124,13 @@ retinanet_config = {
         # model
         'backbone': 'resnet50',
         'norm_type': 'FrozeBN',
-        'stride': [128, 64, 32, 16, 8],
+        'stride': [8, 16, 32, 64, 128],
         'act_type': 'relu',
         # neck
         'fpn': 'basic_fpn',
+        'from_c5': True,
+        'p6_feat': True,
+        'p7_feat': True,
         # head
         'head_dim': 256,
         'head': 'decoupled_head',
@@ -126,12 +140,20 @@ retinanet_config = {
         'conf_thresh': 0.05,
         'nms_thresh': 0.6,
         # anchor box
-        'anchor_config': {'basic_size': [[512, 512], [256, 256], [128, 128], [64, 64], [32, 32]],
+        'anchor_config': {'basic_size': [[32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
                           'aspect_ratio': [0.5, 1.0, 2.0],
                           'area_scale': [2 ** 0, 2 ** (1. / 3.), 2 ** (2. / 3.)]},
         # matcher
         'matcher': 'basic_matcher',
         'iou_t': [0.4, 0.5],
+        'iou_labels': [0, -1, 1],
+        'allow_low_quality_matches': False,
+        'ctr_clamp': 32,
+        # loss
+        'alpha': 0.25,
+        'gamma': 2.0,
+        'loss_cls_weight': 1.0,
+        'loss_reg_weight': 1.0,
         # optimizer
         'optimizer': 'sgd',
         'momentum': 0.9,
@@ -188,10 +210,13 @@ retinanet_config = {
         # model
         'backbone': 'resnet101',
         'norm_type': 'FrozeBN',
-        'stride': [128, 64, 32, 16, 8],
+        'stride': [8, 16, 32, 64, 128],
         'act_type': 'relu',
         # neck
         'fpn': 'basic_fpn',
+        'from_c5': True,
+        'p6_feat': True,
+        'p7_feat': True,
         # head
         'head_dim': 256,
         'head': 'decoupled_head',
@@ -201,12 +226,20 @@ retinanet_config = {
         'conf_thresh': 0.05,
         'nms_thresh': 0.6,
         # anchor box
-        'anchor_config': {'basic_size': [[512, 512], [256, 256], [128, 128], [64, 64], [32, 32]],
+        'anchor_config': {'basic_size': [[32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
                           'aspect_ratio': [0.5, 1.0, 2.0],
                           'area_scale': [2 ** 0, 2 ** (1. / 3.), 2 ** (2. / 3.)]},
         # matcher
         'matcher': 'basic_matcher',
         'iou_t': [0.4, 0.5],
+        'iou_labels': [0, -1, 1],
+        'allow_low_quality_matches': False,
+        'ctr_clamp': 32,
+        # loss
+        'alpha': 0.25,
+        'gamma': 2.0,
+        'loss_cls_weight': 1.0,
+        'loss_reg_weight': 1.0,
         # optimizer
         'optimizer': 'sgd',
         'momentum': 0.9,
@@ -263,10 +296,13 @@ retinanet_config = {
         # model
         'backbone': 'resnet50',
         'norm_type': 'FrozeBN',
-        'stride': [32, 16, 8],
+        'stride': [8, 16, 32],
         'act_type': 'relu',
         # neck
         'fpn': 'basic_fpn',
+        'from_c5': False,
+        'p6_feat': False,
+        'p7_feat': False,
         # head
         'head_dim': 256,
         'head': 'decoupled_head',
@@ -276,12 +312,20 @@ retinanet_config = {
         'conf_thresh': 0.05,
         'nms_thresh': 0.6,
         # anchor box
-        'anchor_config': {'basic_size': [[256, 256], [64, 64], [16, 16]],
+        'anchor_config': {'basic_size': [[16, 16], [64, 64], [256, 256]],
                           'aspect_ratio': [0.5, 1.0, 2.0],
                           'area_scale': [2 ** 0, 2 ** (1. / 3.), 2 ** (2. / 3.)]},
         # matcher
         'matcher': 'basic_matcher',
         'iou_t': [0.4, 0.5],
+        'iou_labels': [0, -1, 1],
+        'allow_low_quality_matches': False,
+        'ctr_clamp': 32,
+        # loss
+        'alpha': 0.25,
+        'gamma': 2.0,
+        'loss_cls_weight': 1.0,
+        'loss_reg_weight': 1.0,
         # optimizer
         'optimizer': 'sgd',
         'momentum': 0.9,

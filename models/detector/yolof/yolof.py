@@ -40,7 +40,7 @@ class YOLOF(nn.Module):
 
         # neck
         self.neck = build_neck(cfg=cfg, 
-                               in_dim=bk_dim, 
+                               in_dim=bk_dim[-1], 
                                out_dim=cfg['head_dim'])
                                      
         # head
@@ -178,7 +178,8 @@ class YOLOF(nn.Module):
     def inference_single_image(self, x):
         img_h, img_w = x.shape[2:]
         # backbone
-        x = self.backbone(x)
+        feats = self.backbone(x)
+        x = feats['layer4']
 
         # neck
         x = self.neck(x)
@@ -265,7 +266,8 @@ class YOLOF(nn.Module):
             return self.inference_single_image(x)
         else:
             # backbone
-            x = self.backbone(x)
+            feats = self.backbone(x)
+            x = feats['layer4']
 
             # neck
             x = self.neck(x)

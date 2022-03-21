@@ -58,17 +58,17 @@ class BackboneBase(nn.Module):
         for name, parameter in backbone.named_parameters():
             if 'layer2' not in name and 'layer3' not in name and 'layer4' not in name:
                 parameter.requires_grad_(False)
-        return_layers = {'layer4': "0"}        
+        return_layers = {'layer2': 'layer2', 'layer3': 'layer3', 'layer4': 'layer4'}        
         self.body = IntermediateLayerGetter(backbone, return_layers=return_layers)
         self.num_channels = num_channels
 
     def forward(self, x):
         xs = self.body(x)
-        fmp_list = []
+        fmp_list = dict()
         for name, fmp in xs.items():
-            fmp_list.append(fmp)
+            fmp_list[name] = fmp
 
-        return fmp_list[-1]
+        return fmp_list
 
 
 class Backbone(BackboneBase):
@@ -90,24 +90,38 @@ class Backbone(BackboneBase):
 
 
 def build_resnet(model_name='resnet18', pretrained=False, norm_type='BN'):
-    if model_name in ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnext101_32x8d']:
+    if model_name in ['resnet18', 'resnet34']:
         backbone = Backbone(model_name, 
                             pretrained, 
                             dilation=False,
                             norm_type=norm_type)
+        feats = [128, 256, 512] # [C3, C4, C5]
+    
+    elif model_name in ['resnet50', 'resnet101']:
+        backbone = Backbone(model_name, 
+                            pretrained, 
+                            dilation=False,
+                            norm_type=norm_type)
+        feats = [512, 1024, 2048] # [C3, C4, C5]
+
     elif model_name in ['resnet50-d', 'resnet101-d']:
         backbone = Backbone(model_name[:-2], 
                             pretrained, 
                             dilation=True,
                             norm_type=norm_type)
+        feats = [512, 1024, 2048] # [C3, C4, C5]
 
-    return backbone, backbone.num_channels
+    return backbone, feats
 
 
 if __name__ == '__main__':
-    model, feat_dim = build_resnet(model_name='resnet50-d', pretrained=True)
+    model, feat_dim = build_resnet(model_name='resnet18', pretrained=True)
     print(feat_dim)
 
     x = torch.randn(2, 3, 800, 800)
-    y = model(x)
-    print(y.size())
+    outputs = model(x)
+    # print(outputs['layer2'].shape)
+    for k in outputs.keys():
+        print(k)
+        f = outputs[k]
+        print(f.shape)

@@ -32,7 +32,8 @@ conda activate detection
 pip install -r requirements.txt 
 ```
 
-We suggest that PyTorch should be higher than 1.9.0 and Torchvision should be higher than 0.10.3. At least, please make sure your torch is version 1.x.
+We suggest that PyTorch should be higher than 1.9.0 and Torchvision should be higher than 0.10.3. 
+At least, please make sure your torch is version 1.x.
 
 # Main results on COCO-val
 ## YOLOF
@@ -57,6 +58,12 @@ We suggest that PyTorch should be higher than 1.9.0 and Torchvision should be hi
 | FCOS_R_50_1x                   |  800,1333  |         |       |
 | FCOS_RT                        |  640,640   |         |       |
 
+Limited by my computing resources, I cannot use larger backbone networks like `ResNet-101` 
+and `ResNeXt-101` to train more powerful detectors.
+
+If you have sufficient computing resources and are already using these larger backbone 
+networks to train the detectors in this benchmark, I look forward to your open source 
+weight files to complement this project. Thanks a lot.
 
 # Train
 ## Single GPU
