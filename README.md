@@ -1,4 +1,20 @@
 # Object Detection Benchmark
+This benchmark is my library of object detection.
+My code is clean and concise, without too much encapsulation, 
+so it is easy to understand the function of each module.
+
+I am sure you will soon become familiar with this benchmark and add your own modules to it.
+
+# Coming soon
+- [] YOLOF
+- [] RetinaNet
+- [] FCOS
+- [] Deformable DeTR
+- [] Anchor DeTR
+- [] Dynamic DeTR
+- [] Dynamic Head
+- [] YOLOX
+
 
 # Requirements
 - We recommend you to use Anaconda to create a conda environment:
@@ -21,25 +37,25 @@ We suggest that PyTorch should be higher than 1.9.0 and Torchvision should be hi
 # Main results on COCO-val
 ## YOLOF
 
-| Model                                       |  scale     |   mAP   | Weight|
-|---------------------------------------------|------------|---------|-------|
-| YOLOF_R_18_C5_1x                            |  800,1333  |         | [github](https://github.com/yjh0410/PyTorch_YOLOF/releases/download/YOLOF-weight/yolof_R_18_C5_1x_31.9.pth) |
-| YOLOF_R_50_C5_1x                            |  800,1333  |         | [github](https://github.com/yjh0410/PyTorch_YOLOF/releases/download/YOLOF-weight/yolof_R_50_C5_1x_37.3.pth) |
-| YOLOF_R_50_DC5_640_3x                       |  640,640   |         |       |
+| Model                          |  scale     |   mAP   | Weight|
+|--------------------------------|------------|---------|-------|
+| YOLOF_R_18_C5_1x               |  800,1333  |         | [github](https://github.com/yjh0410/PyTorch_YOLOF/releases/download/YOLOF-weight/yolof_R_18_C5_1x_31.9.pth) |
+| YOLOF_R_50_C5_1x               |  800,1333  |         | [github](https://github.com/yjh0410/PyTorch_YOLOF/releases/download/YOLOF-weight/yolof_R_50_C5_1x_37.3.pth) |
+| YOLOF_RT                       |  640,640   |         |       |
 
 ## RetinaNet
-| Model                                       |  scale     |   mAP   | Weight|
-|---------------------------------------------|------------|---------|-------|
-| RetinaNet_R_18_1x                           |  800,1333  |         |       |
-| RetinaNet_R_50_1x                           |  800,1333  |         |       |
-| RetinaNet_R_50_640_3x                       |  640,640   |         |       |
+| Model                              |  scale     |   mAP   | Weight|
+|------------------------------------|------------|---------|-------|
+| RetinaNet_R_18_1x                  |  800,1333  |         |       |
+| RetinaNet_R_50_1x                  |  800,1333  |         |       |
+| RetinaNet_RT                       |  640,640   |         |       |
 
 ## FCOS
-| Model                                       |  scale     |   mAP   | Weight|
-|---------------------------------------------|------------|---------|-------|
-| FCOS_R_18_1x                                |  800,1333  |         |       |
-| FCOS_R_50_1x                                |  800,1333  |         |       |
-| FCOS_R_50_640_3x                            |  640,640   |         |       |
+| Model                              |  scale     |   mAP   | Weight|
+|------------------------------------|------------|---------|-------|
+| FCOS_R_18_1x                       |  800,1333  |         |       |
+| FCOS_R_50_1x                       |  800,1333  |         |       |
+| FCOS_RT                            |  640,640   |         |       |
 
 
 # Train
