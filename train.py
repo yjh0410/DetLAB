@@ -15,11 +15,9 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 
 from dataset.voc import VOCDetection
 from dataset.coco import COCODataset
-from config.yolof_config import yolof_config
 from dataset.transforms import TrainTransforms, ValTransforms, BaseTransforms
 
 from utils import distributed_utils
-from utils.criterion import build_criterion
 from utils.com_flops_params import FLOPs_and_Params
 from utils.misc import CollateFunc, get_total_grad_norm
 from utils.solver.optimizer import build_optimizer
@@ -28,6 +26,7 @@ from utils.solver.warmup_schedule import build_warmup
 from evaluator.coco_evaluator import COCOAPIEvaluator
 from evaluator.voc_evaluator import VOCAPIEvaluator
 
+from config import build_config
 from models.detector import build_model
 
 
@@ -58,7 +57,7 @@ def parse_args():
                         help='path to save weight')
 
     # model
-    parser.add_argument('-v', '--version', default='yolof50', type=str,
+    parser.add_argument('-v', '--version', default='yolof18', type=str,
                         help='build yolof')
     parser.add_argument('--conf_thresh', default=0.05, type=float,
                         help='NMS threshold')
@@ -116,6 +115,9 @@ def train():
     else:
         device = torch.device("cpu")
 
+    # config
+    cfg = build_config(args)
+
     # dataset and evaluator
     dataset, evaluator, num_classes = build_dataset(cfg, args, device)
 
@@ -123,11 +125,12 @@ def train():
     dataloader = build_dataloader(args, dataset, CollateFunc())
 
     # build model
-    net, cfg = build_model(args=args, 
-                            device=device, 
-                            num_classes=num_classes, 
-                            trainable=True,
-                            coco_pretrained=args.coco_pretrained)
+    net = build_model(args=args, 
+                      cfg=cfg,
+                      device=device, 
+                      num_classes=num_classes, 
+                      trainable=True,
+                      coco_pretrained=args.coco_pretrained)
     model = net
     model = model.to(device).train()
 
@@ -141,8 +144,8 @@ def train():
         model_without_ddp.trainable = False
         model_without_ddp.eval()
         FLOPs_and_Params(model=model_without_ddp, 
-                         min_size=args.train_min_size, 
-                         max_size=cfg['min_size'], 
+                         min_size=cfg['min_size'], 
+                         max_size=cfg['max_size'], 
                          device=device)
         model_without_ddp.trainable = True
         model_without_ddp.train()
@@ -227,19 +230,21 @@ def train():
                     lr=round(cur_lr_dict['lr'], 6),
                     lr_bk=round(cur_lr_dict['lr_bk'], 6)
                 )
-                # add loss into log
-                for k, v in loss_dict:
-                    log[k] = round(v, 2)
-                # add iter time
-                log['time'] = t1 - t0
-                log['gnorm'] = round(total_norm, 2)
-                log['size'] = [cfg['min_size'], cfg['max_size']]
-                print('======== [Epoch {}/{}][Iter {}/{}] ========'.format(epoch+1, 
-                                                                           max_epoch,
-                                                                           iter_i,
-                                                                           epoch_size))
-                for k, v in log:
-                    print('-- {}: {}'.format(k, v))
+                # basic infor
+                log = '[Epoch: {}/{}]'.format(epoch+1, max_epoch)
+                log += '[Iter: {}/{}]'.format(iter_i, epoch_size)
+                log += '[lr: {:.6f}][lr_bk: {:.6f}]'.format(cur_lr_dict['lr'], cur_lr_dict['lr_bk'])
+                # loss infor
+                for k in loss_dict_reduced.keys():
+                    log += '[{}: {:.2f}]'.format(k, loss_dict[k])
+
+                # other infor
+                log += '[time: {:.2f}]'.format(t1 - t0)
+                log += '[gnorm: {:.2f}]'.format(total_norm)
+                log += '[size: [{}, {}]]'.format(cfg['min_size'], cfg['max_size'])
+
+                # print log infor
+                print(log, flush=True)
                 
                 t0 = time.time()
 

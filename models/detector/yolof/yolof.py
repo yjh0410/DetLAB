@@ -116,8 +116,8 @@ class YOLOF(nn.Module):
 
     def decode_boxes(self, anchor_boxes, pred_reg):
         """
-            anchor_boxes: (List[tensor]) [1, M, 4]
-            pred_reg: (List[tensor]) [B, M, 4]
+            anchor_boxes: (List[tensor]) [1, M, 4] or [M, 4]
+            pred_reg: (List[tensor]) [B, M, 4] or [M, 4]
         """
         # x = x_anchor + dx * w_anchor
         # y = y_anchor + dy * h_anchor
@@ -174,40 +174,6 @@ class YOLOF(nn.Module):
         return keep
 
 
-    def postprocess(self, bboxes, scores):
-        """
-        bboxes: (N, 4), bsize = 1
-        scores: (N, C), bsize = 1
-        """
-
-        cls_inds = np.argmax(scores, axis=1)
-        scores = scores[(np.arange(scores.shape[0]), cls_inds)]
-        
-        # threshold
-        keep = np.where(scores >= self.conf_thresh)
-        bboxes = bboxes[keep]
-        scores = scores[keep]
-        cls_inds = cls_inds[keep]
-
-        # NMS
-        keep = np.zeros(len(bboxes), dtype=np.int)
-        for i in range(self.num_classes):
-            inds = np.where(cls_inds == i)[0]
-            if len(inds) == 0:
-                continue
-            c_bboxes = bboxes[inds]
-            c_scores = scores[inds]
-            c_keep = self.nms(c_bboxes, c_scores)
-            keep[inds[c_keep]] = 1
-
-        keep = np.where(keep > 0)
-        bboxes = bboxes[keep]
-        scores = scores[keep]
-        cls_inds = cls_inds[keep]
-
-        return bboxes, scores, cls_inds
-
-
     @torch.no_grad()
     def inference_single_image(self, x):
         img_h, img_w = x.shape[2:]
@@ -240,10 +206,14 @@ class YOLOF(nn.Module):
         reg_pred =reg_pred.view(B, -1, 4, H, W).permute(0, 3, 4, 1, 2).contiguous()
         reg_pred = reg_pred.view(B, -1, 4)
 
+        # [1, M, C] -> [M, C]
+        cls_pred = normalized_cls_pred[0]
+        reg_pred = reg_pred[0]
+
         # decode box
         anchor_boxes = self.generate_anchors(fmp_size=[H, W]) # [M, 4]
         # scores
-        scores, labels = torch.max(normalized_cls_pred.sigmoid(), dim=-1)
+        scores, labels = torch.max(cls_pred.sigmoid(), dim=-1)
 
         # topk
         if scores.shape[0] > self.topk:
@@ -252,8 +222,8 @@ class YOLOF(nn.Module):
             reg_pred = reg_pred[indices]
             anchor_boxes = anchor_boxes[indices]
 
-        # decode box
-        bboxes = self.decode_boxes(anchor_boxes[None], reg_pred[None])[0] # [N, 4]
+        # decode box: [M, 4]
+        bboxes = self.decode_boxes(anchor_boxes, reg_pred)
 
         # to cpu
         scores = scores.cpu().numpy()

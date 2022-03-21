@@ -14,7 +14,7 @@ def build_matcher(cfg):
     elif matcher == 'uniform_matcher':
         matcher = UniformMatcher(cfg['topk'])
 
-    elif matcher == 'atss_matcher':
+    elif matcher == 'atss':
         matcher = None
 
     elif matcher == 'hungarian_matcher':
@@ -22,10 +22,10 @@ def build_matcher(cfg):
                                    cost_bbox=cfg['cost_bbox_weight'], 
                                    cost_giou=cfg['cost_giou_weight'])
 
-    elif matcher == 'ota_matcher':
+    elif matcher == 'ota':
         matcher = None
 
-    elif matcher == 'sim_ota_matcher':
+    elif matcher == 'sim_ota':
         matcher = None
 
 
