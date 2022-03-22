@@ -64,7 +64,7 @@ class BasicMatcher(object):
     @torch.no_grad()
     def __call__(self, anchor_box, targets):
         """
-            anchor_box: (Tensor) [B, M, 4]
+            anchor_box: (Tensor) [B, M, 4] (x1, y1, x2, y2)
             targets: (Dict) dict{'boxes': [...], 
                                  'labels': [...], 
                                  'orig_size': ...}
@@ -73,7 +73,7 @@ class BasicMatcher(object):
         gt_classes = []
         gt_boxes = []
 
-        for anchors_per_image, targets_per_image in zip(anchors, targets):
+        for anchors_per_image, targets_per_image in zip(anchor_box, targets):
             # [N,]
             tgt_labels = targets_per_image['labels']
             # [N, 4]
