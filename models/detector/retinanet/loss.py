@@ -90,7 +90,7 @@ class Criterion(nn.Module):
         gt_cls_target[foreground_idxs, tgt_classes[foreground_idxs]] = 1
 
         # cls loss
-        masks = outputs['mask'].view(-1)
+        masks = outputs['mask'].view(-1).cpu()
         valid_idxs = (tgt_classes >= 0) & masks
         loss_labels = self.loss_labels(pred_cls[valid_idxs], 
                                        gt_cls_target[valid_idxs], 
