@@ -98,7 +98,7 @@ class Criterion(nn.Module):
 
         # box loss
         loss_bboxes = self.loss_bboxes(pred_box[foreground_idxs],
-                                        tgt_boxes[foreground_idxs],
+                                        tgt_boxes[foreground_idxs].to(pred_box.device),
                                         num_foreground)
 
         # total loss
