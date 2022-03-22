@@ -2,7 +2,7 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
 # Modified by BaseDetection, Inc. and its affiliates.
 import torch
-from utils.box_ops import box_iou
+from utils.box_ops import box_iou, box_cxcywh_to_xyxy
 
 
 class BasicMatcher(object):
@@ -69,11 +69,14 @@ class BasicMatcher(object):
                                  'labels': [...], 
                                  'orig_size': ...}
         """
+        # list[Tensor(R, 4)], one for each image
         gt_classes = []
         gt_boxes = []
-        # list[Tensor(R, 4)], one for each image
+        # convert [x, y, w, h] -> [x1, y1, x2, y2]
+        anchors = box_cxcywh_to_xyxy(anchor_box)
 
-        for anchors_per_image, targets_per_image in zip(anchor_box, targets):
+
+        for anchors_per_image, targets_per_image in zip(anchors, targets):
             # [N,]
             tgt_labels = targets_per_image['labels']
             # [N, 4]

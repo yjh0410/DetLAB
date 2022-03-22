@@ -8,6 +8,7 @@ I am sure you will soon become familiar with this benchmark and add your own mod
 # Coming soon
 - [] YOLOF
 - [] RetinaNet
+- [] SSD
 - [] FCOS
 - [] Deformable DeTR
 - [] Anchor DeTR

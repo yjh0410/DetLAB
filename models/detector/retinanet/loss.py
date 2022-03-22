@@ -95,7 +95,6 @@ class Criterion(nn.Module):
                                        num_foreground)
 
         # box loss
-        print(foreground_idxs.sum())
         loss_bboxes = self.loss_bboxes(pred_box[foreground_idxs],
                                         tgt_boxes[foreground_idxs],
                                         num_foreground)
