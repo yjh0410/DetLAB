@@ -72,9 +72,6 @@ class BasicMatcher(object):
         # list[Tensor(R, 4)], one for each image
         gt_classes = []
         gt_boxes = []
-        # convert [x, y, w, h] -> [x1, y1, x2, y2]
-        anchors = box_cxcywh_to_xyxy(anchor_box)
-
 
         for anchors_per_image, targets_per_image in zip(anchors, targets):
             # [N,]

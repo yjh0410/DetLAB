@@ -68,7 +68,9 @@ class Criterion(nn.Module):
         """
         bs = outputs['pred_cls'].size(0)
         # [M, 4] -> [B, M, 4]
-        anchors = anchor_boxes[None].repeat(bs, 1, 1)
+        anchors = anchor_boxes[None].repeat(bs, 1, 1).cpu()
+        # convert [x, y, w, h] -> [x1, y1, x2, y2]
+        anchors = box_cxcywh_to_xyxy(anchors)
         tgt_classes, tgt_boxes = self.matcher(anchors, targets)
 
         # [B, M, C] -> [BM, C]
