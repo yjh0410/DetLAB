@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) Facebook, Inc. and its affiliates.
 # Modified by BaseDetection, Inc. and its affiliates.
-from attr import has
 import torch
 from utils.box_ops import box_iou
 
