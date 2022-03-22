@@ -5,7 +5,7 @@ import torch
 from utils.box_ops import box_iou
 
 
-class BasicMatcher(object):
+class Matcher(object):
     """
     This class assigns to each predicted "element" (e.g., a box) a ground-truth
     element. Each predicted element will have exactly zero or one matches; each

@@ -58,7 +58,6 @@ retinanet_config = {
                           'aspect_ratio': [0.5, 1.0, 2.0],
                           'area_scale': [2 ** 0, 2 ** (1. / 3.), 2 ** (2. / 3.)]},
         # matcher
-        'matcher': 'basic_matcher',
         'iou_t': [0.4, 0.5],
         'iou_labels': [0, -1, 1], # [negative sample, ignored sample, positive sample]
         'allow_low_quality_matches': False,
@@ -144,7 +143,6 @@ retinanet_config = {
                           'aspect_ratio': [0.5, 1.0, 2.0],
                           'area_scale': [2 ** 0, 2 ** (1. / 3.), 2 ** (2. / 3.)]},
         # matcher
-        'matcher': 'basic_matcher',
         'iou_t': [0.4, 0.5],
         'iou_labels': [0, -1, 1],
         'allow_low_quality_matches': False,
@@ -230,7 +228,6 @@ retinanet_config = {
                           'aspect_ratio': [0.5, 1.0, 2.0],
                           'area_scale': [2 ** 0, 2 ** (1. / 3.), 2 ** (2. / 3.)]},
         # matcher
-        'matcher': 'basic_matcher',
         'iou_t': [0.4, 0.5],
         'iou_labels': [0, -1, 1],
         'allow_low_quality_matches': False,
@@ -316,7 +313,6 @@ retinanet_config = {
                           'aspect_ratio': [0.5, 1.0, 2.0],
                           'area_scale': [2 ** 0, 2 ** (1. / 3.), 2 ** (2. / 3.)]},
         # matcher
-        'matcher': 'basic_matcher',
         'iou_t': [0.4, 0.5],
         'iou_labels': [0, -1, 1],
         'allow_low_quality_matches': False,

@@ -55,8 +55,8 @@ class RetinaNet(nn.Module):
                                   act_type=cfg['act_type'])
 
         # pred
-        self.cls_pred = nn.Conv2d(cfg['head_dim'], self.num_classes * self.num_anchors, kernel_size=3, padding=1)
-        self.reg_pred = nn.Conv2d(cfg['head_dim'], 4 * self.num_anchors, kernel_size=3, padding=1)
+        self.cls_pred = nn.Conv2d(cfg['head_dim'], self.num_classes * self.num_anchors, kernel_size=1)
+        self.reg_pred = nn.Conv2d(cfg['head_dim'], 4 * self.num_anchors, kernel_size=1)
 
         if trainable:
             # init bias
@@ -207,16 +207,16 @@ class RetinaNet(nn.Module):
         for level, feat in enumerate(pyramid_feats):
             cls_feat, reg_feat = self.head(feat)
 
-            # [1, C, H, W]
+            # [1, KAxC, H, W]
             cls_pred = self.cls_pred(cls_feat)
             reg_pred = self.reg_pred(reg_feat)
 
             # decode box
             _, _, H, W = cls_pred.size()
             fmp_size = [H, W]
-            # [1, C, H, W] -> [H, W, C] -> [M, C]
-            cls_pred = cls_pred[0].permute(1, 2, 0).contiguous().view(-1, self.num_classes)
-            reg_pred = reg_pred[0].permute(1, 2, 0).contiguous().view(-1, 4)
+            # [1, KAxC, H, W] -> [H, W, KAxC] -> [H, W, KA, C] -> [M, C]
+            cls_pred = cls_pred[0].permute(1, 2, 0).contiguous().view(H, W, self.num_anchors, -1).view(-1, self.num_classes)
+            reg_pred = reg_pred[0].permute(1, 2, 0).contiguous().view(H, W, self.num_anchors, -1).view(-1, 4)
 
             # scores
             scores, labels = torch.max(cls_pred.sigmoid(), dim=-1)
@@ -294,15 +294,15 @@ class RetinaNet(nn.Module):
             all_masks = []
             for level, feat in enumerate(pyramid_feats):
                 cls_feat, reg_feat = self.head(feat)
-                # [B, C, H, W]
+                # [B, KAxC, H, W]
                 cls_pred = self.cls_pred(cls_feat)
                 reg_pred = self.reg_pred(reg_feat)
 
                 B, _, H, W = cls_pred.size()
                 fmp_size = [H, W]
-                # [B, C, H, W] -> [B, H, W, C] -> [B, M, C]
-                cls_pred = cls_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, self.num_classes)
-                reg_pred = reg_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, 4)
+                # [B, KAxC, H, W] -> [B, H, W, KAxC] -> [B, H, W, KA, C] -> [B, M, C]
+                cls_pred = cls_pred.permute(0, 2, 3, 1).contiguous().view(B, H, W, self.num_anchors, -1).view(B, -1, self.num_classes)
+                reg_pred = reg_pred.permute(0, 2, 3, 1).contiguous().view(B, H, W, self.num_anchors, -1).view(B, -1, 4)
 
                 all_cls_preds.append(cls_pred)
                 all_reg_preds.append(reg_pred)
