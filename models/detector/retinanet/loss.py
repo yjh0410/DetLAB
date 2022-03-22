@@ -71,6 +71,7 @@ class Criterion(nn.Module):
         anchors = anchor_boxes[None].repeat(bs, 1, 1).cpu()
         # convert [x, y, w, h] -> [x1, y1, x2, y2]
         anchors = box_cxcywh_to_xyxy(anchors)
+        # label assignment
         tgt_classes, tgt_boxes = self.matcher(anchors, targets)
 
         # [B, M, C] -> [BM, C]

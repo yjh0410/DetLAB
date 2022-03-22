@@ -2,7 +2,7 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
 # Modified by BaseDetection, Inc. and its affiliates.
 import torch
-from utils.box_ops import box_iou, box_cxcywh_to_xyxy
+from utils.box_ops import box_iou
 
 
 class BasicMatcher(object):
