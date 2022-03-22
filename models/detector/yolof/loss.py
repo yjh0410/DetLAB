@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
+from .matcher import UniformMatcher
 from utils.box_ops import *
-from utils.matcher import build_matcher
 from utils.misc import sigmoid_focal_loss
 from utils.distributed_utils import get_world_size, is_dist_avail_and_initialized
 
@@ -21,10 +21,10 @@ class Criterion(nn.Module):
         self.device = device
         self.alpha = alpha
         self.gamma = gamma
-        self.matcher = build_matcher(cfg)
         self.num_classes = num_classes
         self.loss_cls_weight = loss_cls_weight
         self.loss_reg_weight = loss_reg_weight
+        self.matcher = UniformMatcher(match_times=cfg['topk'])
 
 
     def loss_labels(self, pred_cls, tgt_cls, num_boxes):

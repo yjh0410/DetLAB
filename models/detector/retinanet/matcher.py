@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) Facebook, Inc. and its affiliates.
 # Modified by BaseDetection, Inc. and its affiliates.
+from attr import has
 import torch
-from ..box_ops import box_iou
+from utils.box_ops import box_iou
 
 
 class BasicMatcher(object):
@@ -23,7 +24,7 @@ class BasicMatcher(object):
 
     def __init__(self,
                  num_classes, 
-                 iou_t, 
+                 iou_threshold, 
                  iou_labels, 
                  allow_low_quality_matches=False):
         """
@@ -48,15 +49,15 @@ class BasicMatcher(object):
                 thus will be considered as true positives.
         """
         self.num_classes = num_classes
-        # Add -inf and +inf to first and last position in iou_threshold
-        iou_t = iou_t[:]
-        assert iou_t[0] > 0
-        iou_t.insert(0, -float("inf"))
-        iou_t.append(float("inf"))
-        assert all(low <= high for (low, high) in zip(iou_t[:-1], iou_t[1:]))
+        # Add -inf and +inf to first and last position in iou_thresholdhreshold
+        iou_threshold = iou_threshold[:]
+        assert iou_threshold[0] > 0
+        iou_threshold.insert(0, -float("inf"))
+        iou_threshold.append(float("inf"))
+        assert all(low <= high for (low, high) in zip(iou_threshold[:-1], iou_threshold[1:]))
         assert all(label in [-1, 0, 1] for label in iou_labels)
-        assert len(iou_labels) == len(iou_t) - 1
-        self.iou_t = iou_t
+        assert len(iou_labels) == len(iou_threshold) - 1
+        self.iou_threshold = iou_threshold
         self.iou_labels = iou_labels
         self.allow_low_quality_matches = allow_low_quality_matches
 
@@ -75,13 +76,13 @@ class BasicMatcher(object):
 
         for anchors_per_image, targets_per_image in zip(anchor_box, targets):
             # [N,]
-            tgt_labels = torch.cat([t['labels'] for t in targets_per_image])
+            tgt_labels = targets_per_image['labels']
             # [N, 4]
-            tgt_boxes = torch.cat([t['boxes'] for t in targets_per_image])
+            tgt_boxes = targets_per_image['boxes']
             # [M, 4]
-            match_quality_matrix = box_iou(tgt_boxes, anchors_per_image)
+            match_quality_matrix, _ = box_iou(tgt_boxes, anchors_per_image)
             gt_matched_idxs, anchor_labels = self.matching(match_quality_matrix)
-            has_gt = len(targets_per_image) > 0
+            has_gt = len(tgt_labels) > 0
             if has_gt:
                 # ground truth box regression
                 matched_gt_boxes = tgt_boxes[gt_matched_idxs]
@@ -124,7 +125,7 @@ class BasicMatcher(object):
             # to `self.labels[0]`, which usually defaults to background class 0
             # To choose to ignore instead, can make labels=[-1,0,-1,1] + set appropriate thresholds
             default_match_labels = match_quality_matrix.new_full(
-                (match_quality_matrix.size(1),), self.labels[0], dtype=torch.int8
+                (match_quality_matrix.size(1),), self.iou_labels[0], dtype=torch.int8
             )
             return default_matches, default_match_labels
 
@@ -136,7 +137,7 @@ class BasicMatcher(object):
 
         match_labels = matches.new_full(matches.size(), 1, dtype=torch.int8)
 
-        for (l, low, high) in zip(self.labels, self.thresholds[:-1], self.thresholds[1:]):
+        for (l, low, high) in zip(self.iou_labels, self.iou_threshold[:-1], self.iou_threshold[1:]):
             low_high = (matched_vals >= low) & (matched_vals < high)
             match_labels[low_high] = l
 

@@ -2,7 +2,7 @@ python train.py \
         --cuda \
         -d coco \
         --root /mnt/share/ssd2/dataset/ \
-        -v yolof18 \
+        -v yolof50 \
         -lr 0.03 \
         -lr_bk 0.01 \
         --batch_size 16 \

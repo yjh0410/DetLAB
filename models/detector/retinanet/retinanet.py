@@ -1,3 +1,4 @@
+import enum
 import torch
 import math
 import numpy as np
@@ -103,38 +104,30 @@ class RetinaNet(nn.Module):
         return anchor_sizes
 
 
-    def generate_anchors(self, fmp_sizes):
+    def generate_anchors(self, level, fmp_size):
         """
             fmp_size: (List) [H, W]
         """
         # generate grid cells
-        all_anchor_boxes = []
-        for level, fmp_size in enumerate(fmp_sizes):
-            fmp_h, fmp_w = fmp_size
-            # [KA, 2]
-            anchor_size = self.anchor_size[level]
+        fmp_h, fmp_w = fmp_size
+        # [KA, 2]
+        anchor_size = self.anchor_size[level]
 
-            anchor_y, anchor_x = torch.meshgrid([torch.arange(fmp_h), torch.arange(fmp_w)])
-            # [H, W, 2] -> [HW, 2]
-            anchor_xy = torch.stack([anchor_x, anchor_y], dim=-1).float().view(-1, 2) + 0.5
-            # [HW, 2] -> [HW, 1, 2] -> [HW, KA, 2] 
-            anchor_xy = anchor_xy[:, None, :].repeat(1, self.num_anchors, 1)
-            anchor_xy *= self.stride[level]
+        anchor_y, anchor_x = torch.meshgrid([torch.arange(fmp_h), torch.arange(fmp_w)])
+        # [H, W, 2] -> [HW, 2]
+        anchor_xy = torch.stack([anchor_x, anchor_y], dim=-1).float().view(-1, 2) + 0.5
+        # [HW, 2] -> [HW, 1, 2] -> [HW, KA, 2] 
+        anchor_xy = anchor_xy[:, None, :].repeat(1, self.num_anchors, 1)
+        anchor_xy *= self.stride[level]
 
-            # [KA, 2] -> [1, KA, 2] -> [HW, KA, 2]
-            anchor_wh = anchor_size[None, :, :].repeat(fmp_h*fmp_w, 1, 1)
+        # [KA, 2] -> [1, KA, 2] -> [HW, KA, 2]
+        anchor_wh = anchor_size[None, :, :].repeat(fmp_h*fmp_w, 1, 1)
 
-            # [HW, KA, 4] -> [M, 4], M = HW x KA
-            anchor_boxes = torch.cat([anchor_xy, anchor_wh], dim=-1)
-            anchor_boxes = anchor_boxes.view(-1, 4).to(self.device)
+        # [HW, KA, 4] -> [M, 4], M = HW x KA
+        anchor_boxes = torch.cat([anchor_xy, anchor_wh], dim=-1)
+        anchor_boxes = anchor_boxes.view(-1, 4).to(self.device)
 
-            all_anchor_boxes.append(anchor_boxes)
-
-        # [M, 4]
-        all_anchor_boxes = torch.cat(all_anchor_boxes)
-        self.fmp_sizes = fmp_sizes
-
-        return all_anchor_boxes
+        return anchor_boxes
         
 
     def decode_boxes(self, anchor_boxes, pred_reg):
@@ -208,10 +201,10 @@ class RetinaNet(nn.Module):
         pyramid_feats = self.fpn(pyramid_feats)
 
         # shared head
-        all_fmp_sizes = []
-        all_cls_preds = []
-        all_reg_preds = []
-        for feat in pyramid_feats:
+        all_scores = []
+        all_labels = []
+        all_bboxes = []
+        for level, feat in enumerate(pyramid_feats):
             cls_feat, reg_feat = self.head(feat)
 
             # [1, C, H, W]
@@ -220,30 +213,33 @@ class RetinaNet(nn.Module):
 
             # decode box
             _, _, H, W = cls_pred.size()
-            all_fmp_sizes.append([H, W])
+            fmp_size = [H, W]
             # [1, C, H, W] -> [H, W, C] -> [M, C]
             cls_pred = cls_pred[0].permute(1, 2, 0).contiguous().view(-1, self.num_classes)
             reg_pred = reg_pred[0].permute(1, 2, 0).contiguous().view(-1, 4)
 
-            all_cls_preds.append(cls_pred)
-            all_reg_preds.append(reg_pred)
+            # scores
+            scores, labels = torch.max(cls_pred.sigmoid(), dim=-1)
 
-        all_cls_preds = torch.cat(all_cls_preds)
-        all_reg_preds = torch.cat(all_reg_preds)
+            # topk
+            anchor_boxes = self.generate_anchors(level, fmp_size) # [M, 4]
+            if scores.shape[0] > self.topk:
+                scores, indices = torch.topk(scores, self.topk)
+                labels = labels[indices]
+                reg_pred = reg_pred[indices]
+                anchor_boxes = anchor_boxes[indices]
 
-        # scores
-        scores, labels = torch.max(all_cls_preds.sigmoid(), dim=-1)
+            # decode box: [M, 4]
+            bboxes = self.decode_boxes(anchor_boxes, reg_pred)
 
-        # topk
-        anchor_boxes = self.generate_anchors(all_fmp_sizes) # [M, 4]
-        if scores.shape[0] > self.topk:
-            scores, indices = torch.topk(scores, self.topk)
-            labels = labels[indices]
-            all_reg_preds = all_reg_preds[indices]
-            anchor_boxes = anchor_boxes[indices]
 
-        # decode box: [M, 4]
-        bboxes = self.decode_boxes(anchor_boxes, all_reg_preds)
+            all_scores.append(scores)
+            all_labels.append(labels)
+            all_bboxes.append(bboxes)
+
+        scores = torch.cat(all_scores)
+        labels = torch.cat(all_labels)
+        bboxes = torch.cat(all_bboxes)
 
         # to cpu
         scores = scores.cpu().numpy()
@@ -292,19 +288,18 @@ class RetinaNet(nn.Module):
             pyramid_feats = self.fpn(pyramid_feats) # [P3, P4, P5, P6, P7]
 
             # shared head
-            all_fmp_sizes = []
+            all_anchor_boxes = []
             all_cls_preds = []
             all_reg_preds = []
             all_masks = []
-            for feat in pyramid_feats:
+            for level, feat in enumerate(pyramid_feats):
                 cls_feat, reg_feat = self.head(feat)
                 # [B, C, H, W]
                 cls_pred = self.cls_pred(cls_feat)
                 reg_pred = self.reg_pred(reg_feat)
 
-                # decode box
                 B, _, H, W = cls_pred.size()
-                all_fmp_sizes.append([H, W])
+                fmp_size = [H, W]
                 # [B, C, H, W] -> [B, H, W, C] -> [B, M, C]
                 cls_pred = cls_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, self.num_classes)
                 reg_pred = reg_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, 4)
@@ -321,14 +316,18 @@ class RetinaNet(nn.Module):
                     mask_i = mask_i[..., None].repeat(1, 1, self.num_anchors).flatten(1)
                     
                     all_masks.append(mask_i)
+
+                # generate anchor boxes: [M, 4]
+                anchor_boxes = self.generate_anchors(level, fmp_size)
+                all_anchor_boxes.append(anchor_boxes)
             
             all_cls_preds = torch.cat(all_cls_preds, dim=1)
             all_reg_preds = torch.cat(all_reg_preds, dim=1)
             all_masks = torch.cat(all_masks, dim=1)
 
             # decode box: [M, 4]
-            anchor_boxes = self.generate_anchors(all_fmp_sizes)
-            all_box_preds = self.decode_boxes(anchor_boxes[None], all_reg_preds)
+            all_anchor_boxes = torch.cat(all_anchor_boxes)
+            all_box_preds = self.decode_boxes(all_anchor_boxes[None], all_reg_preds)
 
             outputs = {"pred_cls": all_cls_preds,
                        "pred_box": all_box_preds,
@@ -337,7 +336,7 @@ class RetinaNet(nn.Module):
             # loss
             loss_labels, loss_bboxes, losses = self.criterion(outputs = outputs, 
                                                               targets = targets, 
-                                                              anchor_boxes = anchor_boxes)
+                                                              anchor_boxes = all_anchor_boxes)
 
             loss_dict=dict(
                 loss_labels = loss_labels,

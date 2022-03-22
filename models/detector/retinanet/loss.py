@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
+from .matcher import BasicMatcher
 from utils.box_ops import *
-from utils.matcher import build_matcher
 from utils.misc import sigmoid_focal_loss
 from utils.distributed_utils import get_world_size, is_dist_avail_and_initialized
 
@@ -21,10 +21,13 @@ class Criterion(nn.Module):
         self.device = device
         self.alpha = alpha
         self.gamma = gamma
-        self.matcher = build_matcher(cfg, num_classes)
         self.num_classes = num_classes
         self.loss_cls_weight = loss_cls_weight
         self.loss_reg_weight = loss_reg_weight
+        self.matcher = BasicMatcher(num_classes=num_classes,
+                                    iou_threshold=cfg['iou_t'],
+                                    iou_labels=cfg['iou_labels'],
+                                    allow_low_quality_matches=cfg['allow_low_quality_matches'])
 
 
     def loss_labels(self, pred_cls, tgt_cls, num_boxes):
@@ -63,21 +66,23 @@ class Criterion(nn.Module):
                                  'orig_size': ...}, ...]
             anchor_boxes: (Tensor) [M, 4]
         """
-        tgt_classes, matched_tgt_boxes = self.matcher(anchor_boxes, targets)
+        bs = outputs['pred_cls'].size(0)
+        # [M, 4] -> [B, M, 4]
+        anchors = anchor_boxes[None].repeat(bs, 1, 1)
+        tgt_classes, tgt_boxes = self.matcher(anchors, targets)
 
         # [B, M, C] -> [BM, C]
         pred_cls = outputs['pred_cls'].view(-1, self.num_classes)
         pred_box = outputs['pred_box'].view(-1, 4)
 
         tgt_classes = tgt_classes.flatten()
-        gt_anchors_deltas = gt_anchors_deltas.view(-1, 4)
+        tgt_boxes = tgt_boxes.view(-1, 4)
 
         foreground_idxs = (tgt_classes >= 0) & (tgt_classes != self.num_classes)
         num_foreground = foreground_idxs.sum()
         if is_dist_avail_and_initialized():
             torch.distributed.all_reduce(num_foreground)
         num_foreground = torch.clamp(num_foreground / get_world_size(), min=1).item()
-
 
         gt_cls_target = torch.zeros_like(pred_cls)
         gt_cls_target[foreground_idxs, tgt_classes[foreground_idxs]] = 1
@@ -90,9 +95,9 @@ class Criterion(nn.Module):
                                        num_foreground)
 
         # box loss
-        matched_pred_box = pred_box[foreground_idxs]
-        loss_bboxes = self.loss_bboxes(matched_pred_box,
-                                        matched_tgt_boxes,
+        print(foreground_idxs.sum())
+        loss_bboxes = self.loss_bboxes(pred_box[foreground_idxs],
+                                        tgt_boxes[foreground_idxs],
                                         num_foreground)
 
         # total loss
