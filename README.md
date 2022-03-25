@@ -41,7 +41,7 @@ At least, please make sure your torch is version 1.x.
 
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| YOLOF_R_18_C5_1x               |  800,1333  |   31.6  |       |
+| YOLOF_R_18_C5_1x               |  800,1333  |   31.6  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/yolof_r18_C5_1x_31.6.pth) |
 | YOLOF_R_50_C5_1x               |  800,1333  |         |       |
 | YOLOF_RT                       |  640,640   |         |       |
 
