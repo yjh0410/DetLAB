@@ -59,7 +59,7 @@ def generalized_box_iou(boxes1, boxes2):
 
 if __name__ == '__main__':
     box1 = torch.tensor([[10, 10, 20, 20]])
-    box2 = torch.tensor([[15, 15, 25, 25]])
+    box2 = torch.tensor([[15, 15, 20, 20]])
     iou = box_iou(box1, box2)
     print(iou)
     giou = generalized_box_iou(box1, box2)

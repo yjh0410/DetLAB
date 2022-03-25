@@ -41,7 +41,7 @@ At least, please make sure your torch is version 1.x.
 
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| YOLOF_R_18_C5_1x               |  800,1333  |         |       |
+| YOLOF_R_18_C5_1x               |  800,1333  |   31.6  |       |
 | YOLOF_R_50_C5_1x               |  800,1333  |         |       |
 | YOLOF_RT                       |  640,640   |         |       |
 

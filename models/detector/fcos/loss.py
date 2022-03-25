@@ -1,10 +1,10 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from .matcher import Matcher
 from utils.box_ops import *
 from utils.misc import sigmoid_focal_loss
 from utils.distributed_utils import get_world_size, is_dist_avail_and_initialized
-
 
 
 class Criterion(nn.Module):
@@ -14,7 +14,8 @@ class Criterion(nn.Module):
                  alpha=0.25,
                  gamma=2.0,
                  loss_cls_weight=1.0, 
-                 loss_reg_weight=1.0, 
+                 loss_reg_weight=1.0,
+                 loss_ctn_weight=1.0,
                  num_classes=80):
         super().__init__()
         self.cfg = cfg
@@ -24,6 +25,7 @@ class Criterion(nn.Module):
         self.num_classes = num_classes
         self.loss_cls_weight = loss_cls_weight
         self.loss_reg_weight = loss_reg_weight
+        self.loss_ctn_weight = loss_ctn_weight
         self.matcher = Matcher(num_classes=num_classes,
                                iou_threshold=cfg['iou_t'],
                                iou_labels=cfg['iou_labels'],
@@ -41,71 +43,120 @@ class Criterion(nn.Module):
         return loss_cls.sum() / num_boxes
 
 
-    def loss_bboxes(self, pred_box, tgt_box, num_boxes):
+    def loss_bboxes(self, pred_delta, tgt_delta, tgt_ctn, num_boxes):
         """
             pred_box: (Tensor) [N, 4]
             tgt_box:  (Tensor) [N, 4]
         """
-        # giou
-        pred_giou = generalized_box_iou(pred_box, tgt_box)  # [N, M]
-        # giou loss
-        loss_reg = 1. - torch.diag(pred_giou)
+        pred_delta = torch.cat((-pred_delta[..., :2], pred_delta[..., 2:]), dim=-1)
+        tgt_delta = torch.cat((-tgt_delta[..., :2], tgt_delta[..., 2:]), dim=-1)
 
-        return loss_reg.sum() / num_boxes
+        eps = torch.finfo(torch.float32).eps
+
+        pred_area = (pred_delta[..., 2] - pred_delta[..., 0]).clamp_(min=0) \
+            * (pred_delta[..., 3] - pred_delta[..., 1]).clamp_(min=0)
+        tgt_area = (tgt_delta[..., 2] - tgt_delta[..., 0]).clamp_(min=0) \
+            * (tgt_delta[..., 3] - tgt_delta[..., 1]).clamp_(min=0)
+
+        w_intersect = (torch.min(pred_delta[..., 2], tgt_delta[..., 2])
+                    - torch.max(pred_delta[..., 0], tgt_delta[..., 0])).clamp_(min=0)
+        h_intersect = (torch.min(pred_delta[..., 3], tgt_delta[..., 3])
+                    - torch.max(pred_delta[..., 1], tgt_delta[..., 1])).clamp_(min=0)
+
+        area_intersect = w_intersect * h_intersect
+        area_union = tgt_area + pred_area - area_intersect
+        ious = area_intersect / area_union.clamp(min=eps)
+
+       # giou
+        g_w_intersect = torch.max(pred_delta[..., 2], tgt_delta[..., 2]) \
+            - torch.min(pred_delta[..., 0], tgt_delta[..., 0])
+        g_h_intersect = torch.max(pred_delta[..., 3], tgt_delta[..., 3]) \
+            - torch.min(pred_delta[..., 1], tgt_delta[..., 1])
+        ac_uion = g_w_intersect * g_h_intersect
+        gious = ious - (ac_uion - area_union) / ac_uion.clamp(min=eps)
+        loss_box = 1 - gious
+
+        loss_box = loss_box * tgt_ctn.view(loss_box.size())
+
+        return loss_box.sum() / num_boxes
+
+
+    def loss_centerness(self, pred_ctn, tgt_ctn, num_boxes):
+        """
+            pred_box: (Tensor) [N, 4]
+            tgt_box:  (Tensor) [N, 4]
+        """
+        # bce loss
+        loss_ctn = F.binary_cross_entropy_with_logits(pred_ctn, tgt_ctn)
+
+        return loss_ctn.sum() / num_boxes
 
 
     def forward(self,
                 outputs, 
                 targets, 
-                anchor_boxes=None):
+                anchors=None):
         """
             outputs['pred_cls']: (Tensor) [B, M, C]
-            outputs['pred_box']: (Tensor) [B, M, 4]
+            outputs['pred_reg']: (Tensor) [B, M, 4]
+            outputs['pred_ctn']: (Tensor) [B, M, 1]
             targets: (List) [dict{'boxes': [...], 
                                  'labels': [...], 
                                  'orig_size': ...}, ...]
-            anchor_boxes: (Tensor) [M, 4]
+            anchors: (List of Tensor) List[Tensor[M, 4]], len(anchors) == num_fpn_levels
         """
-        bs = outputs['pred_cls'].size(0)
-        # [M, 4] -> [B, M, 4]
-        anchors = anchor_boxes[None].repeat(bs, 1, 1).cpu()
-        # convert [x, y, w, h] -> [x1, y1, x2, y2]
-        anchors = box_cxcywh_to_xyxy(anchors)
-        # label assignment
-        tgt_classes, tgt_boxes = self.matcher(anchors, targets)
 
-        # [B, M, C] -> [BM, C]
+        gt_classes, gt_shifts_deltas, gt_centerness = self.matcher(anchors, targets)
+
         pred_cls = outputs['pred_cls'].view(-1, self.num_classes)
-        pred_box = outputs['pred_box'].view(-1, 4)
+        pred_delta = outputs['pred_reg'].view(-1, 4)
+        pred_ctn = outputs['pred_ctn'].view(-1, 1)
 
-        tgt_classes = tgt_classes.flatten()
-        tgt_boxes = tgt_boxes.view(-1, 4)
+        gt_classes = gt_classes.flatten()
+        gt_shifts_deltas = gt_shifts_deltas.view(-1, 4)
+        gt_centerness = gt_centerness.view(-1, 1)
 
-        foreground_idxs = (tgt_classes >= 0) & (tgt_classes != self.num_classes)
+        valid_idxs = gt_classes >= 0
+        foreground_idxs = (gt_classes >= 0) & (gt_classes != self.num_classes)
         num_foreground = foreground_idxs.sum()
+
         if is_dist_avail_and_initialized():
             torch.distributed.all_reduce(num_foreground)
         num_foreground = torch.clamp(num_foreground / get_world_size(), min=1).item()
 
-        gt_cls_target = torch.zeros_like(pred_cls)
-        gt_cls_target[foreground_idxs, tgt_classes[foreground_idxs]] = 1
+        num_foreground_centerness = gt_centerness[foreground_idxs].sum()
+        if is_dist_avail_and_initialized():
+            torch.distributed.all_reduce(num_foreground_centerness)
+        num_targets = torch.clamp(num_foreground_centerness / get_world_size(), min=1).item()
+
+        gt_classes_target = torch.zeros_like(pred_cls)
+        gt_classes_target[foreground_idxs, gt_classes[foreground_idxs]] = 1
 
         # cls loss
-        masks = outputs['mask'].view(-1).cpu()
-        valid_idxs = (tgt_classes >= 0) & masks
-        loss_labels = self.loss_labels(pred_cls[valid_idxs], 
-                                       gt_cls_target[valid_idxs], 
-                                       num_foreground)
+        loss_labels = self.loss_labels(
+            pred_cls[valid_idxs],
+            gt_classes_target[valid_idxs],
+            num_boxes=num_foreground)
 
         # box loss
-        loss_bboxes = self.loss_bboxes(pred_box[foreground_idxs],
-                                        tgt_boxes[foreground_idxs].to(pred_box.device),
-                                        num_foreground)
+        loss_bboxes = self.loss_bboxes(
+            pred_delta[foreground_idxs],
+            gt_shifts_deltas[foreground_idxs],
+            gt_centerness[foreground_idxs],
+            num_boxes=num_targets,)
+
+        # centerness loss
+        loss_centerness = F.binary_cross_entropy_with_logits(
+            pred_ctn[foreground_idxs],
+            gt_centerness[foreground_idxs],
+            num_boxes=num_targets,)
 
         # total loss
-        losses = self.loss_cls_weight * loss_labels + self.loss_reg_weight * loss_bboxes
+        losses = self.loss_cls_weight * loss_labels + \
+                 self.loss_reg_weight * loss_bboxes + \
+                 self.loss_ctn_weight * loss_centerness
 
-        return loss_labels, loss_bboxes, losses
+        return loss_labels, loss_bboxes, loss_centerness, losses
 
     
 if __name__ == "__main__":

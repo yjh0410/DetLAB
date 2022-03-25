@@ -3,7 +3,8 @@ import torch
 import math
 import numpy as np
 import torch.nn as nn
-import torch.nn as nn
+import torch.nn.functional as F
+
 from ...backbone import build_backbone
 from ...neck import build_fpn
 from ...head.decoupled_head import DecoupledHead
@@ -188,6 +189,7 @@ class FCOS(nn.Module):
             # [1, C, H, W]
             cls_pred = self.cls_pred(cls_feat)
             reg_pred = self.reg_pred(reg_feat)
+            ctn_pred = self.ctn_pred(reg_feat)
 
             # decode box
             _, _, H, W = cls_pred.size()
@@ -195,10 +197,11 @@ class FCOS(nn.Module):
             # [1, C, H, W] -> [H, W, C] -> [M, C]
             cls_pred = cls_pred[0].permute(1, 2, 0).contiguous().view(-1, self.num_classes)
             reg_pred = reg_pred[0].permute(1, 2, 0).contiguous().view(-1, 4)
-            reg_pred = self.scales[level](reg_pred)
+            reg_pred = F.relu(self.scales[level](reg_pred))
+            ctn_pred = ctn_pred.permute(1, 2, 0).contiguous().view(-1, 1)
 
             # scores
-            scores, labels = torch.max(cls_pred.sigmoid(), dim=-1)
+            scores, labels = torch.max(torch.sqrt(cls_pred.sigmoid() * ctn_pred.sigmoid()), dim=-1)
 
             # topk
             anchors = self.generate_anchors(level, fmp_size) # [M, 4]
@@ -270,22 +273,26 @@ class FCOS(nn.Module):
             all_anchors = []
             all_cls_preds = []
             all_reg_preds = []
+            all_ctn_preds = []
             all_masks = []
             for level, feat in enumerate(pyramid_feats):
                 cls_feat, reg_feat = self.head(feat)
                 # [B, C, H, W]
                 cls_pred = self.cls_pred(cls_feat)
                 reg_pred = self.reg_pred(reg_feat)
+                ctn_pred = self.ctn_pred(reg_feat)
 
                 B, _, H, W = cls_pred.size()
                 fmp_size = [H, W]
                 # [B, C, H, W] -> [B, H, W, C] -> [B, M, C]
                 cls_pred = cls_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, self.num_classes)
                 reg_pred = reg_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, 4)
-                reg_pred = self.scales[level](reg_pred)
+                reg_pred = F.relu(self.scales[level](reg_pred))
+                ctn_pred = ctn_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, 1)
 
                 all_cls_preds.append(cls_pred)
                 all_reg_preds.append(reg_pred)
+                all_ctn_preds.append(ctn_pred)
 
                 if mask is not None:
                     # [B, H, W]
@@ -301,14 +308,13 @@ class FCOS(nn.Module):
             
             all_cls_preds = torch.cat(all_cls_preds, dim=1)
             all_reg_preds = torch.cat(all_reg_preds, dim=1)
+            all_ctn_preds = torch.cat(all_ctn_preds, dim=1)
             all_masks = torch.cat(all_masks, dim=1)
 
             # decode box: [M, 4]
-            all_anchors = torch.cat(all_anchors)
-            all_box_preds = self.decode_boxes(all_anchors[None], all_reg_preds)
-
             outputs = {"pred_cls": all_cls_preds,
-                       "pred_box": all_box_preds,
+                       "pred_reg": all_reg_preds,
+                       "pred_ctn": all_ctn_preds,
                        "mask": all_masks}
 
             # loss

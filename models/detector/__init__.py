@@ -1,6 +1,4 @@
 import torch
-from config.yolof_config import yolof_config
-from config.retinanet_config import retinanet_config
 
 from .yolof.yolof import YOLOF
 from .retinanet.retinanet import RetinaNet

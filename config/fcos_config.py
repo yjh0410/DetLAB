@@ -54,14 +54,16 @@ fcos_config = {
         'conf_thresh': 0.05,
         'nms_thresh': 0.6,
         # anchor box
-        'regression_range': [[0, 64], [64, 128], [128, 256], [256, 512], [512, float('inf')]],
+        'regression_range': [[-1, 64], [64, 128], [128, 256], [256, 512], [512, float('inf')]],
         # matcher
         'ctr_clamp': 32,
+        'center_sampling_radius': 1.5,
         # loss
         'alpha': 0.25,
         'gamma': 2.0,
         'loss_cls_weight': 1.0,
         'loss_reg_weight': 1.0,
+        'loss_ctn_weight': 1.0,
         # optimizer
         'optimizer': 'sgd',
         'momentum': 0.9,
@@ -134,14 +136,16 @@ fcos_config = {
         'conf_thresh': 0.05,
         'nms_thresh': 0.6,
         # anchor box
-        'regression_range': [[0, 64], [64, 128], [128, 256], [256, 512], [512, float('inf')]],
+        'regression_range': [[-1, 64], [64, 128], [128, 256], [256, 512], [512, float('inf')]],
         # matcher
         'ctr_clamp': 32,
+        'center_sampling_radius': 1.5,
         # loss
         'alpha': 0.25,
         'gamma': 2.0,
         'loss_cls_weight': 1.0,
         'loss_reg_weight': 1.0,
+        'loss_ctn_weight': 1.0,
         # optimizer
         'optimizer': 'sgd',
         'momentum': 0.9,
@@ -214,14 +218,16 @@ fcos_config = {
         'conf_thresh': 0.05,
         'nms_thresh': 0.6,
         # anchor box
-        'regression_range': [[0, 64], [64, 128], [128, 256], [256, 512], [512, float('inf')]],
+        'regression_range': [[-1, 64], [64, 128], [128, 256], [256, 512], [512, float('inf')]],
         # matcher
         'ctr_clamp': 32,
+        'center_sampling_radius': 1.5,
         # loss
         'alpha': 0.25,
         'gamma': 2.0,
         'loss_cls_weight': 1.0,
         'loss_reg_weight': 1.0,
+        'loss_ctn_weight': 1.0,
         # optimizer
         'optimizer': 'sgd',
         'momentum': 0.9,
@@ -294,14 +300,16 @@ fcos_config = {
         'conf_thresh': 0.05,
         'nms_thresh': 0.6,
         # anchor box
-        'regression_range': [[0, 64], [64, 128], [128, float('inf')]],
+        'regression_range': [[-1, 64], [64, 128], [128, float('inf')]],
         # matcher
         'ctr_clamp': 32,
+        'center_sampling_radius': 1.5,
         # loss
         'alpha': 0.25,
         'gamma': 2.0,
         'loss_cls_weight': 1.0,
         'loss_reg_weight': 1.0,
+        'loss_ctn_weight': 1.0,
         # optimizer
         'optimizer': 'sgd',
         'momentum': 0.9,
