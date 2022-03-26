@@ -11,9 +11,7 @@ I am sure you will soon become familiar with this benchmark and add your own mod
 - [] FCOS
 - [] SSD
 - [] YOLOv3
-- [] Deformable DeTR
 - [] Anchor DeTR
-- [] Dynamic DeTR
 - [] Dynamic Head
 - [] YOLOX
 
