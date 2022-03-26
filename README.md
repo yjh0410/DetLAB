@@ -13,7 +13,6 @@ I am sure you will soon become familiar with this benchmark and add your own mod
 - [] YOLOv3
 - [] Anchor DeTR
 - [] Dynamic Head
-- [] YOLOX
 
 
 # Requirements
@@ -61,19 +60,15 @@ At least, please make sure your torch is version 1.x.
 
 As for now, limited by my computation source, only `FCOS_RT` supports `OTA`.
 
-
 ## SSD
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| SSD_VGG_16_320_1x              |  320,320   |         |       |
-| SSD_VGG_16_512_1x              |  512,512   |         |       |
 | SSD_VGG_16_320_3x              |  320,320   |         |       |
 | SSD_VGG_16_512_3x              |  512,512   |         |       |
 
 ## YOLOv3
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| YOLOv3_D_53_608_1x             |  608,608   |         |       |
 | YOLOv3_D_53_608_3x             |  608,608   |         |       |
 | YOLOv3_D_53_608_9x             |  608,608   |         |       |
 
