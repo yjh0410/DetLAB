@@ -56,7 +56,7 @@ At least, please make sure your torch is version 1.x.
 |--------------------------------|------------|---------|-------|
 | FCOS_R_18_1x                   |  800,1333  |         |       |
 | FCOS_R_50_1x                   |  800,1333  |         |       |
-| FCOS_RT                        |  640,640   |         |       |
+| FCOS_RT_R_50                   |  640,640   |         |       |
 
 ## SSD
 | Model                          |  scale     |   mAP   | Weight|
