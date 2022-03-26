@@ -1,5 +1,6 @@
 from .resnet import build_resnet
 from .convnext import build_convnext
+from .vggnet import vgg16
 
 
 def build_backbone(model_name='resnet50-d', 
@@ -26,6 +27,9 @@ def build_backbone(model_name='resnet50-d',
                                             pretrained=pretrained,
                                             res_dilation=False,
                                             in_22k=in_22k)
+    elif model_name == 'vgg16':
+        model, feat_dim = vgg16(pretrained=pretrained)
+
     else:
         print('Unknown Backbone ...')
         exit()

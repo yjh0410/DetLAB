@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from .matcher import Matcher
+from .matcher import Matcher, OTA_Matcher
 from utils.box_ops import *
 from utils.misc import sigmoid_focal_loss
 from utils.distributed_utils import get_world_size, is_dist_avail_and_initialized
@@ -26,10 +26,14 @@ class Criterion(nn.Module):
         self.loss_cls_weight = loss_cls_weight
         self.loss_reg_weight = loss_reg_weight
         self.loss_ctn_weight = loss_ctn_weight
-        self.matcher = Matcher(num_classes=num_classes,
-                               iou_threshold=cfg['iou_t'],
-                               iou_labels=cfg['iou_labels'],
-                               allow_low_quality_matches=cfg['allow_low_quality_matches'])
+        if cfg['matcher'] == 'matcher':
+            self.matcher = Matcher(cfg,
+                                   num_classes=num_classes,
+                                   box_weight=[1., 1., 1., 1.])
+        elif cfg['matcher'] == 'ota_matcher':
+            self.matcher = OTA_Matcher(cfg, 
+                                       num_classes, 
+                                       box_weight=[1., 1., 1., 1.])
 
 
     def loss_labels(self, pred_cls, tgt_cls, num_boxes):
@@ -100,13 +104,14 @@ class Criterion(nn.Module):
             outputs['pred_cls']: (Tensor) [B, M, C]
             outputs['pred_reg']: (Tensor) [B, M, 4]
             outputs['pred_ctn']: (Tensor) [B, M, 1]
+            outputs['strides']: (List) [8, 16, 32, ...] stride of the model output
             targets: (List) [dict{'boxes': [...], 
                                  'labels': [...], 
                                  'orig_size': ...}, ...]
             anchors: (List of Tensor) List[Tensor[M, 4]], len(anchors) == num_fpn_levels
         """
-
-        gt_classes, gt_shifts_deltas, gt_centerness = self.matcher(anchors, targets)
+        fpn_strides = outputs['strides']
+        gt_classes, gt_shifts_deltas, gt_centerness = self.matcher(fpn_strides, anchors, targets)
 
         pred_cls = outputs['pred_cls'].view(-1, self.num_classes)
         pred_delta = outputs['pred_reg'].view(-1, 4)

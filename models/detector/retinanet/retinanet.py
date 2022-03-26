@@ -331,6 +331,7 @@ class RetinaNet(nn.Module):
 
             outputs = {"pred_cls": all_cls_preds,
                        "pred_box": all_box_preds,
+                       'strides': self.stride,
                        "mask": all_masks}
 
             # loss

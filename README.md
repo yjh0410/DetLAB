@@ -8,8 +8,9 @@ I am sure you will soon become familiar with this benchmark and add your own mod
 # Coming soon
 - [] YOLOF
 - [] RetinaNet
-- [] SSD
 - [] FCOS
+- [] SSD
+- [] YOLOv3
 - [] Deformable DeTR
 - [] Anchor DeTR
 - [] Dynamic DeTR
@@ -42,7 +43,7 @@ At least, please make sure your torch is version 1.x.
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
 | YOLOF_R_18_C5_1x               |  800,1333  |   31.6  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/yolof_r18_C5_1x_31.6.pth) |
-| YOLOF_R_50_C5_1x               |  800,1333  |         |       |
+| YOLOF_R_50_C5_1x               |  800,1333  |   37.6  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/yolof_r50_C5_1x_37.6.pth) |
 | YOLOF_RT                       |  640,640   |         |       |
 
 ## RetinaNet
@@ -58,6 +59,22 @@ At least, please make sure your torch is version 1.x.
 | FCOS_R_18_1x                   |  800,1333  |         |       |
 | FCOS_R_50_1x                   |  800,1333  |         |       |
 | FCOS_RT                        |  640,640   |         |       |
+
+## SSD
+| Model                          |  scale     |   mAP   | Weight|
+|--------------------------------|------------|---------|-------|
+| SSD_VGG_16_320_1x              |  320,320   |         |       |
+| SSD_VGG_16_512_1x              |  512,512   |         |       |
+| SSD_VGG_16_320_3x              |  320,320   |         |       |
+| SSD_VGG_16_512_3x              |  512,512   |         |       |
+
+## YOLOv3
+| Model                          |  scale     |   mAP   | Weight|
+|--------------------------------|------------|---------|-------|
+| YOLOv3_D_53_608_1x             |  608,608   |         |       |
+| YOLOv3_D_53_608_3x             |  608,608   |         |       |
+| YOLOv3_D_53_608_9x             |  608,608   |         |       |
+
 
 Limited by my computing resources, I cannot use larger backbone networks like `ResNet-101` 
 and `ResNeXt-101` to train more powerful detectors.

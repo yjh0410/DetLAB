@@ -24,7 +24,8 @@ class Criterion(nn.Module):
         self.num_classes = num_classes
         self.loss_cls_weight = loss_cls_weight
         self.loss_reg_weight = loss_reg_weight
-        self.matcher = UniformMatcher(match_times=cfg['topk'])
+        if cfg['matcher'] == 'uniform_matcher':
+            self.matcher = UniformMatcher(match_times=cfg['topk'])
 
 
     def loss_labels(self, pred_cls, tgt_cls, num_boxes):
@@ -58,6 +59,7 @@ class Criterion(nn.Module):
         """
             outputs['pred_cls']: (Tensor) [B, M, C]
             outputs['pred_box']: (Tensor) [B, M, 4]
+            outputs['strides']: (List) [8, 16, 32, ...] stride of the model output
             targets: (List) [dict{'boxes': [...], 
                                  'labels': [...], 
                                  'orig_size': ...}, ...]

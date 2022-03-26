@@ -56,6 +56,7 @@ fcos_config = {
         # anchor box
         'regression_range': [[-1, 64], [64, 128], [128, 256], [256, 512], [512, float('inf')]],
         # matcher
+        'matcher': 'matcher',
         'ctr_clamp': 32,
         'center_sampling_radius': 1.5,
         # loss
@@ -138,6 +139,7 @@ fcos_config = {
         # anchor box
         'regression_range': [[-1, 64], [64, 128], [128, 256], [256, 512], [512, float('inf')]],
         # matcher
+        'matcher': 'matcher',
         'ctr_clamp': 32,
         'center_sampling_radius': 1.5,
         # loss
@@ -220,6 +222,7 @@ fcos_config = {
         # anchor box
         'regression_range': [[-1, 64], [64, 128], [128, 256], [256, 512], [512, float('inf')]],
         # matcher
+        'matcher': 'matcher',
         'ctr_clamp': 32,
         'center_sampling_radius': 1.5,
         # loss
@@ -302,6 +305,7 @@ fcos_config = {
         # anchor box
         'regression_range': [[-1, 64], [64, 128], [128, float('inf')]],
         # matcher
+        'matcher': 'matcher',
         'ctr_clamp': 32,
         'center_sampling_radius': 1.5,
         # loss

@@ -309,6 +309,7 @@ class YOLOF(nn.Module):
 
             outputs = {"pred_cls": normalized_cls_pred,
                        "pred_box": box_pred,
+                       'strides': self.stride,
                        "mask": mask}
 
             # loss

@@ -54,6 +54,7 @@ yolof_config = {
         # anchor box
         'anchor_size': [[32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
         # matcher
+        'matcher': 'uniform_matcher',
         'topk': 4,
         'iou_t': 0.15,
         'igt': 0.7,
@@ -135,6 +136,7 @@ yolof_config = {
         # anchor box
         'anchor_size': [[32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
         # matcher
+        'matcher': 'uniform_matcher',
         'topk': 4,
         'iou_t': 0.15,
         'igt': 0.7,
@@ -216,6 +218,7 @@ yolof_config = {
         # anchor box
         'anchor_size': [[16, 16], [32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
         # matcher
+        'matcher': 'uniform_matcher',
         'topk': 4,
         'iou_t': 0.15,
         'igt': 0.7,
@@ -297,6 +300,7 @@ yolof_config = {
         # anchor box
         'anchor_size': [[32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
         # matcher
+        'matcher': 'uniform_matcher',
         'topk': 4,
         'iou_t': 0.15,
         'igt': 0.7,
@@ -378,6 +382,7 @@ yolof_config = {
         # anchor box
         'anchor_size': [[16, 16], [32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
         # matcher
+        'matcher': 'uniform_matcher',
         'topk': 4,
         'iou_t': 0.15,
         'igt': 0.7,
@@ -459,6 +464,7 @@ yolof_config = {
         # anchor box
         'anchor_size': [[16, 16], [32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
         # matcher
+        'matcher': 'uniform_matcher',
         'topk': 4,
         'iou_t': 0.15,
         'igt': 0.7,

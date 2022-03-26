@@ -315,6 +315,7 @@ class FCOS(nn.Module):
             outputs = {"pred_cls": all_cls_preds,
                        "pred_reg": all_reg_preds,
                        "pred_ctn": all_ctn_preds,
+                       'strides': self.stride,
                        "mask": all_masks}
 
             # loss

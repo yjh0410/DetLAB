@@ -61,6 +61,7 @@ class Criterion(nn.Module):
         """
             outputs['pred_cls']: (Tensor) [B, M, C]
             outputs['pred_box']: (Tensor) [B, M, 4]
+            outputs['strides']: (List) [8, 16, 32, ...] stride of the model output
             targets: (List) [dict{'boxes': [...], 
                                  'labels': [...], 
                                  'orig_size': ...}, ...]
