@@ -260,22 +260,36 @@ class Normalize(object):
 # Resize tensor image
 class Resize(object):
     def __init__(self, min_size=800, max_size=1333, random_size=None):
+        assert max_size is not None
         self.min_size = min_size
         self.max_size = max_size
         self.random_size = random_size
 
     def __call__(self, image, target=None, mask=None):
-        if self.random_size:
-            min_size = random.choice(self.random_size)
-        else:
-            min_size = self.min_size
+        if self.min_size is None:
+            # Resize the longest side of the image to the specified max size
+            img_h0, img_w0 = image.shape[1:]
+            if self.random_size:
+                max_size = random.choice(self.random_size)
+            else:
+                max_size = self.max_size
 
-        # resize
-        if self.min_size == self.max_size:
+            r = max_size / max(img_h0, img_w0)
+            if r != 1: 
+                image = F.resize(image, (int(img_h0 * r), int(img_w0 * r)))
+
+        elif self.min_size == self.max_size:
+            # Resize an image into a square image
+            if self.random_size:
+                min_size = random.choice(self.random_size)
+            else:
+                min_size = self.min_size
             # donot keep aspect ratio
             img_h0, img_w0 = image.shape[1:]
             image = F.resize(image, size=[min_size, min_size])
+
         else:
+            # Resize the shortest side of the image to the specified max size
             # keep aspect ratio
             img_h0, img_w0 = image.shape[1:]
             min_original_size = float(min((img_w0, img_h0)))

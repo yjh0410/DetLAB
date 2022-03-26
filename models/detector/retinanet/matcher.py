@@ -78,7 +78,7 @@ class Matcher(object):
             tgt_labels = targets_per_image['labels']
             # [N, 4]
             tgt_boxes = targets_per_image['boxes']
-            # [M, 4]
+            # [N, M], N is the number of targets, M is the number of anchors
             match_quality_matrix, _ = box_iou(tgt_boxes, anchors_per_image)
             gt_matched_idxs, anchor_labels = self.matching(match_quality_matrix)
             has_gt = len(tgt_labels) > 0
@@ -104,15 +104,15 @@ class Matcher(object):
     def matching(self, match_quality_matrix):
         """
         Args:
-            match_quality_matrix (Tensor[float]): an MxN tensor, containing the
-                pairwise quality between M ground-truth elements and N predicted
+            match_quality_matrix (Tensor[float]): an N x M tensor, containing the
+                pairwise quality between N ground-truth elements and M predicted
                 elements. All elements must be >= 0 (due to the us of `torch.nonzero`
                 for selecting indices in :meth:`set_low_quality_matches_`).
 
         Returns:
-            matches (Tensor[int64]): a vector of length N, where matches[i] is a matched
-                ground-truth index in [0, M)
-            match_labels (Tensor[int8]): a vector of length N, where pred_labels[i] indicates
+            matches (Tensor[int64]): a vector of length M, where matches[i] is a matched
+                ground-truth index in [0, N)
+            match_labels (Tensor[int8]): a vector of length M, where pred_labels[i] indicates
                 whether a prediction is a true or false positive or ignored
         """
         assert match_quality_matrix.dim() == 2
@@ -130,7 +130,7 @@ class Matcher(object):
 
         assert torch.all(match_quality_matrix >= 0)
 
-        # match_quality_matrix is M (gt) x N (predicted)
+        # match_quality_matrix is N (gt) x M (predicted)
         # Max over gt elements (dim 0) to find best gt candidate for each prediction
         matched_vals, matches = match_quality_matrix.max(dim=0)
 

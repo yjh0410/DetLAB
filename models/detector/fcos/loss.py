@@ -113,6 +113,7 @@ class Criterion(nn.Module):
         fpn_strides = outputs['strides']
         gt_classes, gt_shifts_deltas, gt_centerness = self.matcher(fpn_strides, anchors, targets)
 
+        # [B, M, C] -> [BM, C]
         pred_cls = outputs['pred_cls'].view(-1, self.num_classes)
         pred_delta = outputs['pred_reg'].view(-1, 4)
         pred_ctn = outputs['pred_ctn'].view(-1, 1)
@@ -121,7 +122,6 @@ class Criterion(nn.Module):
         gt_shifts_deltas = gt_shifts_deltas.view(-1, 4)
         gt_centerness = gt_centerness.view(-1, 1)
 
-        valid_idxs = gt_classes >= 0
         foreground_idxs = (gt_classes >= 0) & (gt_classes != self.num_classes)
         num_foreground = foreground_idxs.sum()
 
@@ -138,23 +138,26 @@ class Criterion(nn.Module):
         gt_classes_target[foreground_idxs, gt_classes[foreground_idxs]] = 1
 
         # cls loss
+        masks = outputs['mask'].view(-1).cpu()
+        valid_idxs = (gt_classes >= 0 & masks)
         loss_labels = self.loss_labels(
             pred_cls[valid_idxs],
             gt_classes_target[valid_idxs],
             num_boxes=num_foreground)
 
         # box loss
+        num_bboxes = num_targets if self.cfg['matcher'] == 'matcher' else num_foreground
         loss_bboxes = self.loss_bboxes(
             pred_delta[foreground_idxs],
             gt_shifts_deltas[foreground_idxs],
             gt_centerness[foreground_idxs],
-            num_boxes=num_targets,)
+            num_boxes=num_bboxes)
 
         # centerness loss
-        loss_centerness = F.binary_cross_entropy_with_logits(
+        loss_centerness = self.loss_centerness(
             pred_ctn[foreground_idxs],
             gt_centerness[foreground_idxs],
-            num_boxes=num_targets,)
+            num_boxes=num_foreground)
 
         # total loss
         losses = self.loss_cls_weight * loss_labels + \
