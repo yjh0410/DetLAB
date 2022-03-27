@@ -83,7 +83,7 @@ class Criterion(nn.Module):
         tgt_boxes = tgt_boxes.view(-1, 4)
 
         foreground_idxs = (tgt_classes >= 0) & (tgt_classes != self.num_classes)
-        num_foreground = foreground_idxs.sum()
+        num_foreground = foreground_idxs.sum().to(pred_box.device)
         if is_dist_avail_and_initialized():
             torch.distributed.all_reduce(num_foreground)
         num_foreground = torch.clamp(num_foreground / get_world_size(), min=1).item()
