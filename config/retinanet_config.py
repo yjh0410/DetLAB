@@ -262,8 +262,8 @@ retinanet_config = {
 
     'retinanet-rt': { # Real Time RetinaNet
         # input
-        'min_size': 640,
-        'max_size': 640,
+        'min_size': 512,
+        'max_size': 736,
         'format': 'RGB',
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],
@@ -312,7 +312,7 @@ retinanet_config = {
         'conf_thresh': 0.05,
         'nms_thresh': 0.6,
         # anchor box
-        'anchor_config': {'basic_size': [[16, 16], [64, 64], [256, 256]],
+        'anchor_config': {'basic_size': [[32, 32], [64, 64], [128, 128]],
                           'aspect_ratio': [0.5, 1.0, 2.0],
                           'area_scale': [2 ** 0, 2 ** (1. / 3.), 2 ** (2. / 3.)]},
         # matcher
@@ -339,10 +339,13 @@ retinanet_config = {
                     'multi_scale': None},
             '2x': {'max_epoch': 24, 
                     'lr_epoch': [16, 22], 
-                    'multi_scale': [448, 480, 512, 544, 576, 608, 640]},
+                    'multi_scale': [256, 288, 320, 352, 384, 416, 448, 480, 512, 544, 576, 608]},
             '3x': {'max_epoch': 36, 
                     'lr_epoch': [24, 33], 
-                    'multi_scale': [448, 480, 512, 544, 576, 608, 640]},
+                    'multi_scale': [256, 288, 320, 352, 384, 416, 448, 480, 512, 544, 576, 608]},
+            '4x': {'max_epoch': 48, 
+                    'lr_epoch': [32, 44], 
+                    'multi_scale': [256, 288, 320, 352, 384, 416, 448, 480, 512, 544, 576, 608]},
         },
     },
 

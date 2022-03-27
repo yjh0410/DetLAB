@@ -18,11 +18,11 @@ class BasicFPN(nn.Module):
         assert from_c5 == p6_feat
 
         # latter layers
-        self.input_proj = nn.ModuleList()
+        self.input_projs = nn.ModuleList()
         self.smooth_layers = nn.ModuleList()
         
         for in_dim in in_dims[::-1]:
-            self.input_proj.append(nn.Conv2d(in_dim, out_dim, kernel_size=1))
+            self.input_projs.append(nn.Conv2d(in_dim, out_dim, kernel_size=1))
             self.smooth_layers.append(nn.Conv2d(out_dim, out_dim, kernel_size=3, padding=1))
 
         # P6/P7
@@ -44,32 +44,28 @@ class BasicFPN(nn.Module):
         outputs = []
         # [C3, C4, C5] -> [C5, C4, C3]
         feats = feats[::-1]
-        for i, x in enumerate(feats):
-            if i == 0:
-                x = self.smooth_layers[i](self.input_proj[i](x))
-                outputs.append(x)
-            else:
-                x1 = self.input_proj[i](x)
-                x2 = outputs[i - 1]
-                x2_up = F.interpolate(x2, size=x1.shape[2:])
-                y = self.smooth_layers[i](x1 + x2_up)
-                outputs.append(y)
+        top_level_feat = feats[0]
+        prev_feat = self.input_projs[0](top_level_feat)
+        outputs.append(self.smooth_layers[0](prev_feat))
 
-        # [P5, p4, P3] -> [P3, P4, P5]
-        outputs = outputs[::-1]
+        for feat, input_proj, smooth_layer in zip(feats[1:], self.input_projs[1:], self.smooth_layers[1:]):
+            feat = input_proj(feat)
+            top_down_feat = F.interpolate(prev_feat, size=feat.shape[2:], mode='nearest')
+            prev_feat = feat + top_down_feat
+            outputs.insert(0, smooth_layer(prev_feat))
 
         if self.p6_feat:
             if self.from_c5:
-                P_6 = self.p6_conv(feats[0])
+                p6_feat = self.p6_conv(feats[0])
             else:
-                P_6 = self.p6_conv(outputs[-1])
+                p6_feat = self.p6_conv(outputs[-1])
             # [P3, P4, P5] -> [P3, P4, P5, P6]
-            outputs.append(P_6)
+            outputs.append(p6_feat)
 
             if self.p7_feat:
-                P_7 = self.p7_conv(outputs[-1])
+                p7_feat = self.p7_conv(outputs[-1])
                 # [P3, P4, P5, P6] -> [P3, P4, P5, P6, P7]
-                outputs.append(P_7)
+                outputs.append(p7_feat)
 
         # [P3, P4, P5] or [P3, P4, P5, P6, P7]
         return outputs

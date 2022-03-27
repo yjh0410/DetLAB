@@ -290,6 +290,10 @@ class Resize(object):
 
         else:
             # Resize the shortest side of the image to the specified max size
+            if self.random_size:
+                min_size = random.choice(self.random_size)
+            else:
+                min_size = self.min_size
             # keep aspect ratio
             img_h0, img_w0 = image.shape[1:]
             min_original_size = float(min((img_w0, img_h0)))

@@ -253,8 +253,8 @@ fcos_config = {
 
     'fcos-rt': { # Real Time fcos
         # input
-        'min_size': 640,
-        'max_size': 640,
+        'min_size': 512,
+        'max_size': 736,
         'format': 'RGB',
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],
@@ -327,17 +327,20 @@ fcos_config = {
                     'multi_scale': None},
             '2x': {'max_epoch': 24, 
                     'lr_epoch': [16, 22], 
-                    'multi_scale': [448, 480, 512, 544, 576, 608, 640]},
+                    'multi_scale': [256, 288, 320, 352, 384, 416, 448, 480, 512, 544, 576, 608]},
             '3x': {'max_epoch': 36, 
                     'lr_epoch': [24, 33], 
-                    'multi_scale': [448, 480, 512, 544, 576, 608, 640]},
+                    'multi_scale': [256, 288, 320, 352, 384, 416, 448, 480, 512, 544, 576, 608]},
+            '4x': {'max_epoch': 48, 
+                    'lr_epoch': [32, 44], 
+                    'multi_scale': [256, 288, 320, 352, 384, 416, 448, 480, 512, 544, 576, 608]},
         },
     },
 
     'fcos-rt-ota': { # Real Time FCOS with OTA
         # input
-        'min_size': 640,
-        'max_size': 640,
+        'min_size': 512,
+        'max_size': 736,
         'format': 'RGB',
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],
