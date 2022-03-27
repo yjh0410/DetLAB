@@ -6,12 +6,12 @@ import numpy as np
 import torch
 import torch.backends.cudnn as cudnn
 
-from config.yolof_config import yolof_config
 from dataset.voc import VOC_CLASSES, VOCDetection
 from dataset.coco import coco_class_index, coco_class_labels, COCODataset
 from dataset.transforms import ValTransforms
 from utils.misc import TestTimeAugmentation
 
+from config import build_config
 from models.detector import build_model
 
 
@@ -203,9 +203,8 @@ if __name__ == '__main__':
                      np.random.randint(255),
                      np.random.randint(255)) for _ in range(num_classes)]
 
-    # YOLOF config
-    print('Model: ', args.version)
-    cfg = yolof_config[args.version]
+    # config
+    cfg = build_config(args)
 
     # build model
     model = build_model(args=args, 
