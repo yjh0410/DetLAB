@@ -14,6 +14,8 @@ I am sure you will soon become familiar with this benchmark and add your own mod
 - [] Anchor DeTR
 - [] Dynamic Head
 
+More advanced detectors is coming soon ...
+
 
 # Requirements
 - We recommend you to use Anaconda to create a conda environment:
