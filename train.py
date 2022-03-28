@@ -145,7 +145,7 @@ def train():
         model_copy = deepcopy(model_without_ddp)
         model_copy.trainable = False
         model_copy.eval()
-        FLOPs_and_Params(model=model_without_ddp, 
+        FLOPs_and_Params(model=model_copy, 
                          min_size=cfg['min_size'], 
                          max_size=cfg['max_size'], 
                          device=device)
@@ -261,7 +261,7 @@ def train():
                     print('Saving state, epoch: {}'.format(epoch + 1))
                     weight_name = '{}_epoch_{}.pth'.format(args.version, epoch + 1)
                     checkpoint_path = os.path.join(path_to_save, weight_name)
-                    torch.save({'model': model_eval.state_dict(),
+                    torch.save({'model': model_without_ddp.state_dict(),
                                 'optimizer': optimizer.state_dict(),
                                 'lr_scheduler': lr_scheduler.state_dict(),
                                 'epoch': epoch,
