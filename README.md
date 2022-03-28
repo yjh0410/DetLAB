@@ -1,9 +1,23 @@
 # Object Detection Benchmark
 This benchmark is my library of object detection.
-My code is clean and concise, without too much encapsulation, 
+My code is clean and concise, without too deep encapsulation, 
 so it is easy to understand the function of each module.
 
+For example, 
+
+- If you want to know how to pull data from `COCO`, you just open `dataset/coco.py`.
+- If you want to know how to build `RetinaNet`, you just open `models/detector/retinanet/` and `config/retinanet_config.py`.
+- If you want to know how to build `FPN`, you just open `models/neck/fpn.py/`.
+- If you want to know the whole pipeline of training, you just open `train.py`.
+- If you want to know the whole pipeline of evaluation, you just open `eval.py` and `evaluator/coco_evaluator.py`.
+- If you want to know how to visualize the detection results on detection benchmark like `COCO` or `VOC`, you just open `test.py`.
+- If you want to know how to run a demo with images or videos on your own device, you just open `demo.py`.
+- If you want to know how to run a demo with your own camero, you just also open `demo.py`.
+
+So, it is very friendly, right?
+
 I am sure you will soon become familiar with this benchmark and add your own modules to it.
+
 
 # Coming soon
 - [] YOLOF
