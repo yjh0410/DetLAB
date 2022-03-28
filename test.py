@@ -215,7 +215,7 @@ if __name__ == '__main__':
 
     # load weight
     checkpoint = torch.load(args.weight, map_location='cpu')
-    model.load_state_dict(checkpoint['model'])
+    model.load_state_dict(checkpoint)
     model = model.to(device).eval()
     print('Finished loading model!')
 

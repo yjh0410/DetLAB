@@ -353,10 +353,10 @@ class OTA_Matcher(object):
 
                 # [M, 4]
                 gt_anchors_deltas_per_image = gt_delta_per_image.new_zeros((num_anchor, 4))
-                # normalize ground truth deltas
-                gt_delta_per_image = gt_delta_per_image / strides_over_all_feature_maps
                 gt_anchors_deltas_per_image[fg_mask] = \
                     gt_delta_per_image[matched_gt_inds[fg_mask], torch.arange(num_anchor)[fg_mask]]
+                # normalize ground truth deltas
+                gt_anchors_deltas_per_image = gt_anchors_deltas_per_image / strides_over_all_feature_maps
                 gt_anchors_deltas.append(gt_anchors_deltas_per_image)
 
                 # [M,]
