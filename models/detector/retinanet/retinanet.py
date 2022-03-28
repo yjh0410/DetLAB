@@ -55,8 +55,8 @@ class RetinaNet(nn.Module):
                                   act_type=cfg['act_type'])
 
         # pred
-        self.cls_pred = nn.Conv2d(cfg['head_dim'], self.num_classes * self.num_anchors, kernel_size=1)
-        self.reg_pred = nn.Conv2d(cfg['head_dim'], 4 * self.num_anchors, kernel_size=1)
+        self.cls_pred = nn.Conv2d(cfg['head_dim'], self.num_anchors * self.num_classes, kernel_size=1)
+        self.reg_pred = nn.Conv2d(cfg['head_dim'], self.num_anchors * 4, kernel_size=1)
 
         if trainable:
             # init bias

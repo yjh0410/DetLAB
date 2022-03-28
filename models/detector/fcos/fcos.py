@@ -123,15 +123,15 @@ class FCOS(nn.Module):
         return anchors
         
 
-    def decode_boxes(self, anchors, pred_reg):
+    def decode_boxes(self, anchors, pred_deltas):
         """
             anchors:  (List[Tensor]) [1, M, 2] or [M, 2]
             pred_reg: (List[Tensor]) [B, M, 4] or [M, 4] (l, t, r, b)
         """
         # x1 = x_anchor - l, x2 = x_anchor + r
         # y1 = y_anchor - t, y2 = y_anchor + b
-        pred_x1y1 = anchors - pred_reg[..., :2].relu()
-        pred_x2y2 = anchors + pred_reg[..., :2].relu()
+        pred_x1y1 = anchors - pred_deltas[..., :2]
+        pred_x2y2 = anchors + pred_deltas[..., :2]
         pred_box = torch.cat([pred_x1y1, pred_x2y2], dim=-1)
 
         return pred_box
@@ -203,8 +203,9 @@ class FCOS(nn.Module):
             # scores
             scores, labels = torch.max(torch.sqrt(cls_pred.sigmoid() * ctn_pred.sigmoid()), dim=-1)
 
+            # [M, 4]
+            anchors = self.generate_anchors(level, fmp_size)
             # topk
-            anchors = self.generate_anchors(level, fmp_size) # [M, 4]
             if scores.shape[0] > self.topk:
                 scores, indices = torch.topk(scores, self.topk)
                 labels = labels[indices]
@@ -213,7 +214,6 @@ class FCOS(nn.Module):
 
             # decode box: [M, 4]
             bboxes = self.decode_boxes(anchors, reg_pred)
-
 
             all_scores.append(scores)
             all_labels.append(labels)
