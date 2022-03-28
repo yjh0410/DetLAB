@@ -119,7 +119,8 @@ if __name__ == '__main__':
                         trainable=False)
 
     # load weight
-    model.load_state_dict(torch.load(args.weight, map_location='cpu'), strict=False)
+    checkpoint = torch.load(args.weight, map_location='cpu')
+    model.load_state_dict(checkpoint['model'])
     model = model.to(device).eval()
     print('Finished loading model!')
 

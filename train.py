@@ -258,7 +258,14 @@ def train():
                     print('No evaluator ... save model and go on training.')
                     print('Saving state, epoch: {}'.format(epoch + 1))
                     weight_name = '{}_epoch_{}.pth'.format(args.version, epoch + 1)
-                    torch.save(model_without_ddp.state_dict(), os.path.join(path_to_save, weight_name)) 
+                    checkpoint_path = os.path.join(path_to_save, weight_name)
+                    torch.save({'model': model_eval.state_dict(),
+                                'optimizer': optimizer.state_dict(),
+                                'lr_scheduler': lr_scheduler.state_dict(),
+                                'epoch': epoch,
+                                'args': args}, 
+                                checkpoint_path)                      
+                    
                 else:
                     print('eval ...')
                     model_eval = model_without_ddp
@@ -277,7 +284,13 @@ def train():
                         # save model
                         print('Saving state, epoch:', epoch + 1)
                         weight_name = '{}_epoch_{}_{:.2f}.pth'.format(args.version, epoch + 1, best_map*100)
-                        torch.save(model_eval.state_dict(), os.path.join(path_to_save, weight_name)) 
+                        checkpoint_path = os.path.join(path_to_save, weight_name)
+                        torch.save({'model': model_eval.state_dict(),
+                                    'optimizer': optimizer.state_dict(),
+                                    'lr_scheduler': lr_scheduler.state_dict(),
+                                    'epoch': epoch,
+                                    'args': args}, 
+                                    checkpoint_path)                      
 
                     # set train mode.
                     model_eval.trainable = True
