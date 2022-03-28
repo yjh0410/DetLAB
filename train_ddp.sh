@@ -5,7 +5,7 @@ python -m torch.distributed.run --nproc_per_node=2 train.py \
                                                     --num_gpu 2 \
                                                     -d coco \
                                                     --root /mnt/share/ssd2/dataset/ \
-                                                    -v retinanet18 \
+                                                    -v retinanet50 \
                                                     -lr 0.01 \
                                                     -lr_bk 0.01 \
                                                     --batch_size 8 \
