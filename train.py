@@ -5,6 +5,7 @@ import os
 import argparse
 import time
 import random
+from copy import deepcopy
 
 import torch
 import torch.nn.functional as F
@@ -141,14 +142,15 @@ def train():
 
     # compute FLOPs and Params
     if distributed_utils.is_main_process:
-        model_without_ddp.trainable = False
-        model_without_ddp.eval()
+        model_copy = deepcopy(model_without_ddp)
+        model_copy.trainable = False
+        model_copy.eval()
         FLOPs_and_Params(model=model_without_ddp, 
                          min_size=cfg['min_size'], 
                          max_size=cfg['max_size'], 
                          device=device)
-        model_without_ddp.trainable = True
-        model_without_ddp.train()
+        model_copy.trainable = True
+        model_copy.train()
     if args.distributed:
         # wait for all processes to synchronize
         dist.barrier()
