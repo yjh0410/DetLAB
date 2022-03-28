@@ -215,7 +215,21 @@ if __name__ == '__main__':
 
     # load weight
     checkpoint = torch.load(args.weight, map_location='cpu')
-    model.load_state_dict(checkpoint)
+    # checkpoint state dict
+    checkpoint_state_dict = checkpoint
+    # model state dict
+    model_state_dict = model.state_dict()
+    # check
+    for k in list(checkpoint_state_dict.keys()):
+        if k in model_state_dict:
+            shape_model = tuple(model_state_dict[k].shape)
+            shape_checkpoint = tuple(checkpoint_state_dict[k].shape)
+            if shape_model != shape_checkpoint:
+                checkpoint_state_dict.pop(k)
+        else:
+            print(k)
+
+    model.load_state_dict(checkpoint_state_dict)
     model = model.to(device).eval()
     print('Finished loading model!')
 

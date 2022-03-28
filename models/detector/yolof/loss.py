@@ -7,7 +7,7 @@ from utils.distributed_utils import get_world_size, is_dist_avail_and_initialize
 
 
 
-class Criterion(nn.Module):
+class Criterion(object):
     def __init__(self, 
                  cfg, 
                  device, 
@@ -16,7 +16,6 @@ class Criterion(nn.Module):
                  loss_cls_weight=1.0, 
                  loss_reg_weight=1.0, 
                  num_classes=80):
-        super().__init__()
         self.cfg = cfg
         self.device = device
         self.alpha = alpha
@@ -52,10 +51,10 @@ class Criterion(nn.Module):
         return loss_reg.sum() / num_boxes
 
 
-    def forward(self,
-                outputs, 
-                targets, 
-                anchor_boxes=None):
+    def __call__(self,
+                 outputs, 
+                 targets, 
+                 anchor_boxes=None):
         """
             outputs['pred_cls']: (Tensor) [B, M, C]
             outputs['pred_box']: (Tensor) [B, M, 4]

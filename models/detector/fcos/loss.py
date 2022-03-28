@@ -7,7 +7,7 @@ from utils.misc import sigmoid_focal_loss
 from utils.distributed_utils import get_world_size, is_dist_avail_and_initialized
 
 
-class Criterion(nn.Module):
+class Criterion(object):
     def __init__(self, 
                  cfg, 
                  device, 
@@ -17,7 +17,6 @@ class Criterion(nn.Module):
                  loss_reg_weight=1.0,
                  loss_ctn_weight=1.0,
                  num_classes=80):
-        super().__init__()
         self.cfg = cfg
         self.device = device
         self.alpha = alpha
@@ -96,10 +95,10 @@ class Criterion(nn.Module):
         return loss_ctn.sum() / num_boxes
 
 
-    def forward(self,
-                outputs, 
-                targets, 
-                anchors=None):
+    def __call__(self,
+                 outputs, 
+                 targets, 
+                 anchors=None):
         """
             outputs['pred_cls']: (Tensor) [B, M, C]
             outputs['pred_reg']: (Tensor) [B, M, 4]
