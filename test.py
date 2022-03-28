@@ -227,6 +227,7 @@ if __name__ == '__main__':
             if shape_model != shape_checkpoint:
                 checkpoint_state_dict.pop(k)
         else:
+            checkpoint_state_dict.pop(k)
             print(k)
 
     model.load_state_dict(checkpoint_state_dict)
