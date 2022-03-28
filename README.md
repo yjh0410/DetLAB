@@ -103,8 +103,6 @@ python test.py -d coco \
                --cuda \
                -v yolof50 \
                --weight path/to/weight \
-               --min_size 800 \
-               --max_size 1333 \
                --root path/to/dataset/ \
                --show
 ```
@@ -118,8 +116,6 @@ python demo.py --mode image \
                -v yolof50 \
                --cuda \
                --weight path/to/weight \
-               --min_size 800 \
-               --max_size 1333 \
                --show
 ```
 
@@ -131,8 +127,6 @@ python demo.py --mode video \
                -v yolof50 \
                --cuda \
                --weight path/to/weight \
-               --min_size 800 \
-               --max_size 1333 \
                --show
 ```
 
@@ -143,7 +137,5 @@ python demo.py --mode camera \
                -v yolof50 \
                --cuda \
                --weight path/to/weight \
-               --min_size 800 \
-               --max_size 1333 \
                --show
 ```
