@@ -9,7 +9,7 @@ import torch.backends.cudnn as cudnn
 from dataset.voc import VOC_CLASSES, VOCDetection
 from dataset.coco import coco_class_index, coco_class_labels, COCODataset
 from dataset.transforms import ValTransforms
-from utils.misc import TestTimeAugmentation
+from utils.misc import load_weight, TestTimeAugmentation
 
 from config import build_config
 from models.detector import build_model
@@ -213,26 +213,10 @@ if __name__ == '__main__':
                         num_classes=num_classes, 
                         trainable=False)
 
-    # load weight
-    checkpoint = torch.load(args.weight, map_location='cpu')
-    # checkpoint state dict
-    checkpoint_state_dict = checkpoint
-    # model state dict
-    model_state_dict = model.state_dict()
-    # check
-    for k in list(checkpoint_state_dict.keys()):
-        if k in model_state_dict:
-            shape_model = tuple(model_state_dict[k].shape)
-            shape_checkpoint = tuple(checkpoint_state_dict[k].shape)
-            if shape_model != shape_checkpoint:
-                checkpoint_state_dict.pop(k)
-        else:
-            checkpoint_state_dict.pop(k)
-            print(k)
-
-    model.load_state_dict(checkpoint_state_dict)
-    model = model.to(device).eval()
-    print('Finished loading model!')
+    # load trained weight
+    model = load_weight(device=device, 
+                        model=model, 
+                        path_to_ckpt=args.weight)
 
     # TTA
     test_aug = TestTimeAugmentation(num_classes=num_classes) if args.test_aug else None

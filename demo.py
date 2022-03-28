@@ -9,6 +9,7 @@ import torch.backends.cudnn as cudnn
 from config.yolof_config import yolof_config
 from dataset.coco import coco_class_index, coco_class_labels, COCODataset
 from dataset.transforms import ValTransforms
+from utils.misc import load_weight
 
 from models.detector import build_model
 
@@ -237,11 +238,11 @@ def run():
                         num_classes=80, 
                         trainable=False)
 
-    # load weight
-    checkpoint = torch.load(args.weight, map_location='cpu')
-    model.load_state_dict(checkpoint['model'])
-    model = model.to(device).eval()
-    print('Finished loading model!')
+    # load trained weight
+    model = load_weight(device=device, 
+                        model=model, 
+                        path_to_ckpt=args.weight)
+
 
     # transform
     transform = ValTransforms(min_size=args.min_size, 

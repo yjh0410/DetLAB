@@ -10,6 +10,7 @@ from dataset.transforms import ValTransforms
 from dataset.coco import COCODataset, coco_class_index, coco_class_labels
 from utils.com_flops_params import FLOPs_and_Params
 from utils import fuse_conv_bn
+from utils.misc import load_weight
 
 from models.detector import build_model
 
@@ -120,16 +121,11 @@ if __name__ == '__main__':
                         num_classes=num_classes, 
                         trainable=False)
 
-    # load weight
-    if args.weight:
-        checkpoint = torch.load(args.weight, map_location='cpu')
-        model.load_state_dict(checkpoint['model'])
-        model = model.to(device).eval()
-        print('Finished loading model!')
-    else:
-        print('The path to weight file is None !')
-        exit(0)
-    model = model.to(device).eval()
+    # load trained weight
+    model = load_weight(device=device, 
+                        model=model, 
+                        path_to_ckpt=args.weight)
+
 
     # fuse conv bn
     if args.fuse_conv_bn:
