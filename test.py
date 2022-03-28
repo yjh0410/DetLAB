@@ -217,8 +217,8 @@ if __name__ == '__main__':
     model = load_weight(device=device, 
                         model=model, 
                         path_to_ckpt=args.weight)
-    save_path = os.path.join(args.weight[:-4] + '_modified.pth')
-    torch.save({'model': model.state_dict()}, save_path)
+    # save_path = os.path.join(args.weight[:-4] + '_modified.pth')
+    # torch.save({'model': model.state_dict()}, save_path)
 
     # TTA
     test_aug = TestTimeAugmentation(num_classes=num_classes) if args.test_aug else None
