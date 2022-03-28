@@ -14,7 +14,7 @@ I am sure you will soon become familiar with this benchmark and add your own mod
 - [] Anchor DeTR
 - [] Dynamic Head
 
-More advanced detectors is coming soon ...
+More advanced detectors are coming soon ...
 
 
 # Requirements
