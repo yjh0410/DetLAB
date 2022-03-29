@@ -57,7 +57,7 @@ fcos_config = {
         'object_sizes_of_interest': [[-1, 64], [64, 128], [128, 256], [256, 512], [512, float('inf')]],
         # matcher
         'matcher': 'matcher',
-        'ctr_clamp': 32,
+        'ctr_clamp': None,
         'center_sampling_radius': 1.5,
         # loss
         'alpha': 0.25,
@@ -140,7 +140,7 @@ fcos_config = {
         'object_sizes_of_interest': [[-1, 64], [64, 128], [128, 256], [256, 512], [512, float('inf')]],
         # matcher
         'matcher': 'matcher',
-        'ctr_clamp': 32,
+        'ctr_clamp': None,
         'center_sampling_radius': 1.5,
         # loss
         'alpha': 0.25,
@@ -223,7 +223,7 @@ fcos_config = {
         'matcher': 'ota_matcher',
         'eps': 0.1, 
         'max_iter': 50,
-        'ctr_clamp': 32,
+        'ctr_clamp': None,
         'center_sampling_radius': 2.5,
         # loss
         'alpha': 0.25,
@@ -306,7 +306,7 @@ fcos_config = {
         'object_sizes_of_interest': [[-1, 64], [64, 128], [128, 256], [256, 512], [512, float('inf')]],
         # matcher
         'matcher': 'matcher',
-        'ctr_clamp': 32,
+        'ctr_clamp': None,
         'center_sampling_radius': 1.5,
         # loss
         'alpha': 0.25,
@@ -389,7 +389,7 @@ fcos_config = {
         'object_sizes_of_interest': [[-1, 64], [64, 128], [128, float('inf')]],
         # matcher
         'matcher': 'matcher',
-        'ctr_clamp': 32,
+        'ctr_clamp': None,
         'center_sampling_radius': 1.5,
         # loss
         'alpha': 0.25,
@@ -475,7 +475,7 @@ fcos_config = {
         'matcher': 'ota_matcher',
         'eps': 0.1, 
         'max_iter': 50,
-        'ctr_clamp': 32,
+        'ctr_clamp': None,
         'center_sampling_radius': 2.5,
         # loss
         'alpha': 0.25,

@@ -59,7 +59,7 @@ retinanet_config = {
         'iou_t': [0.4, 0.5],
         'iou_labels': [0, -1, 1], # [negative sample, ignored sample, positive sample]
         'allow_low_quality_matches': False,
-        'ctr_clamp': 32,
+        'ctr_clamp': None,
         # loss
         'alpha': 0.25,
         'gamma': 2.0,
@@ -142,7 +142,7 @@ retinanet_config = {
         'iou_t': [0.4, 0.5],
         'iou_labels': [0, -1, 1],
         'allow_low_quality_matches': False,
-        'ctr_clamp': 32,
+        'ctr_clamp': None,
         # loss
         'alpha': 0.25,
         'gamma': 2.0,
@@ -225,7 +225,7 @@ retinanet_config = {
         'iou_t': [0.4, 0.5],
         'iou_labels': [0, -1, 1],
         'allow_low_quality_matches': False,
-        'ctr_clamp': 32,
+        'ctr_clamp': None,
         # loss
         'alpha': 0.25,
         'gamma': 2.0,
@@ -308,7 +308,7 @@ retinanet_config = {
         'iou_t': [0.4, 0.5],
         'iou_labels': [0, -1, 1],
         'allow_low_quality_matches': False,
-        'ctr_clamp': 32,
+        'ctr_clamp': None,
         # loss
         'alpha': 0.25,
         'gamma': 2.0,

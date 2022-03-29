@@ -138,9 +138,10 @@ class RetinaNet(nn.Module):
         # x = x_anchor + dx * w_anchor
         # y = y_anchor + dy * h_anchor
         pred_ctr_offset = pred_reg[..., :2] * anchor_boxes[..., 2:]
-        pred_ctr_offset = torch.clamp(pred_ctr_offset,
-                                      max=self.cfg['ctr_clamp'],
-                                      min=-self.cfg['ctr_clamp'])
+        if self.cfg['ctr_clamp'] is not None:
+            pred_ctr_offset = torch.clamp(pred_ctr_offset,
+                                        max=self.cfg['ctr_clamp'],
+                                        min=-self.cfg['ctr_clamp'])
         pred_ctr_xy = anchor_boxes[..., :2] + pred_ctr_offset
 
         # w = w_anchor * exp(tw)
