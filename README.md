@@ -89,8 +89,10 @@ As for now, limited by my computation source, only `FCOS_RT` supports `OTA`.
 | SSD_V2_VGG_16_320_3x           |  320,320   |         |       |
 | SSD_V2_VGG_16_512_3x           |  512,512   |         |       |
 
-In SSDv2, `focal loss` and `GIoU Loss` are deployed in classification head and regression head, respectively.
-In addition, SSDv2 also takes advantage of `FPN` to enchance the performance.
+In SSDv2:
+- `Focal loss` for classification head
+- `GIoU Loss` for regression head
+- `FPN` for neck of SSD
 
 ## YOLOv3-SPP
 | Model                          |  scale     |   mAP   | Weight|
@@ -98,8 +100,9 @@ In addition, SSDv2 also takes advantage of `FPN` to enchance the performance.
 | YOLOv3_D_53_SPP_608_3x         |  608,608   |         |       |
 | YOLOv3_D_53_SPP_608_9x         |  608,608   |         |       |
 
-I plan to deploy GFocal loss and Focal in objectness head and classification head, respectively. It might make YOLOv3-SPP stronger.
-
+Plan to do for YOLOv3-SPP:
+- `GFocal loss` for objectness head
+- `Focal loss` for classification head
 
 # Train
 ## Single GPU
