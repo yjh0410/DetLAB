@@ -18,13 +18,20 @@ So, it is very friendly, right?
 
 I am sure you will soon become familiar with this benchmark and add your own modules to it.
 
+***However, limited by my computing resources, I cannot use larger backbone networks like `ResNet-101` 
+and `ResNeXt-101` to train more powerful detectors.***
+
+If you have sufficient computing resources and are already using these larger backbone 
+networks to train the detectors in this benchmark, I look forward to your open source 
+weight files to complement this project. Thanks a lot.
+
 
 # Coming soon
 - [] YOLOF
 - [] RetinaNet
 - [] FCOS
-- [] SSD
-- [] YOLOv3
+- [] SSDv2
+- [] YOLOv3-SPP
 - [] Anchor DeTR
 - [] Dynamic Head
 
@@ -76,25 +83,23 @@ At least, please make sure your torch is version 1.x.
 
 As for now, limited by my computation source, only `FCOS_RT` supports `OTA`.
 
-## SSD
+## SSDv2
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| SSD_VGG_16_320_3x              |  320,320   |         |       |
-| SSD_VGG_16_512_3x              |  512,512   |         |       |
+| SSD_V2_VGG_16_320_3x           |  320,320   |         |       |
+| SSD_V2_VGG_16_512_3x           |  512,512   |         |       |
 
-## YOLOv3
+In SSDv2, `focal loss` and `GIoU Loss` are deployed in classification head and regression head, respectively.
+In addition, SSDv2 also takes advantage of `FPN` to enchance the performance.
+
+## YOLOv3-SPP
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| YOLOv3_D_53_608_3x             |  608,608   |         |       |
-| YOLOv3_D_53_608_9x             |  608,608   |         |       |
+| YOLOv3_D_53_SPP_608_3x         |  608,608   |         |       |
+| YOLOv3_D_53_SPP_608_9x         |  608,608   |         |       |
 
+I plan to deploy GFocal loss and Focal in objectness head and classification head, respectively. It might make YOLOv3-SPP stronger.
 
-Limited by my computing resources, I cannot use larger backbone networks like `ResNet-101` 
-and `ResNeXt-101` to train more powerful detectors.
-
-If you have sufficient computing resources and are already using these larger backbone 
-networks to train the detectors in this benchmark, I look forward to your open source 
-weight files to complement this project. Thanks a lot.
 
 # Train
 ## Single GPU
