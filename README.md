@@ -78,10 +78,8 @@ At least, please make sure your torch is version 1.x.
 |--------------------------------|------------|---------|-------|
 | FCOS_R_18_1x                   |  800,1333  |         |       |
 | FCOS_R_50_1x                   |  800,1333  |         |       |
-| FCOS-RT_R_50_3x                |  512,736   |         |       |
+| FCOS_R_50_OTA_1x               |  800,1333  |         |       |
 | FCOS-RT_R_50_OTA_3x            |  512,736   |         |       |
-
-As for now, limited by my computation source, only `FCOS_RT` supports `OTA`.
 
 ## SSDv2
 | Model                          |  scale     |   mAP   | Weight|
