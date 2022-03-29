@@ -64,22 +64,22 @@ At least, please make sure your torch is version 1.x.
 |--------------------------------|------------|---------|-------|
 | YOLOF_R_18_C5_1x               |  800,1333  |   31.6  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/yolof_r18_C5_1x_31.6.pth) |
 | YOLOF_R_50_C5_1x               |  800,1333  |   37.6  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/yolof_r50_C5_1x_37.6.pth) |
-| YOLOF_RT                       |  640,640   |         |       |
+| YOLOF-RT_R_50_DC5_3x           |  640,640   |         |       |
 
 ## RetinaNet
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
 | RetinaNet_R_18_1x              |  800,1333  |         |       |
 | RetinaNet_R_50_1x              |  800,1333  |         |       |
-| RetinaNet_RT                   |  512,736   |         |       |
+| RetinaNet-RT_R50_3x            |  512,736   |         |       |
 
 ## FCOS
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
 | FCOS_R_18_1x                   |  800,1333  |         |       |
 | FCOS_R_50_1x                   |  800,1333  |         |       |
-| FCOS_RT_R_50                   |  640,640   |         |       |
-| FCOS_RT_R_50_OTA               |  512,736   |         |       |
+| FCOS-RT_R_50_3x                |  512,736   |         |       |
+| FCOS-RT_R_50_OTA_3x            |  512,736   |         |       |
 
 As for now, limited by my computation source, only `FCOS_RT` supports `OTA`.
 
