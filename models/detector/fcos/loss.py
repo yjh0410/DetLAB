@@ -163,7 +163,15 @@ class Criterion(object):
                  self.loss_reg_weight * loss_bboxes + \
                  self.loss_ctn_weight * loss_centerness
 
-        return loss_labels, loss_bboxes, loss_centerness, losses
+        loss_dict = dict(
+                loss_labels = loss_labels,
+                loss_bboxes = loss_bboxes,
+                loss_centerness = loss_centerness,
+                losses = losses,
+                num_foreground = num_foreground
+        )
+
+        return loss_dict
 
     
 if __name__ == "__main__":

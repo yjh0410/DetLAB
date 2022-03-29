@@ -313,14 +313,8 @@ class YOLOF(nn.Module):
                        "mask": mask}
 
             # loss
-            loss_labels, loss_bboxes, losses = self.criterion(outputs=outputs, 
-                                                              targets=targets, 
-                                                              anchor_boxes=self.anchor_boxes)
-
-            loss_dict=dict(
-                loss_labels = loss_labels,
-                loss_bboxes = loss_bboxes,
-                losses = losses
-            )
+            loss_dict = self.criterion(outputs=outputs, 
+                                       targets=targets, 
+                                       anchor_boxes=self.anchor_boxes)
 
             return loss_dict 

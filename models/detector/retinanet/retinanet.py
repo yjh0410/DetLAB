@@ -335,15 +335,9 @@ class RetinaNet(nn.Module):
                        "mask": all_masks}
 
             # loss
-            loss_labels, loss_bboxes, losses = self.criterion(outputs = outputs, 
-                                                              targets = targets, 
-                                                              anchor_boxes = all_anchor_boxes)
-
-            loss_dict=dict(
-                loss_labels = loss_labels,
-                loss_bboxes = loss_bboxes,
-                losses = losses
-            )
+            loss_dict = self.criterion(outputs = outputs, 
+                                       targets = targets, 
+                                       anchor_boxes = all_anchor_boxes)
 
             return loss_dict 
     

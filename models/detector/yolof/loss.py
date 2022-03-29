@@ -142,7 +142,14 @@ class Criterion(object):
         # total loss
         losses = self.loss_cls_weight * loss_labels + self.loss_reg_weight * loss_bboxes
 
-        return loss_labels, loss_bboxes, losses
+        loss_dict = dict(
+                loss_labels = loss_labels,
+                loss_bboxes = loss_bboxes,
+                losses = losses,
+                num_foreground = num_foreground
+        )
+
+        return loss_dict
 
     
 if __name__ == "__main__":
