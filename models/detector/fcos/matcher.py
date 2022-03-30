@@ -208,10 +208,11 @@ class Matcher(object):
                 gt_classes.append(tgt_cls_i)
                 gt_anchors_deltas.append(gt_anchors_reg_deltas_i)
                 gt_centerness.append(gt_centerness_i)
+                
             else:
                 tgt_cls_i = torch.zeros(anchors_over_all_feature_maps.shape[0], device=device) + self.num_classes
                 gt_anchors_reg_deltas_i = torch.zeros([anchors_over_all_feature_maps.shape[0], 4], device=device)
-                gt_centerness = torch.zeros(anchors_over_all_feature_maps.shape[0], device=device)
+                gt_centerness_i = torch.zeros(anchors_over_all_feature_maps.shape[0], device=device)
 
                 gt_classes.append(tgt_cls_i)
                 gt_anchors_deltas.append(gt_anchors_reg_deltas_i)
