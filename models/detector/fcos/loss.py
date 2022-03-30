@@ -139,7 +139,7 @@ class Criterion(object):
         gt_classes_target[foreground_idxs, gt_classes[foreground_idxs]] = 1
 
         # cls loss
-        masks = outputs['mask'].view(-1).cpu()
+        masks = outputs['mask'].view(-1)
         valid_idxs = (gt_classes >= 0) & masks
         loss_labels = self.loss_labels(
             pred_cls[valid_idxs],
