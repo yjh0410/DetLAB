@@ -109,7 +109,7 @@ class Criterion(object):
                 loss_labels = loss_labels,
                 loss_bboxes = loss_bboxes,
                 losses = losses,
-                num_foreground = num_foreground
+                num_foreground = num_foreground / bs
         )
 
         return loss_dict
