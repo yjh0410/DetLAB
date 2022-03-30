@@ -106,6 +106,9 @@ class FCOS(nn.Module):
         # init reg pred
         nn.init.normal_(self.reg_pred.weight, mean=0, std=0.01)
         nn.init.constant_(self.reg_pred.bias, 0.0)
+        # init ctn pred
+        nn.init.normal_(self.ctn_pred.weight, mean=0, std=0.01)
+        nn.init.constant_(self.reg_pred.bias, 0.0)
 
 
     def generate_anchors(self, level, fmp_size):
