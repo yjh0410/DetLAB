@@ -92,6 +92,7 @@ class Matcher(object):
                 # Anchors with label -1 are ignored.
                 gt_classes_i[anchor_labels == -1] = -1
             else:
+                print(1111111111111111111111111111111)
                 gt_classes_i = torch.zeros_like(gt_matched_idxs) + self.num_classes
                 matched_gt_boxes = torch.zeros_like(anchors_per_image)
 
