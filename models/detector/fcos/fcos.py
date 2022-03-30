@@ -118,7 +118,7 @@ class FCOS(nn.Module):
         # [H, W, 2] -> [HW, 2]
         anchor_xy = torch.stack([anchor_x, anchor_y], dim=-1).float().view(-1, 2) + 0.5
         anchor_xy *= self.stride[level]
-        anchors = anchor_xy.to(self.device)
+        anchors = anchor_xy
 
         return anchors
         
@@ -213,6 +213,7 @@ class FCOS(nn.Module):
                 anchors = anchors[indices]
 
             # decode box: [M, 4]
+            anchors = anchors.to(self.device)
             bboxes = self.decode_boxes(anchors, reg_pred)
 
             all_scores.append(scores)

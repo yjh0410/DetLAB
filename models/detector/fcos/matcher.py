@@ -99,8 +99,6 @@ class Matcher(object):
         """
         assert isinstance(anchors, torch.Tensor), type(anchors)
         assert isinstance(boxes, torch.Tensor), type(boxes)
-        print(anchors.device)
-        print(boxes.device)
         deltas = torch.cat((anchors - boxes[..., :2], boxes[..., 2:] - anchors),
                            dim=-1) * anchors.new_tensor(self.box_weights)
         return deltas
