@@ -119,19 +119,19 @@ class Matcher(object):
         gt_centerness = []
 
         # List[F, M, 2]
-        strides_at_each_feature_maps = [[stride] * anchor.shape[0] \
+        strides_at_each_feature_maps = [torch.as_tensor([stride] * anchor.shape[0]).float() \
                                         for stride, anchor in zip(fpn_strides, anchors)]
-
+        # List[F, M,] -> [M,] -> [M, 1]
+        strides_over_all_feature_maps = torch.cat(strides_at_each_feature_maps, dim=0).unsqueeze(-1)
         # List[F, M, 2] -> [M, 2]
-        strides_over_all_feature_maps = torch.cat(strides_at_each_feature_maps, dim=0)
         anchors_over_all_feature_maps = torch.cat(anchors, dim=0)
 
         for targets_per_image in targets:
             # generate object_sizes_of_interest: List[[M, 2]]
-            object_sizes_of_interest = [anchors_i.new_tensor(size).unsqueeze(0).expand(anchors_i.size(0), -1) 
-                                        for anchors_i, size in zip(anchors, self.object_sizes_of_interest)]
+            object_sizes_of_interest = [anchors_i.new_tensor(scale_range).unsqueeze(0).expand(anchors_i.size(0), -1) 
+                                        for anchors_i, scale_range in zip(anchors, self.object_sizes_of_interest)]
             # List[F, M, 2] -> [M, 2], M = M1 + M2 + ... + MF
-            object_sizes_of_interest = torch.cat([object_sizes_of_interest], dim=0)
+            object_sizes_of_interest = torch.cat(object_sizes_of_interest, dim=0)
             # [N, 4]
             tgt_box = targets_per_image['boxes']
             # [N, C]

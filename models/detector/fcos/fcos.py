@@ -198,7 +198,7 @@ class FCOS(nn.Module):
             cls_pred = cls_pred[0].permute(1, 2, 0).contiguous().view(-1, self.num_classes)
             reg_pred = reg_pred[0].permute(1, 2, 0).contiguous().view(-1, 4)
             reg_pred = F.relu(self.scales[level](reg_pred)) * self.stride[level]
-            ctn_pred = ctn_pred.permute(1, 2, 0).contiguous().view(-1, 1)
+            ctn_pred = ctn_pred[0].permute(1, 2, 0).contiguous().view(-1, 1)
 
             # scores
             scores, labels = torch.max(torch.sqrt(cls_pred.sigmoid() * ctn_pred.sigmoid()), dim=-1)

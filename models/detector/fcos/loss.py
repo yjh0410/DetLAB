@@ -28,11 +28,11 @@ class Criterion(object):
         if cfg['matcher'] == 'matcher':
             self.matcher = Matcher(cfg,
                                    num_classes=num_classes,
-                                   box_weight=[1., 1., 1., 1.])
+                                   box_weights=[1., 1., 1., 1.])
         elif cfg['matcher'] == 'ota_matcher':
             self.matcher = OTA_Matcher(cfg, 
                                        num_classes, 
-                                       box_weight=[1., 1., 1., 1.])
+                                       box_weights=[1., 1., 1., 1.])
 
 
     def loss_labels(self, pred_cls, tgt_cls, num_boxes):
@@ -139,7 +139,7 @@ class Criterion(object):
 
         # cls loss
         masks = outputs['mask'].view(-1).cpu()
-        valid_idxs = (gt_classes >= 0 & masks)
+        valid_idxs = (gt_classes >= 0) & masks
         loss_labels = self.loss_labels(
             pred_cls[valid_idxs],
             gt_classes_target[valid_idxs],

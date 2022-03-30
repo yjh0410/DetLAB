@@ -16,7 +16,6 @@ class BasicFPN(nn.Module):
         self.from_c5 = from_c5
         self.p6_feat = p6_feat
         self.p7_feat = p7_feat
-        assert from_c5 == p6_feat
 
         # latter layers
         self.input_projs = nn.ModuleList()
