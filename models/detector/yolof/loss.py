@@ -145,8 +145,7 @@ class Criterion(object):
         loss_dict = dict(
                 loss_labels = loss_labels,
                 loss_bboxes = loss_bboxes,
-                losses = losses,
-                num_foreground = num_foreground / bs
+                losses = losses
         )
 
         return loss_dict
