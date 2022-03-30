@@ -31,7 +31,7 @@ weight files to complement this project. Thanks a lot.
 - [] RetinaNet
 - [] FCOS
 - [] SSDv2
-- [] YOLOv3-SPP
+- [] YOLOv3
 - [] Anchor DeTR
 - [] Dynamic Head
 
@@ -92,11 +92,11 @@ In SSDv2:
 - `GIoU Loss` for regression head
 - `FPN` for neck of SSD
 
-## YOLOv3-SPP
+## YOLOv3
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| YOLOv3_D_53_SPP_608_3x         |  608,608   |         |       |
-| YOLOv3_D_53_SPP_608_9x         |  608,608   |         |       |
+| YOLOv3_D_53_3x                 |  608,608   |         |       |
+| YOLOv3_D_53_Mosaic_4x          |  608,608   |         |       |
 
 Plan to do for YOLOv3-SPP:
 - `GFocal loss` for objectness head
