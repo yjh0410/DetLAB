@@ -116,14 +116,15 @@ class Matcher(object):
         gt_classes = []
         gt_anchors_deltas = []
         gt_centerness = []
+        device = anchors[0].device
 
         # List[F, M, 2]
         strides_at_each_feature_maps = [torch.as_tensor([stride] * anchor.shape[0]).float() \
                                         for stride, anchor in zip(fpn_strides, anchors)]
         # List[F, M,] -> [M,] -> [M, 1]
-        strides_over_all_feature_maps = torch.cat(strides_at_each_feature_maps, dim=0).unsqueeze(-1).to()
+        strides_over_all_feature_maps = torch.cat(strides_at_each_feature_maps, dim=0).unsqueeze(-1).to(device)
         # List[F, M, 2] -> [M, 2]
-        anchors_over_all_feature_maps = torch.cat(anchors, dim=0).cpu()
+        anchors_over_all_feature_maps = torch.cat(anchors, dim=0)
 
         for targets_per_image in targets:
             # generate object_sizes_of_interest: List[[M, 2]]
@@ -132,9 +133,9 @@ class Matcher(object):
             # List[F, M, 2] -> [M, 2], M = M1 + M2 + ... + MF
             object_sizes_of_interest = torch.cat(object_sizes_of_interest, dim=0)
             # [N, 4]
-            tgt_box = targets_per_image['boxes']
+            tgt_box = targets_per_image['boxes'].to(device)
             # [N, C]
-            tgt_cls = targets_per_image['labels']
+            tgt_cls = targets_per_image['labels'].to(device)
             # [N, M, 4], M = M1 + M2 + ... + MF
             deltas = self.get_deltas(anchors_over_all_feature_maps, tgt_box.unsqueeze(1))
 
