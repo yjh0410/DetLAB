@@ -110,6 +110,7 @@ class Criterion(object):
             anchors: (List of Tensor) List[Tensor[M, 4]], len(anchors) == num_fpn_levels
         """
         bs = outputs['pred_cls'].shape[0]
+        device = outputs['pred_cls'].device
         fpn_strides = outputs['strides']
         gt_classes, gt_shifts_deltas, gt_centerness = self.matcher(fpn_strides, anchors, targets)
 
@@ -118,9 +119,9 @@ class Criterion(object):
         pred_delta = outputs['pred_reg'].view(-1, 4)
         pred_ctn = outputs['pred_ctn'].view(-1, 1)
 
-        gt_classes = gt_classes.flatten()
-        gt_shifts_deltas = gt_shifts_deltas.view(-1, 4)
-        gt_centerness = gt_centerness.view(-1, 1)
+        gt_classes = gt_classes.flatten().to(device)
+        gt_shifts_deltas = gt_shifts_deltas.view(-1, 4).to(device)
+        gt_centerness = gt_centerness.view(-1, 1).to(device)
 
         foreground_idxs = (gt_classes >= 0) & (gt_classes != self.num_classes)
         num_foreground = foreground_idxs.sum()
