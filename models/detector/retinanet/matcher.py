@@ -72,12 +72,13 @@ class Matcher(object):
         # list[Tensor(R, 4)], one for each image
         gt_classes = []
         gt_boxes = []
+        device = anchors.device
 
         for anchors_per_image, targets_per_image in zip(anchors, targets):
             # [N,]
-            tgt_labels = targets_per_image['labels']
+            tgt_labels = targets_per_image['labels'].to(device)
             # [N, 4]
-            tgt_boxes = targets_per_image['boxes']
+            tgt_boxes = targets_per_image['boxes'].to(device)
             # [N, M], N is the number of targets, M is the number of anchors
             match_quality_matrix, _ = box_iou(tgt_boxes, anchors_per_image)
             gt_matched_idxs, anchor_labels = self.matching(match_quality_matrix)
@@ -92,7 +93,6 @@ class Matcher(object):
                 # Anchors with label -1 are ignored.
                 gt_classes_i[anchor_labels == -1] = -1
             else:
-                print(1111111111111111111111111111111)
                 gt_classes_i = torch.zeros_like(gt_matched_idxs) + self.num_classes
                 matched_gt_boxes = torch.zeros_like(anchors_per_image)
 

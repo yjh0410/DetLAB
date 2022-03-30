@@ -69,7 +69,7 @@ class Criterion(object):
         bs = outputs['pred_cls'].size(0)
         device = outputs['pred_cls'].device
         # [M, 4] -> [B, M, 4]
-        anchors = anchor_boxes[None].repeat(bs, 1, 1).cpu()
+        anchors = anchor_boxes[None].repeat(bs, 1, 1)
         # convert [x, y, w, h] -> [x1, y1, x2, y2]
         anchors = box_cxcywh_to_xyxy(anchors)
         # label assignment
@@ -79,11 +79,11 @@ class Criterion(object):
         pred_cls = outputs['pred_cls'].view(-1, self.num_classes)
         pred_box = outputs['pred_box'].view(-1, 4)
 
-        tgt_classes = tgt_classes.flatten().to(device)
-        tgt_boxes = tgt_boxes.view(-1, 4).to(device)
+        tgt_classes = tgt_classes.flatten()
+        tgt_boxes = tgt_boxes.view(-1, 4)
 
         foreground_idxs = (tgt_classes >= 0) & (tgt_classes != self.num_classes)
-        num_foreground = foreground_idxs.sum().to(device)
+        num_foreground = foreground_idxs.sum()
         if is_dist_avail_and_initialized():
             torch.distributed.all_reduce(num_foreground)
         num_foreground = torch.clamp(num_foreground / get_world_size(), min=1).item()
