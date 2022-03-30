@@ -124,7 +124,7 @@ class Matcher(object):
         # List[F, M,] -> [M,] -> [M, 1]
         strides_over_all_feature_maps = torch.cat(strides_at_each_feature_maps, dim=0).unsqueeze(-1).to(device)
         # List[F, M, 2] -> [M, 2]
-        anchors_over_all_feature_maps = torch.cat(anchors, dim=0)
+        anchors_over_all_feature_maps = torch.cat(anchors, dim=0).to(device)
 
         for targets_per_image in targets:
             # generate object_sizes_of_interest: List[[M, 2]]
@@ -180,7 +180,7 @@ class Matcher(object):
             # if there are still more than one objects for a position,
             # we choose the one with minimal area
             # [M,], each element is the index of ground-truth
-            print(gt_positions_area.shape)
+            print(len(tgt_box))
             positions_min_area, gt_matched_idxs = gt_positions_area.min(dim=0)
 
             # ground truth box regression
