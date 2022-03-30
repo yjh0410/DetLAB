@@ -109,6 +109,7 @@ class Criterion(object):
                                  'orig_size': ...}, ...]
             anchors: (List of Tensor) List[Tensor[M, 4]], len(anchors) == num_fpn_levels
         """
+        bs = outputs['pred_cls'].shape[0]
         fpn_strides = outputs['strides']
         gt_classes, gt_shifts_deltas, gt_centerness = self.matcher(fpn_strides, anchors, targets)
 
@@ -168,7 +169,7 @@ class Criterion(object):
                 loss_bboxes = loss_bboxes,
                 loss_centerness = loss_centerness,
                 losses = losses,
-                num_foreground = num_foreground
+                num_foreground = num_foreground / bs
         )
 
         return loss_dict

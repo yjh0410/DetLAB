@@ -69,15 +69,15 @@ class Criterion(object):
         pred_box_copy = pred_box.detach().clone().cpu()
         anchor_boxes_copy = anchor_boxes.clone().cpu()
         # rescale tgt boxes
-        B = len(targets)
+        bs = len(targets)
         indices = self.matcher(pred_box_copy, anchor_boxes_copy, targets)
         anchor_boxes_copy = box_cxcywh_to_xyxy(anchor_boxes_copy)
         # [M, 4] -> [1, M, 4] -> [B, M, 4]
-        anchor_boxes_copy = anchor_boxes_copy[None].repeat(B, 1, 1)
+        anchor_boxes_copy = anchor_boxes_copy[None].repeat(bs, 1, 1)
 
         ious = []
         pos_ious = []
-        for i in range(B):
+        for i in range(bs):
             src_idx, tgt_idx = indices[i]
             # iou between predbox and tgt box
             iou, _ = box_iou(pred_box_copy[i, ...], (targets[i]['boxes']).clone())
@@ -146,7 +146,7 @@ class Criterion(object):
                 loss_labels = loss_labels,
                 loss_bboxes = loss_bboxes,
                 losses = losses,
-                num_foreground = num_foreground
+                num_foreground = num_foreground / bs
         )
 
         return loss_dict

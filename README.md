@@ -27,7 +27,7 @@ weight files to complement this project. Thanks a lot.
 
 
 # Coming soon
-- [] YOLOF
+- [x] YOLOF
 - [] RetinaNet
 - [] FCOS
 - [] SSDv2
@@ -64,7 +64,7 @@ At least, please make sure your torch is version 1.x.
 |--------------------------------|------------|---------|-------|
 | YOLOF_R_18_C5_1x               |  800,1333  |   31.6  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/yolof_r18_C5_1x_31.6.pth) |
 | YOLOF_R_50_C5_1x               |  800,1333  |   37.6  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/yolof_r50_C5_1x_37.6.pth) |
-| YOLOF-RT_R_50_DC5_3x           |  640,640   |         |       |
+| YOLOF-RT_R_50_DC5_3x           |  640,640   |   38.1  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/yolof-rt_r50_DC5_1x_38.1.pth) |
 
 ## RetinaNet
 | Model                          |  scale     |   mAP   | Weight|
