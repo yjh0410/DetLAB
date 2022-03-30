@@ -180,6 +180,7 @@ class Matcher(object):
             # if there are still more than one objects for a position,
             # we choose the one with minimal area
             # [M,], each element is the index of ground-truth
+            print(gt_positions_area.shape)
             positions_min_area, gt_matched_idxs = gt_positions_area.min(dim=0)
 
             # ground truth box regression
