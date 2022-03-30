@@ -122,9 +122,9 @@ class Matcher(object):
         strides_at_each_feature_maps = [torch.as_tensor([stride] * anchor.shape[0]).float() \
                                         for stride, anchor in zip(fpn_strides, anchors)]
         # List[F, M,] -> [M,] -> [M, 1]
-        strides_over_all_feature_maps = torch.cat(strides_at_each_feature_maps, dim=0).unsqueeze(-1)
+        strides_over_all_feature_maps = torch.cat(strides_at_each_feature_maps, dim=0).unsqueeze(-1).to()
         # List[F, M, 2] -> [M, 2]
-        anchors_over_all_feature_maps = torch.cat(anchors, dim=0)
+        anchors_over_all_feature_maps = torch.cat(anchors, dim=0).cpu()
 
         for targets_per_image in targets:
             # generate object_sizes_of_interest: List[[M, 2]]
