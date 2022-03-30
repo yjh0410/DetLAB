@@ -90,7 +90,7 @@ class Criterion(object):
             tgt_box:  (Tensor) [N, 4]
         """
         # bce loss
-        loss_ctn = F.binary_cross_entropy_with_logits(pred_ctn, tgt_ctn)
+        loss_ctn = F.binary_cross_entropy_with_logits(pred_ctn, tgt_ctn, reduction='none')
 
         return loss_ctn.sum() / num_boxes
 
