@@ -46,6 +46,7 @@ yolof_config = {
         'expand_ratio': 0.25,
         # head
         'head_dim': 512,
+        'head_norm': 'BN',
         'num_cls_head': 2,
         'num_reg_head': 4,
         # post process
@@ -128,6 +129,7 @@ yolof_config = {
         'expand_ratio': 0.25,
         # head
         'head_dim': 512,
+        'head_norm': 'BN',
         'num_cls_head': 2,
         'num_reg_head': 4,
         # post process
@@ -210,6 +212,7 @@ yolof_config = {
         'expand_ratio': 0.25,
         # head
         'head_dim': 512,
+        'head_norm': 'BN',
         'num_cls_head': 2,
         'num_reg_head': 4,
         # post process
@@ -292,6 +295,7 @@ yolof_config = {
         'expand_ratio': 0.25,
         # head
         'head_dim': 512,
+        'head_norm': 'BN',
         'num_cls_head': 2,
         'num_reg_head': 4,
         # post process
@@ -374,6 +378,7 @@ yolof_config = {
         'expand_ratio': 0.25,
         # head
         'head_dim': 512,
+        'head_norm': 'BN',
         'num_cls_head': 2,
         'num_reg_head': 4,
         # post process
@@ -456,6 +461,7 @@ yolof_config = {
         'expand_ratio': 0.25,
         # head
         'head_dim': 512,
+        'head_norm': 'BN',
         'num_cls_head': 2,
         'num_reg_head': 4,
         # post process

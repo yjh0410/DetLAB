@@ -48,7 +48,8 @@ class YOLOF(nn.Module):
                                   num_cls_head=cfg['num_cls_head'],
                                   num_reg_head=cfg['num_reg_head'],
                                   num_classes=num_classes,
-                                  act_type=cfg['act_type'])
+                                  act_type=cfg['act_type'],
+                                  norm_type=cfg['head_norm'])
 
         # pred
         self.obj_pred = nn.Conv2d(cfg['head_dim'], 1 * self.num_anchors, kernel_size=3, padding=1)
