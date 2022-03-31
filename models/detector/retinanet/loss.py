@@ -3,7 +3,6 @@ import torch.nn as nn
 from .matcher import Matcher
 from utils.box_ops import *
 from utils.misc import sigmoid_focal_loss
-from utils.distributed_utils import get_world_size, is_dist_avail_and_initialized
 
 
 
@@ -27,6 +26,30 @@ class Criterion(object):
                                iou_threshold=cfg['iou_t'],
                                iou_labels=cfg['iou_labels'],
                                allow_low_quality_matches=cfg['allow_low_quality_matches'])
+
+
+    def _ema_update(self, name: str, value: float, initial_value: float, momentum: float = 0.9):
+            """
+            Apply EMA update to `self.name` using `value`.
+            This is mainly used for loss normalizer. In Detectron1, loss is normalized by number
+            of foreground samples in the batch. When batch size is 1 per GPU, #foreground has a
+            large variance and using it lead to lower performance. Therefore we maintain an EMA of
+            #foreground to stabilize the normalizer.
+            Args:
+                name: name of the normalizer
+                value: the new value to update
+                initial_value: the initial value to start with
+                momentum: momentum of EMA
+            Returns:
+                float: the updated EMA value
+            """
+            if hasattr(self, name):
+                old = getattr(self, name)
+            else:
+                old = initial_value
+            new = old * momentum + value * (1 - momentum)
+            setattr(self, name, new)
+            return new
 
 
     def loss_labels(self, pred_cls, tgt_cls, num_boxes):
@@ -67,7 +90,6 @@ class Criterion(object):
             anchor_boxes: (Tensor) [M, 4]
         """
         bs = outputs['pred_cls'].size(0)
-        device = outputs['pred_cls'].device
         # [M, 4] -> [B, M, 4]
         anchors = anchor_boxes[None].repeat(bs, 1, 1)
         # convert [x, y, w, h] -> [x1, y1, x2, y2]
@@ -84,9 +106,7 @@ class Criterion(object):
 
         foreground_idxs = (tgt_classes >= 0) & (tgt_classes != self.num_classes)
         num_foreground = foreground_idxs.sum()
-        if is_dist_avail_and_initialized():
-            torch.distributed.all_reduce(num_foreground)
-        num_foreground = torch.clamp(num_foreground / get_world_size(), min=1).item()
+        loss_normalizer = self._ema_update("loss_normalizer", max(num_foreground, 1), 100)
 
         gt_cls_target = torch.zeros_like(pred_cls)
         gt_cls_target[foreground_idxs, tgt_classes[foreground_idxs]] = 1
@@ -96,12 +116,12 @@ class Criterion(object):
         valid_idxs = (tgt_classes >= 0) & masks
         loss_labels = self.loss_labels(pred_cls[valid_idxs], 
                                        gt_cls_target[valid_idxs], 
-                                       num_foreground)
+                                       loss_normalizer)
 
         # box loss
         loss_bboxes = self.loss_bboxes(pred_box[foreground_idxs],
                                         tgt_boxes[foreground_idxs].to(pred_box.device),
-                                        num_foreground)
+                                        loss_normalizer)
 
         # total loss
         losses = self.loss_cls_weight * loss_labels + self.loss_reg_weight * loss_bboxes

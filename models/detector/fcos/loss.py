@@ -4,7 +4,6 @@ import torch.nn.functional as F
 from .matcher import Matcher, OTA_Matcher
 from utils.box_ops import *
 from utils.misc import sigmoid_focal_loss
-from utils.distributed_utils import get_world_size, is_dist_avail_and_initialized
 
 
 class Criterion(object):
@@ -33,6 +32,30 @@ class Criterion(object):
             self.matcher = OTA_Matcher(cfg, 
                                        num_classes, 
                                        box_weights=[1., 1., 1., 1.])
+
+
+    def _ema_update(self, name: str, value: float, initial_value: float, momentum: float = 0.9):
+            """
+            Apply EMA update to `self.name` using `value`.
+            This is mainly used for loss normalizer. In Detectron1, loss is normalized by number
+            of foreground samples in the batch. When batch size is 1 per GPU, #foreground has a
+            large variance and using it lead to lower performance. Therefore we maintain an EMA of
+            #foreground to stabilize the normalizer.
+            Args:
+                name: name of the normalizer
+                value: the new value to update
+                initial_value: the initial value to start with
+                momentum: momentum of EMA
+            Returns:
+                float: the updated EMA value
+            """
+            if hasattr(self, name):
+                old = getattr(self, name)
+            else:
+                old = initial_value
+            new = old * momentum + value * (1 - momentum)
+            setattr(self, name, new)
+            return new
 
 
     def loss_labels(self, pred_cls, tgt_cls, num_boxes):
@@ -124,16 +147,11 @@ class Criterion(object):
         gt_centerness = gt_centerness.view(-1, 1).to(device)
 
         foreground_idxs = (gt_classes >= 0) & (gt_classes != self.num_classes)
-        num_foreground = foreground_idxs.sum()
-
-        if is_dist_avail_and_initialized():
-            torch.distributed.all_reduce(num_foreground)
-        num_foreground = torch.clamp(num_foreground / get_world_size(), min=1).item()
-
-        num_foreground_centerness = gt_centerness[foreground_idxs].sum()
-        if is_dist_avail_and_initialized():
-            torch.distributed.all_reduce(num_foreground_centerness)
-        num_targets = torch.clamp(num_foreground_centerness / get_world_size(), min=1).item()
+        num_foreground = foreground_idxs.sum().clamp(1.0).item()
+        num_foreground_centerness = gt_centerness[foreground_idxs].sum().clamp(1.0).item()
+        num_targets = num_foreground_centerness
+        loss_normalizer_1 = self._ema_update("loss_normalizer_1", max(num_foreground, 1), 100)
+        loss_normalizer_2 = self._ema_update("loss_normalizer_2", max(num_targets, 1), 100)
 
         gt_classes_target = torch.zeros_like(pred_cls)
         gt_classes_target[foreground_idxs, gt_classes[foreground_idxs]] = 1
@@ -144,21 +162,24 @@ class Criterion(object):
         loss_labels = self.loss_labels(
             pred_cls[valid_idxs],
             gt_classes_target[valid_idxs],
-            num_boxes=num_foreground)
+            num_boxes=loss_normalizer_1)
 
         # box loss
-        num_bboxes = num_targets if self.cfg['matcher'] == 'matcher' else num_foreground
+        if self.cfg['matcher'] == 'matcher':
+            loss_normalizer = loss_normalizer_2
+        else: # OTA Matcher
+            loss_normalizer = loss_normalizer_1
         loss_bboxes = self.loss_bboxes(
             pred_delta[foreground_idxs],
             gt_shifts_deltas[foreground_idxs],
             gt_centerness[foreground_idxs],
-            num_boxes=num_bboxes)
+            num_boxes=loss_normalizer)
 
         # centerness loss
         loss_centerness = self.loss_centerness(
             pred_ctn[foreground_idxs],
             gt_centerness[foreground_idxs],
-            num_boxes=num_foreground)
+            num_boxes=loss_normalizer_1)
 
         # total loss
         losses = self.loss_cls_weight * loss_labels + \

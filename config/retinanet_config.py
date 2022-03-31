@@ -44,6 +44,7 @@ retinanet_config = {
         'p7_feat': True,
         # head
         'head_dim': 256,
+        'head_norm': '',
         'head': 'decoupled_head',
         'num_cls_head': 4,
         'num_reg_head': 4,
@@ -127,6 +128,7 @@ retinanet_config = {
         'p7_feat': True,
         # head
         'head_dim': 256,
+        'head_norm': '',
         'head': 'decoupled_head',
         'num_cls_head': 4,
         'num_reg_head': 4,
@@ -210,6 +212,7 @@ retinanet_config = {
         'p7_feat': True,
         # head
         'head_dim': 256,
+        'head_norm': '',
         'head': 'decoupled_head',
         'num_cls_head': 4,
         'num_reg_head': 4,
@@ -293,6 +296,7 @@ retinanet_config = {
         'p7_feat': False,
         # head
         'head_dim': 256,
+        'head_norm': '',
         'head': 'decoupled_head',
         'num_cls_head': 4,
         'num_reg_head': 4,
