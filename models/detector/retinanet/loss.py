@@ -3,7 +3,6 @@ import torch.nn as nn
 from .matcher import Matcher
 from utils.box_ops import *
 from utils.misc import sigmoid_focal_loss
-from utils.distributed_utils import get_world_size, is_dist_avail_and_initialized
 
 
 
@@ -107,10 +106,7 @@ class Criterion(object):
 
         foreground_idxs = (tgt_classes >= 0) & (tgt_classes != self.num_classes)
         num_foreground = foreground_idxs.sum()
-        if is_dist_avail_and_initialized():
-            torch.distributed.all_reduce(num_foreground)
-        num_foreground = torch.clamp(num_foreground / get_world_size(), min=1).item()
-
+        loss_normalizer = self._ema_update("loss_normalizer", max(num_foreground, 1), 100)
 
         gt_cls_target = torch.zeros_like(pred_cls)
         gt_cls_target[foreground_idxs, tgt_classes[foreground_idxs]] = 1
@@ -120,12 +116,12 @@ class Criterion(object):
         valid_idxs = (tgt_classes >= 0) & masks
         loss_labels = self.loss_labels(pred_cls[valid_idxs], 
                                        gt_cls_target[valid_idxs], 
-                                       num_foreground)
+                                       loss_normalizer)
 
         # box loss
         loss_bboxes = self.loss_bboxes(pred_box[foreground_idxs],
                                         tgt_boxes[foreground_idxs].to(pred_box.device),
-                                        num_foreground)
+                                        loss_normalizer)
 
         # total loss
         losses = self.loss_cls_weight * loss_labels + self.loss_reg_weight * loss_bboxes
