@@ -99,8 +99,9 @@ In SSDv2:
 | YOLOv3_D_53_Mosaic_4x          |  608,608   |         |       |
 
 Plan to do for YOLOv3-SPP:
-- `GFocal loss` for objectness head
+- `IoU-aware` and `QFocal loss` for objectness head
 - `Focal loss` for classification head
+- `GIoU loss` for regression head
 
 # Train
 ## Single GPU
