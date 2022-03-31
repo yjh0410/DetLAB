@@ -51,7 +51,6 @@ class RetinaNet(nn.Module):
         self.head = DecoupledHead(head_dim=cfg['head_dim'],
                                   num_cls_head=cfg['num_cls_head'],
                                   num_reg_head=cfg['num_reg_head'],
-                                  num_classes=num_classes,
                                   act_type=cfg['act_type'],
                                   norm_type=cfg['head_norm'])
 

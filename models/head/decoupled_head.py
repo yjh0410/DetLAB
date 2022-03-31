@@ -9,11 +9,9 @@ class DecoupledHead(nn.Module):
                  head_dim=256,
                  num_cls_head=4,
                  num_reg_head=4,
-                 num_classes=80, 
                  act_type='relu',
                  norm_type=''):
         super().__init__()
-        self.num_classes = num_classes
         self.head_dim = head_dim
         self.add_bias = (norm_type == '')
 
