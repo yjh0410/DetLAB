@@ -183,54 +183,6 @@ def train():
         if args.distributed:
             dataloader.batch_sampler.sampler.set_epoch(epoch)            
 
-        # evaluation
-        if (epoch) % args.eval_epoch == 0 or (epoch + 1) == max_epoch:
-            # check evaluator
-            if distributed_utils.is_main_process():
-                if evaluator is None:
-                    print('No evaluator ... save model and go on training.')
-                    print('Saving state, epoch: {}'.format(epoch + 1))
-                    weight_name = '{}_epoch_{}.pth'.format(args.version, epoch + 1)
-                    checkpoint_path = os.path.join(path_to_save, weight_name)
-                    torch.save({'model': model_without_ddp.state_dict(),
-                                'optimizer': optimizer.state_dict(),
-                                'lr_scheduler': lr_scheduler.state_dict(),
-                                'epoch': epoch,
-                                'args': args}, 
-                                checkpoint_path)                      
-                    
-                else:
-                    print('eval ...')
-                    # set eval mode
-                    model_without_ddp.trainable = False
-                    model_without_ddp.eval()
-
-                    # evaluate
-                    evaluator.evaluate(model_without_ddp)
-
-                    cur_map = evaluator.map
-                    if cur_map > best_map:
-                        # update best-map
-                        best_map = cur_map
-                        # save model
-                        print('Saving state, epoch:', epoch + 1)
-                        weight_name = '{}_epoch_{}_{:.2f}.pth'.format(args.version, epoch + 1, best_map*100)
-                        checkpoint_path = os.path.join(path_to_save, weight_name)
-                        torch.save({'model': model_without_ddp.state_dict(),
-                                    'optimizer': optimizer.state_dict(),
-                                    'lr_scheduler': lr_scheduler.state_dict(),
-                                    'epoch': epoch,
-                                    'args': args}, 
-                                    checkpoint_path)                      
-
-                    # set train mode.
-                    model_without_ddp.trainable = True
-                    model_without_ddp.train()
-        
-            if args.distributed:
-                # wait for all processes to synchronize
-                dist.barrier()
-
         # train one epoch
         for iter_i, (images, targets, masks) in enumerate(dataloader):
             ni = iter_i + epoch * epoch_size
@@ -279,7 +231,7 @@ def train():
                     lr_bk=round(cur_lr_dict['lr_bk'], 6)
                 )
                 # basic infor
-                log = '[Epoch: {}/{}]'.format(epoch+1, max_epoch)
+                log =  '[Epoch: {}/{}]'.format(epoch+1, max_epoch)
                 log += '[Iter: {}/{}]'.format(iter_i, epoch_size)
                 log += '[lr: {:.6f}][lr_bk: {:.6f}]'.format(cur_lr_dict['lr'], cur_lr_dict['lr_bk'])
                 # loss infor
