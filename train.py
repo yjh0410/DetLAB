@@ -381,7 +381,8 @@ def build_dataloader(args, dataset, collate_fn=None):
                         collate_fn=collate_fn,
                         num_workers=args.num_workers,
                         pin_memory=True,
-                        sampler=torch.utils.data.distributed.DistributedSampler(dataset)
+                        sampler=torch.utils.data.distributed.DistributedSampler(dataset),
+                        drop_last=True
                         )
 
     else:
