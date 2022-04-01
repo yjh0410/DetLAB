@@ -25,6 +25,8 @@ If you have sufficient computing resources and are already using these larger ba
 networks to train the detectors in this benchmark, I look forward to your open source 
 weight files to complement this project. Thanks a lot.
 
+<!-- ***All models are trained on 1 `Nvidia A40` GPU. However, once trained with `DDP`, the mAP will drop by about 2 points. If you have any idea
+about this problem, please do not hesitate to give me your opinion.*** -->
 
 # Coming soon
 - [x] YOLOF
@@ -66,10 +68,6 @@ At least, please make sure your torch is version 1.x.
 | YOLOF_R_50_C5_1x               |  800,1333  |   37.6  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/yolof_r50_C5_1x_37.6.pth) |
 | YOLOF-RT_R_50_DC5_3x           |  640,640   |   38.1  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/yolof-rt_r50_DC5_1x_38.1.pth) |
 
-All models are trained on 1 `RTX 3090` GPUs.
-
-All results are measured on 1 `TITAN RTX` GPU.
-
 ## RetinaNet
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
@@ -77,9 +75,6 @@ All results are measured on 1 `TITAN RTX` GPU.
 | RetinaNet_R_50_1x              |  800,1333  |         |       |
 | RetinaNet-RT_R50_3x            |  512,736   |         |       |
 
-All models are trained on 2 `RTX 3090` GPUs.
-
-All results are measured on 1 `TITAN RTX` GPU.
 
 ## FCOS
 | Model                          |  scale     |   mAP   | Weight|
@@ -88,10 +83,6 @@ All results are measured on 1 `TITAN RTX` GPU.
 | FCOS_R_50_1x                   |  800,1333  |         |       |
 | FCOS_R_50_OTA_1x               |  800,1333  |         |       |
 | FCOS-RT_R_50_OTA_3x            |  512,736   |         |       |
-
-All models are trained on 2 `RTX 3090` GPUs.
-
-All results are measured on 1 `TITAN RTX` GPU.
 
 ## SSDv2
 | Model                          |  scale     |   mAP   | Weight|
@@ -105,10 +96,6 @@ In SSDv2:
 - [] `IoU-Aware` branch for regression head
 - [] `FPN` for neck of SSD
 
-All models are trained on 1 `RTX 3090` GPUs.
-
-All results are measured on 1 `TITAN RTX` GPU.
-
 ## TTF-YOLO
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
@@ -121,10 +108,6 @@ Plan to do for TTF-YOLO:
 - [] `VariFocal loss` for classification head with `IoU-awareness`
 - [] `GIoU loss` for regression head
 - [] `3x` training schedule rather than 300 epochs.
-
-All models are trained on 1 `RTX 3090` GPUs.
-
-All results are measured on 1 `TITAN RTX` GPU.
 
 # Train
 ## Single GPU
