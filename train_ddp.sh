@@ -2,7 +2,6 @@
 python -m torch.distributed.run --nproc_per_node=2 train.py \
                                                     --cuda \
                                                     -dist \
-                                                    --num_gpu 2 \
                                                     -d coco \
                                                     --root /mnt/share/ssd2/dataset/ \
                                                     -v retinanet18 \

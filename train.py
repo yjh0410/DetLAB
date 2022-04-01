@@ -46,8 +46,6 @@ def parse_args():
                         help='backbone learning rate')
     parser.add_argument('--num_workers', default=4, type=int, 
                         help='Number of workers used in dataloading')
-    parser.add_argument('--num_gpu', default=1, type=int, 
-                        help='Number of GPUs to train')
     parser.add_argument('--eval_epoch', type=int,
                             default=2, help='interval between evaluations')
     parser.add_argument('--grad_clip_norm', type=float, default=-1.,
@@ -175,7 +173,7 @@ def train():
 
     # training configuration
     max_epoch = cfg['epoch'][args.schedule]['max_epoch']
-    epoch_size = len(dataloader) # // (args.batch_size * args.num_gpu)
+    epoch_size = len(dataloader)
     best_map = -1.
     warmup = not args.no_warmup
 
