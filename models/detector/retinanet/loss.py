@@ -110,7 +110,6 @@ class Criterion(object):
         if is_dist_avail_and_initialized():
             torch.distributed.all_reduce(num_foreground)
         num_foreground = torch.clamp(num_foreground / get_world_size(), min=1).item()
-        num_foreground = torch.clamp(num_foreground, min=1).item()
 
         gt_cls_target = torch.zeros_like(pred_cls)
         gt_cls_target[foreground_idxs, tgt_classes[foreground_idxs]] = 1
