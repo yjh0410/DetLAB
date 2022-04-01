@@ -31,7 +31,7 @@ weight files to complement this project. Thanks a lot.
 - [] RetinaNet
 - [] FCOS
 - [] SSDv2
-- [] YOLOv3
+- [] TTF-YOLO
 - [] Anchor DeTR
 - [] Dynamic Head
 
@@ -66,12 +66,20 @@ At least, please make sure your torch is version 1.x.
 | YOLOF_R_50_C5_1x               |  800,1333  |   37.6  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/yolof_r50_C5_1x_37.6.pth) |
 | YOLOF-RT_R_50_DC5_3x           |  640,640   |   38.1  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/yolof-rt_r50_DC5_1x_38.1.pth) |
 
+All models are trained on 1 `RTX 3090` GPUs.
+
+All results are measured on 1 `TITAN RTX` GPU.
+
 ## RetinaNet
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
 | RetinaNet_R_18_1x              |  800,1333  |         |       |
 | RetinaNet_R_50_1x              |  800,1333  |         |       |
 | RetinaNet-RT_R50_3x            |  512,736   |         |       |
+
+All models are trained on 2 `RTX 3090` GPUs.
+
+All results are measured on 1 `TITAN RTX` GPU.
 
 ## FCOS
 | Model                          |  scale     |   mAP   | Weight|
@@ -81,6 +89,10 @@ At least, please make sure your torch is version 1.x.
 | FCOS_R_50_OTA_1x               |  800,1333  |         |       |
 | FCOS-RT_R_50_OTA_3x            |  512,736   |         |       |
 
+All models are trained on 2 `RTX 3090` GPUs.
+
+All results are measured on 1 `TITAN RTX` GPU.
+
 ## SSDv2
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
@@ -88,20 +100,31 @@ At least, please make sure your torch is version 1.x.
 | SSD_V2_VGG_16_512_3x           |  512,512   |         |       |
 
 In SSDv2:
-- `Focal loss` for classification head
-- `GIoU Loss` for regression head
-- `FPN` for neck of SSD
+- [] `Focal loss` for classification head
+- [] `GIoU Loss` for regression head
+- [] `IoU-Aware` branch for regression head
+- [] `FPN` for neck of SSD
 
-## YOLOv3
+All models are trained on 1 `RTX 3090` GPUs.
+
+All results are measured on 1 `TITAN RTX` GPU.
+
+## TTF-YOLO
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| YOLOv3_D_53_3x                 |  608,608   |         |       |
-| YOLOv3_D_53_Mosaic_4x          |  608,608   |         |       |
+| TTF-YOLO_D_53_3x               |  640,640   |         |       |
+| TTF-YOLO_D_53_3x_Mosaic        |  640,640   |         |       |
 
-Plan to do for YOLOv3-SPP:
-- `IoU-aware` and `QFocal loss` for objectness head
-- `Focal loss` for classification head
-- `GIoU loss` for regression head
+Plan to do for TTF-YOLO:
+- [] Based on YOLOv3 structure
+- [] Remove objectness head
+- [] `VariFocal loss` for classification head with `IoU-awareness`
+- [] `GIoU loss` for regression head
+- [] `3x` training schedule rather than 300 epochs.
+
+All models are trained on 1 `RTX 3090` GPUs.
+
+All results are measured on 1 `TITAN RTX` GPU.
 
 # Train
 ## Single GPU
