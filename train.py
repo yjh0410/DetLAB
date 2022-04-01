@@ -37,7 +37,7 @@ def parse_args():
     parser.add_argument('--cuda', action='store_true', default=False,
                         help='use cuda.')
     parser.add_argument('--batch_size', default=16, type=int, 
-                        help='Batch size for training')
+                        help='Batch size on single GPU')
     parser.add_argument('--schedule', type=str, default='1x', choices=['1x', '2x', '3x'],
                         help='training schedule.')
     parser.add_argument('-lr', '--base_lr', type=float, default=0.01,
