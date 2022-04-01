@@ -201,7 +201,7 @@ def train():
             masks = masks.to(device)
 
             # inference
-            loss_dict = model_without_ddp(images, mask=masks, targets=targets)
+            loss_dict = model(images, mask=masks, targets=targets)
             losses = loss_dict['losses']
 
             # reduce            
@@ -215,9 +215,9 @@ def train():
             # Backward and Optimize
             losses.backward()
             if args.grad_clip_norm > 0.:
-                total_norm = torch.nn.utils.clip_grad_norm_(model_without_ddp.parameters(), args.grad_clip_norm)
+                total_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip_norm)
             else:
-                total_norm = get_total_grad_norm(model_without_ddp.parameters())
+                total_norm = get_total_grad_norm(model.parameters())
             optimizer.step()
             optimizer.zero_grad()
 
@@ -268,14 +268,12 @@ def train():
                     
                 else:
                     print('eval ...')
-                    model_eval = model_without_ddp
-
                     # set eval mode
-                    model_eval.trainable = False
-                    model_eval.eval()
+                    model_without_ddp.trainable = False
+                    model_without_ddp.eval()
 
                     # evaluate
-                    evaluator.evaluate(model_eval)
+                    evaluator.evaluate(model_without_ddp)
 
                     cur_map = evaluator.map
                     if cur_map > best_map:
@@ -285,7 +283,7 @@ def train():
                         print('Saving state, epoch:', epoch + 1)
                         weight_name = '{}_epoch_{}_{:.2f}.pth'.format(args.version, epoch + 1, best_map*100)
                         checkpoint_path = os.path.join(path_to_save, weight_name)
-                        torch.save({'model': model_eval.state_dict(),
+                        torch.save({'model': model_without_ddp.state_dict(),
                                     'optimizer': optimizer.state_dict(),
                                     'lr_scheduler': lr_scheduler.state_dict(),
                                     'epoch': epoch,
@@ -293,8 +291,8 @@ def train():
                                     checkpoint_path)                      
 
                     # set train mode.
-                    model_eval.trainable = True
-                    model_eval.train()
+                    model_without_ddp.trainable = True
+                    model_without_ddp.train()
         
             if args.distributed:
                 # wait for all processes to synchronize
