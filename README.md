@@ -83,7 +83,7 @@ In my RetinaNet:
 ## FCOS
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| FCOS_R_18_1x                   |  800,1333  |         |       |
+| FCOS_R_18_1x                   |  800,1333  |   29.3  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/retinanet_r18_1x_29.3.pth) |
 | FCOS_R_50_1x                   |  800,1333  |         |       |
 | FCOS_R_50_OTA_1x               |  800,1333  |         |       |
 | FCOS-RT_R_50_OTA_3x            |  512,736   |         |       |
