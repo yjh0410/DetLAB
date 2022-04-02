@@ -70,7 +70,7 @@ fcos_config = {
         'momentum': 0.9,
         'weight_decay': 1e-4,
         'warmup': 'linear',
-        'wp_iter': 1500,
+        'wp_iter': 1000,
         'warmup_factor': 0.00066667,
         'epoch': {
             '1x': {'max_epoch': 12, 
@@ -153,7 +153,7 @@ fcos_config = {
         'momentum': 0.9,
         'weight_decay': 1e-4,
         'warmup': 'linear',
-        'wp_iter': 1500,
+        'wp_iter': 1000,
         'warmup_factor': 0.00066667,
         'epoch': {
             '1x': {'max_epoch': 12, 
@@ -236,7 +236,7 @@ fcos_config = {
         'momentum': 0.9,
         'weight_decay': 1e-4,
         'warmup': 'linear',
-        'wp_iter': 1500,
+        'wp_iter': 1000,
         'warmup_factor': 0.00066667,
         'epoch': {
             '1x': {'max_epoch': 12, 
@@ -319,7 +319,7 @@ fcos_config = {
         'momentum': 0.9,
         'weight_decay': 1e-4,
         'warmup': 'linear',
-        'wp_iter': 1500,
+        'wp_iter': 1000,
         'warmup_factor': 0.00066667,
         'epoch': {
             '1x': {'max_epoch': 12, 
@@ -402,7 +402,7 @@ fcos_config = {
         'momentum': 0.9,
         'weight_decay': 1e-4,
         'warmup': 'linear',
-        'wp_iter': 1500,
+        'wp_iter': 1000,
         'warmup_factor': 0.00066667,
         'epoch': {
             '1x': {'max_epoch': 12, 
@@ -485,7 +485,7 @@ fcos_config = {
         'momentum': 0.9,
         'weight_decay': 1e-4,
         'warmup': 'linear',
-        'wp_iter': 1500,
+        'wp_iter': 1000,
         'warmup_factor': 0.00066667,
         'epoch': {
             '1x': {'max_epoch': 12, 
@@ -572,7 +572,7 @@ fcos_config = {
         'momentum': 0.9,
         'weight_decay': 1e-4,
         'warmup': 'linear',
-        'wp_iter': 1500,
+        'wp_iter': 1000,
         'warmup_factor': 0.00066667,
         'epoch': {
             '1x': {'max_epoch': 12, 

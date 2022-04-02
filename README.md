@@ -66,6 +66,8 @@ At least, please make sure your torch is version 1.x.
 |--------------------------------|------------|---------|-------|
 | YOLOF_R_18_C5_1x               |  800,1333  |   31.6  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/yolof_r18_C5_1x_31.6.pth) |
 | YOLOF_R_50_C5_1x               |  800,1333  |   37.6  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/yolof_r50_C5_1x_37.6.pth) |
+| YOLOF_R_50_DC5_1x              |  800,1333  |         |       |
+| YOLOF_R_101_C5_1x              |  800,1333  |         |       |
 | YOLOF-RT_R_50_DC5_3x           |  640,640   |   38.1  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/yolof-rt_r50_DC5_1x_38.1.pth) |
 
 ## RetinaNet
@@ -75,6 +77,8 @@ At least, please make sure your torch is version 1.x.
 | RetinaNet_R_50_1x              |  800,1333  |         |       |
 | RetinaNet-RT_R50_3x            |  512,736   |         |       |
 
+In my RetinaNet:
+- For regression head, `GIoU Loss` is deployed rather than `SmoothL1Loss`
 
 ## FCOS
 | Model                          |  scale     |   mAP   | Weight|
@@ -84,6 +88,9 @@ At least, please make sure your torch is version 1.x.
 | FCOS_R_50_OTA_1x               |  800,1333  |         |       |
 | FCOS-RT_R_50_OTA_3x            |  512,736   |         |       |
 
+In my FCOS:
+- For regression head, `GIoU loss` is deployed rather than `IoU loss`
+
 ## SSDv2
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
@@ -92,13 +99,15 @@ At least, please make sure your torch is version 1.x.
 
 In SSDv2:
 - [] `Focal loss` for classification head
-- [] `GIoU Loss` for regression head
+- [] `GIoU loss` for regression head
 - [] `IoU-Aware` branch for regression head
 - [] `FPN` for neck of SSD
 
 ## TTF-YOLO
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
+| TTF-YOLO_D_19_3x               |  640,640   |         |       |
+| TTF-YOLO_D_19_3x_Mosaic        |  640,640   |         |       |
 | TTF-YOLO_D_53_3x               |  640,640   |         |       |
 | TTF-YOLO_D_53_3x_Mosaic        |  640,640   |         |       |
 
