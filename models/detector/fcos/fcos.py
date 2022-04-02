@@ -143,7 +143,7 @@ class FCOS(nn.Module):
         # x1 = x_anchor - l, x2 = x_anchor + r
         # y1 = y_anchor - t, y2 = y_anchor + b
         pred_x1y1 = anchors - pred_deltas[..., :2]
-        pred_x2y2 = anchors + pred_deltas[..., :2]
+        pred_x2y2 = anchors + pred_deltas[..., 2:]
         pred_box = torch.cat([pred_x1y1, pred_x2y2], dim=-1)
 
         return pred_box
