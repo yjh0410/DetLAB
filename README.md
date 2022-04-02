@@ -19,11 +19,9 @@ So, it is very friendly, right?
 I am sure you will soon become familiar with this benchmark and add your own modules to it.
 
 ***However, limited by my computing resources, I cannot use larger backbone networks like `ResNet-101` 
-and `ResNeXt-101` to train more powerful detectors.***
-
-If you have sufficient computing resources and are already using these larger backbone 
+and `ResNeXt-101` to train more powerful detectors. If you have sufficient computing resources and are already using these larger backbone 
 networks to train the detectors in this benchmark, I look forward to your open source 
-weight files to complement this project. Thanks a lot.
+weight files to complement this project. Thanks a lot.***
 
 <!-- ***All models are trained on 1 `Nvidia A40` GPU. However, once trained with `DDP`, the mAP will drop by about 2 points. If you have any idea
 about this problem, please do not hesitate to give me your opinion.*** -->
@@ -73,7 +71,7 @@ At least, please make sure your torch is version 1.x.
 ## RetinaNet
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| RetinaNet_R_18_1x              |  800,1333  |         |       |
+| RetinaNet_R_18_1x              |  800,1333  |   29.3  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/retinanet_r18_1x_29.3.pth) |
 | RetinaNet_R_50_1x              |  800,1333  |         |       |
 | RetinaNet-RT_R50_3x            |  512,736   |         |       |
 
@@ -83,7 +81,7 @@ In my RetinaNet:
 ## FCOS
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| FCOS_R_18_1x                   |  800,1333  |   29.3  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/retinanet_r18_1x_29.3.pth) |
+| FCOS_R_18_1x                   |  800,1333  |         |       |
 | FCOS_R_50_1x                   |  800,1333  |         |       |
 | FCOS_R_50_OTA_1x               |  800,1333  |         |       |
 | FCOS-RT_R_50_OTA_3x            |  512,736   |         |       |
