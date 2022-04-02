@@ -118,11 +118,6 @@ class Matcher(object):
         gt_centerness = []
         device = anchors[0].device
 
-        # List[F, M, 2]
-        strides_at_each_feature_maps = [torch.as_tensor([stride] * anchor.shape[0]).float() \
-                                        for stride, anchor in zip(fpn_strides, anchors)]
-        # List[F, M,] -> [M,] -> [M, 1]
-        strides_over_all_feature_maps = torch.cat(strides_at_each_feature_maps, dim=0).unsqueeze(-1).to(device)
         # List[F, M, 2] -> [M, 2]
         anchors_over_all_feature_maps = torch.cat(anchors, dim=0).to(device)
 
@@ -188,8 +183,6 @@ class Matcher(object):
                 # [M, 4]
                 gt_anchors_reg_deltas_i = self.get_deltas(
                     anchors_over_all_feature_maps, tgt_box[gt_matched_idxs])
-                # normalize ground truth deltas by output stride
-                gt_anchors_reg_deltas_i = gt_anchors_reg_deltas_i / strides_over_all_feature_maps
 
                 # [M,]
                 tgt_cls_i = tgt_cls[gt_matched_idxs]

@@ -299,7 +299,7 @@ class FCOS(nn.Module):
                 # [B, C, H, W] -> [B, H, W, C] -> [B, M, C]
                 cls_pred = cls_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, self.num_classes)
                 reg_pred = reg_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, 4)
-                reg_pred = F.relu(self.scales[level](reg_pred))
+                reg_pred = torch.exp(self.scales[level](reg_pred)) * self.stride[level]
                 ctn_pred = ctn_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, 1)
 
                 all_cls_preds.append(cls_pred)
