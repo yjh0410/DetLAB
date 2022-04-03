@@ -251,12 +251,7 @@ class OTA_Matcher(object):
         gt_ious = []
         assigned_units = []
 
-        # List[F, M, 2]
-        strides_at_each_feature_maps = [[stride] * anchor.shape[0] \
-                                        for stride, anchor in zip(fpn_strides, anchors)]
-
         # List[F, M, 2] -> [M, 2]
-        strides_over_all_feature_maps = torch.cat(strides_at_each_feature_maps, dim=0)
         anchors_over_all_feature_maps = torch.cat(anchors, dim=0)
 
         # [B, M, C]
@@ -311,8 +306,6 @@ class OTA_Matcher(object):
 
                 # [N, M, 4]
                 gt_delta_per_image = self.get_deltas(anchors_over_all_feature_maps, tgt_bboxes_per_images.unsqueeze(1))
-                # rescale pred regression
-                pred_deltas_per_image = pred_deltas_per_image * strides_over_all_feature_maps
 
                 # compute iou and iou loss between pred deltas and tgt deltas
                 ious, loss_delta = get_ious_and_iou_loss(
@@ -353,8 +346,6 @@ class OTA_Matcher(object):
                 gt_anchors_deltas_per_image = gt_delta_per_image.new_zeros((num_anchor, 4))
                 gt_anchors_deltas_per_image[fg_mask] = \
                     gt_delta_per_image[matched_gt_inds[fg_mask], torch.arange(num_anchor)[fg_mask]]
-                # normalize ground truth deltas
-                gt_anchors_deltas_per_image = gt_anchors_deltas_per_image / strides_over_all_feature_maps
                 gt_anchors_deltas.append(gt_anchors_deltas_per_image)
 
                 # [M,]
