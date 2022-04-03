@@ -33,8 +33,8 @@ class BasicFPN(nn.Module):
                 self.p6_conv = nn.Conv2d(out_dim, out_dim, kernel_size=3, stride=2, padding=1)
         if p7_feat:
             self.p7_conv = nn.Sequential(
+                nn.ReLU(inplace=True),
                 nn.Conv2d(out_dim, out_dim, kernel_size=3, stride=2, padding=1),
-                nn.ReLU(inplace=True)
             )
 
         self._init_weight()
@@ -79,7 +79,7 @@ class BasicFPN(nn.Module):
             outputs.append(p6_feat)
 
             if self.p7_feat:
-                p7_feat = self.p7_conv(outputs[-1])
+                p7_feat = self.p7_conv(p6_feat)
                 # [P3, P4, P5, P6] -> [P3, P4, P5, P6, P7]
                 outputs.append(p7_feat)
 
