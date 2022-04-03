@@ -50,7 +50,7 @@ class BasicFPN(nn.Module):
         if self.p6_feat:
             weight_init.c2_xavier_fill(self.p6_conv)
         if self.p7_feat:
-            weight_init.c2_xavier_fill(self.p7_conv[0])
+            weight_init.c2_xavier_fill(self.p7_conv[1])
 
 
     def forward(self, feats):
