@@ -36,7 +36,6 @@ retinanet_config = {
         'backbone': 'resnet18',
         'norm_type': 'FrozeBN',
         'stride': [8, 16, 32, 64, 128],  # P3, P4, P5, P6, P7
-        'act_type': 'relu',
         # neck
         'fpn': 'basic_fpn',
         'from_c5': True,
@@ -45,6 +44,7 @@ retinanet_config = {
         # head
         'head_dim': 256,
         'head_norm': '',
+        'act_type': 'relu',
         'head': 'decoupled_head',
         'num_cls_head': 4,
         'num_reg_head': 4,
@@ -120,7 +120,6 @@ retinanet_config = {
         'backbone': 'resnet50',
         'norm_type': 'FrozeBN',
         'stride': [8, 16, 32, 64, 128],
-        'act_type': 'relu',
         # neck
         'fpn': 'basic_fpn',
         'from_c5': True,
@@ -129,6 +128,7 @@ retinanet_config = {
         # head
         'head_dim': 256,
         'head_norm': '',
+        'act_type': 'relu',
         'head': 'decoupled_head',
         'num_cls_head': 4,
         'num_reg_head': 4,
@@ -204,7 +204,6 @@ retinanet_config = {
         'backbone': 'resnet101',
         'norm_type': 'FrozeBN',
         'stride': [8, 16, 32, 64, 128],
-        'act_type': 'relu',
         # neck
         'fpn': 'basic_fpn',
         'from_c5': True,
@@ -213,6 +212,7 @@ retinanet_config = {
         # head
         'head_dim': 256,
         'head_norm': '',
+        'act_type': 'relu',
         'head': 'decoupled_head',
         'num_cls_head': 4,
         'num_reg_head': 4,
@@ -288,7 +288,6 @@ retinanet_config = {
         'backbone': 'resnet50',
         'norm_type': 'FrozeBN',
         'stride': [8, 16, 32],
-        'act_type': 'relu',
         # neck
         'fpn': 'basic_fpn',
         'from_c5': False,
@@ -297,6 +296,7 @@ retinanet_config = {
         # head
         'head_dim': 256,
         'head_norm': '',
+        'act_type': 'relu',
         'head': 'decoupled_head',
         'num_cls_head': 4,
         'num_reg_head': 4,

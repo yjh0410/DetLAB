@@ -124,7 +124,6 @@ yolof_config = {
         'backbone': 'resnet50',
         'norm_type': 'FrozeBN',
         'stride': 32,
-        'act_type': 'relu',
         # neck
         'neck': 'dilated_encoder',
         'dilation_list': [2, 4, 6, 8],
@@ -210,7 +209,6 @@ yolof_config = {
         'backbone': 'resnet50-d',
         'norm_type': 'FrozeBN',
         'stride': 16,
-        'act_type': 'relu',
         # neck
         'neck': 'dilated_encoder',
         'dilation_list': [4, 8, 12, 16],
@@ -296,7 +294,6 @@ yolof_config = {
         'backbone': 'resnet101',
         'norm_type': 'FrozeBN',
         'stride': 32,
-        'act_type': 'relu',
         # neck
         'neck': 'dilated_encoder',
         'dilation_list': [2, 4, 6, 8],
@@ -382,7 +379,6 @@ yolof_config = {
         'backbone': 'resnet101-d',
         'norm_type': 'FrozeBN',
         'stride': 16,
-        'act_type': 'relu',
         # neck
         'neck': 'dilated_encoder',
         'dilation_list': [4, 8, 12, 16],
@@ -468,7 +464,6 @@ yolof_config = {
         'backbone': 'resnet50-d',
         'norm_type': 'FrozeBN',
         'stride': 16,
-        'act_type': 'relu',
         # neck
         'neck': 'dilated_encoder',
         'dilation_list': [2, 4, 6, 8],
