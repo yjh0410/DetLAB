@@ -13,7 +13,6 @@ class DecoupledHead(nn.Module):
                  norm_type=''):
         super().__init__()
         self.head_dim = head_dim
-        self.add_bias = (norm_type == '')
 
         print('==============================')
         print('Head: Decoupled Head')
@@ -23,13 +22,13 @@ class DecoupledHead(nn.Module):
                                               k=3, p=1, s=1, 
                                               act_type=act_type, 
                                               norm_type=norm_type,
-                                              bias=self.add_bias) for _ in range(num_cls_head)])
+                                              bias=True) for _ in range(num_cls_head)])
         self.reg_feats = nn.Sequential(*[Conv(head_dim, 
                                               head_dim, 
                                               k=3, p=1, s=1, 
                                               act_type=act_type, 
                                               norm_type=norm_type,
-                                              bias=self.add_bias) for _ in range(num_reg_head)])
+                                              bias=True) for _ in range(num_reg_head)])
 
         self._init_weight()
 
