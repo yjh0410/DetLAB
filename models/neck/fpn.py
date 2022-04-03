@@ -87,44 +87,7 @@ class BasicFPN(nn.Module):
         return outputs
 
 
-class BiFPN(nn.Module):
-    def __init__(self, 
-                 in_dims=[512, 1024, 2048],
-                 out_dim=256,
-                 from_c5=False,
-                 p6_feat=False,
-                 p7_feat=False
-                 ):
+class YoloFPN(nn.Module):
+    def __init__(self):
         super().__init__()
-        self.from_c5 = from_c5
-        self.p6_feat = p6_feat
-        self.p7_feat = p7_feat
-
-
-class PaFPN(nn.Module):
-    def __init__(self, 
-                 in_dims=[512, 1024, 2048],
-                 out_dim=256,
-                 from_c5=False,
-                 p6_feat=False,
-                 p7_feat=False
-                 ):
-        super().__init__()
-        self.from_c5 = from_c5
-        self.p6_feat = p6_feat
-        self.p7_feat = p7_feat
-
-
-class DynamicFPN(nn.Module):
-    def __init__(self, 
-                 in_dims=[512, 1024, 2048],
-                 out_dim=256,
-                 from_c5=False,
-                 p6_feat=False,
-                 p7_feat=False
-                 ):
-        super().__init__()
-        self.from_c5 = from_c5
-        self.p6_feat = p6_feat
-        self.p7_feat = p7_feat
 
