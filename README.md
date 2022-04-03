@@ -1,5 +1,5 @@
 # Object Detection Benchmark
-This benchmark is my library of object detection.
+This benchmark is my library of **One-stage Object Detection**.
 My code is clean and concise, without too deep encapsulation, 
 so it is easy to understand the function of each module.
 
@@ -22,9 +22,6 @@ I am sure you will soon become familiar with this benchmark and add your own mod
 and `ResNeXt-101` to train more powerful detectors. If you have sufficient computing resources and are already using these larger backbone 
 networks to train the detectors in this benchmark, I look forward to your open source 
 weight files to complement this project. Thanks a lot.***
-
-<!-- ***All models are trained on 1 `Nvidia A40` GPU. However, once trained with `DDP`, the mAP will drop by about 2 points. If you have any idea
-about this problem, please do not hesitate to give me your opinion.*** -->
 
 # Coming soon
 - [x] YOLOF
@@ -115,6 +112,13 @@ Plan to do for TTF-YOLO:
 - [] `VariFocal loss` for classification head with `IoU-awareness`
 - [] `GIoU loss` for regression head
 - [] `3x` training schedule rather than 300 epochs.
+
+## Anchor-DeTR
+| Model                          |  scale     |   mAP   | Weight|
+|--------------------------------|------------|---------|-------|
+| Anchor-DeTR_R_50_C5_4x         |  800,1333  |         |       |
+| Anchor-DeTR-RT_R_50_DC5_4x     |  512,736   |         |       |
+
 
 # Train
 ## Single GPU
