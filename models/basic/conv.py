@@ -21,7 +21,7 @@ def get_norm(norm_type, dim):
 
 # Basic conv layer
 class Conv(nn.Module):
-    def __init__(self, c1, c2, k=1, p=0, s=1, d=1, g=1, act_type='relu', norm_type='BN', depthwise=False, bias=False):
+    def __init__(self, c1, c2, k=1, p=0, s=1, d=1, g=1, act_type='', norm_type='', depthwise=False, bias=False):
         super(Conv, self).__init__()
         convs = []
         if depthwise:

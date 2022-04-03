@@ -39,14 +39,16 @@ yolof_config = {
         'backbone': 'resnet18',
         'norm_type': 'FrozeBN',
         'stride': 32,
-        'act_type': 'relu',
         # neck
         'neck': 'dilated_encoder',
         'dilation_list': [2, 4, 6, 8],
         'expand_ratio': 0.25,
+        'act_type': 'relu',
+        'neck_norm': 'BN',
         # head
         'head_dim': 512,
         'head_norm': 'BN',
+        'act_type': 'relu',
         'num_cls_head': 2,
         'num_reg_head': 4,
         # post process
@@ -127,9 +129,12 @@ yolof_config = {
         'neck': 'dilated_encoder',
         'dilation_list': [2, 4, 6, 8],
         'expand_ratio': 0.25,
+        'act_type': 'relu',
+        'neck_norm': 'BN',
         # head
         'head_dim': 512,
         'head_norm': 'BN',
+        'act_type': 'relu',
         'num_cls_head': 2,
         'num_reg_head': 4,
         # post process
@@ -210,9 +215,12 @@ yolof_config = {
         'neck': 'dilated_encoder',
         'dilation_list': [4, 8, 12, 16],
         'expand_ratio': 0.25,
+        'act_type': 'relu',
+        'neck_norm': 'BN',
         # head
         'head_dim': 512,
         'head_norm': 'BN',
+        'act_type': 'relu',
         'num_cls_head': 2,
         'num_reg_head': 4,
         # post process
@@ -293,9 +301,12 @@ yolof_config = {
         'neck': 'dilated_encoder',
         'dilation_list': [2, 4, 6, 8],
         'expand_ratio': 0.25,
+        'act_type': 'relu',
+        'neck_norm': 'BN',
         # head
         'head_dim': 512,
         'head_norm': 'BN',
+        'act_type': 'relu',
         'num_cls_head': 2,
         'num_reg_head': 4,
         # post process
@@ -376,9 +387,12 @@ yolof_config = {
         'neck': 'dilated_encoder',
         'dilation_list': [4, 8, 12, 16],
         'expand_ratio': 0.25,
+        'act_type': 'relu',
+        'neck_norm': 'BN',
         # head
         'head_dim': 512,
         'head_norm': 'BN',
+        'act_type': 'relu',
         'num_cls_head': 2,
         'num_reg_head': 4,
         # post process
@@ -459,9 +473,12 @@ yolof_config = {
         'neck': 'dilated_encoder',
         'dilation_list': [2, 4, 6, 8],
         'expand_ratio': 0.25,
+        'act_type': 'relu',
+        'neck_norm': 'BN',
         # head
         'head_dim': 512,
         'head_norm': 'BN',
+        'act_type': 'relu',
         'num_cls_head': 2,
         'num_reg_head': 4,
         # post process
