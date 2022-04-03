@@ -34,7 +34,7 @@ class BasicFPN(nn.Module):
         if p7_feat:
             self.p7_conv = nn.Sequential(
                 nn.ReLU(inplace=True),
-                nn.Conv2d(out_dim, out_dim, kernel_size=3, stride=2, padding=1),
+                nn.Conv2d(out_dim, out_dim, kernel_size=3, stride=2, padding=1)
             )
 
         self._init_weight()
