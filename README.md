@@ -92,11 +92,24 @@ In my FCOS:
 | SSD_V2_VGG_16_320_3x           |  320,320   |         |       |
 | SSD_V2_VGG_16_512_3x           |  512,512   |         |       |
 
-In SSDv2:
+Plan to do for SSDv2:
+- [] `C3`, `C4`, `C5` backbone features
+- [] `SPP` block for neck network
+- [] `BiFPN` for feature pyramid network
 - [] `Focal loss` for classification head
 - [] `GIoU loss` for regression head
 - [] `IoU-Aware` branch for regression head
-- [] `FPN` for neck of SSD
+
+### Ablation studies of SSDv2
+Baseline: `FocalLoss` + `GIoULoss` + `FPN`
+
+| Model                          |  scale     |   mAP   |
+|--------------------------------|------------|---------|
+| Baseline                       |  512,512   |         |
+| + SPP                          |  512,512   |         |
+| + BiFPN                        |  512,512   |         |
+| + IoU-Aware                    |  512,512   |         |
+| + BiFPN                        |  512,512   |         |
 
 ## TTF-YOLO
 | Model                          |  scale     |   mAP   | Weight|
@@ -111,7 +124,7 @@ Plan to do for TTF-YOLO:
 - [] Remove objectness head
 - [] `VariFocal loss` for classification head with `IoU-awareness`
 - [] `GIoU loss` for regression head
-- [] `3x` training schedule rather than 300 epochs.
+- [] `3x` training schedule rather than 300 epochs
 
 ## Anchor-DeTR
 | Model                          |  scale     |   mAP   | Weight|
