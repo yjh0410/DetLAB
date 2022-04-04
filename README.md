@@ -68,7 +68,7 @@ At least, please make sure your torch is version 1.x.
 ## RetinaNet
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| RetinaNet_R_18_1x              |  800,1333  |         |       |
+| RetinaNet_R_18_1x              |  800,1333  |   29.3  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/retinanet_r18_1x_29.3.pth) |
 | RetinaNet_R_50_1x              |  800,1333  |         |       |
 | RetinaNet-RT_R50_3x            |  512,736   |         |       |
 
