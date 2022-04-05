@@ -290,7 +290,6 @@ retinanet_config = {
                    'saturation': 1.5,
                    'exposure': 1.5},
                   {'name': 'RandomHorizontalFlip'},
-                #   {'name': 'JitterCrop', 'jitter_ratio': 0.3},
                   {'name': 'ToTensor'},
                   {'name': 'Resize'},
                   {'name': 'Normalize'},
