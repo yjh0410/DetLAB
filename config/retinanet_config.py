@@ -263,7 +263,7 @@ retinanet_config = {
     'retinanet-rt': { # Real Time RetinaNet
         # input
         'train_min_size': 608,
-        'train_max_size': 608,
+        'train_max_size': 900,
         'test_min_size': 512,
         'test_max_size': 736,
         'format': 'RGB',
@@ -287,8 +287,6 @@ retinanet_config = {
                    'saturation': 1.5,
                    'exposure': 1.5},
                   {'name': 'RandomHorizontalFlip'},
-                  {'name': 'RandomShift', 'max_shift': 32},
-                  {'name': 'JitterCrop', 'jitter_ratio': 0.3},
                   {'name': 'ToTensor'},
                   {'name': 'Resize'},
                   {'name': 'Normalize'},
