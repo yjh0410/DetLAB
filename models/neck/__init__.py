@@ -1,5 +1,6 @@
 from .dilated_encoder import DilatedEncoder
 from .fpn import BasicFPN
+from .bifpn import BiFPN
 
 
 def build_neck(cfg, in_dim, out_dim):
@@ -31,8 +32,15 @@ def build_fpn(cfg, in_dims, out_dim, from_c5=False, p6_feat=False, p7_feat=False
                            p6_feat=p6_feat,
                            p7_feat=p7_feat)
 
-    elif model == 'basic_pan':
-        fpn_net = None
+    elif model == 'bifpn':
+        fpn_net = BiFPN(in_dims=in_dims,
+                        out_dim=out_dim, 
+                        num_bifpn_layers=cfg['num_bifpn_layers'],
+                        fuse_type=cfg['fuse_type'], 
+                        norm_type=cfg['norm_type'], 
+                        memory_efficient=cfg['memory_efficient'],
+                        p6_feat=p6_feat,
+                        p7_feat=p7_feat)
         
     elif model == 'yolo_fpn':
         fpn_net = None
