@@ -277,7 +277,7 @@ retinanet_config = {
                   {'name': 'Normalize'},
                   {'name': 'PadImage'}],
 
-            '3x':[{'name': 'DistortTransform',
+            '4x':[{'name': 'DistortTransform',
                    'hue': 0.1,
                    'saturation': 1.5,
                    'exposure': 1.5},
@@ -339,9 +339,6 @@ retinanet_config = {
                     'multi_scale': None},
             '2x': {'max_epoch': 24, 
                     'lr_epoch': [16, 22], 
-                    'multi_scale': [256, 288, 320, 352, 384, 416, 448, 480, 512, 544, 576, 608]},
-            '3x': {'max_epoch': 36, 
-                    'lr_epoch': [24, 33], 
                     'multi_scale': [256, 288, 320, 352, 384, 416, 448, 480, 512, 544, 576, 608]},
             '4x': {'max_epoch': 48, 
                     'lr_epoch': [32, 44], 
