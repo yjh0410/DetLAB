@@ -216,8 +216,8 @@ if __name__ == '__main__':
     test_aug = TestTimeAugmentation(num_classes=num_classes) if args.test_aug else None
 
     # transform
-    transform = ValTransforms(min_size=args.min_size, 
-                              max_size=args.max_size,
+    transform = ValTransforms(min_size=cfg['test_min_size'], 
+                              max_size=cfg['test_max_size'],
                               pixel_mean=cfg['pixel_mean'],
                               pixel_std=cfg['pixel_std'],
                               format=cfg['format'])

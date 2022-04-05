@@ -150,8 +150,8 @@ def train():
         model_copy.trainable = False
         model_copy.eval()
         FLOPs_and_Params(model=model_copy, 
-                         min_size=cfg['min_size'], 
-                         max_size=cfg['max_size'], 
+                         min_size=cfg['test_min_size'], 
+                         max_size=cfg['test_max_size'], 
                          device=device)
         model_copy.trainable = True
         model_copy.train()
@@ -247,7 +247,7 @@ def train():
                 # other infor
                 log += '[time: {:.2f}]'.format(t1 - t0)
                 log += '[gnorm: {:.2f}]'.format(total_norm)
-                log += '[size: [{}, {}]]'.format(cfg['min_size'], cfg['max_size'])
+                log += '[size: [{}, {}]]'.format(cfg['train_min_size'], cfg['train_max_size'])
 
                 # print log infor
                 print(log, flush=True)
@@ -316,19 +316,19 @@ def build_dataset(cfg, args, device):
     print('==============================')
     print('TrainTransforms: {}'.format(trans_config))
     train_transform = TrainTransforms(trans_config=trans_config,
-                                      min_size=cfg['min_size'],
-                                      max_size=cfg['max_size'],
+                                      min_size=cfg['train_min_size'],
+                                      max_size=cfg['train_max_size'],
                                       random_size=cfg['epoch'][args.schedule]['multi_scale'],
                                       pixel_mean=cfg['pixel_mean'],
                                       pixel_std=cfg['pixel_std'],
                                       format=cfg['format'])
-    val_transform = ValTransforms(min_size=cfg['min_size'],
-                                  max_size=cfg['max_size'],
+    val_transform = ValTransforms(min_size=cfg['test_min_size'],
+                                  max_size=cfg['test_max_size'],
                                   pixel_mean=cfg['pixel_mean'],
                                   pixel_std=cfg['pixel_std'],
                                   format=cfg['format'])
-    color_augment = BaseTransforms(min_size=cfg['min_size'],
-                                   max_size=cfg['max_size'],
+    color_augment = BaseTransforms(min_size=cfg['train_min_size'],
+                                   max_size=cfg['train_max_size'],
                                    random_size=cfg['epoch'][args.schedule]['multi_scale'],
                                    pixel_mean=cfg['pixel_mean'],
                                    pixel_std=cfg['pixel_std'],
@@ -339,7 +339,7 @@ def build_dataset(cfg, args, device):
         data_dir = os.path.join(args.root, 'VOCdevkit')
         num_classes = 20
         # dataset
-        dataset = VOCDetection(img_size=cfg['min_size'],
+        dataset = VOCDetection(img_size=cfg['train_min_size'],
                                data_dir=data_dir, 
                                transform=train_transform,
                                color_augment=color_augment,
@@ -353,7 +353,7 @@ def build_dataset(cfg, args, device):
         data_dir = os.path.join(args.root, 'COCO')
         num_classes = 80
         # dataset
-        dataset = COCODataset(img_size=cfg['min_size'],
+        dataset = COCODataset(img_size=cfg['train_min_size'],
                               data_dir=data_dir,
                               image_set='train2017',
                               transform=train_transform,

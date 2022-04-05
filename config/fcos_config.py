@@ -4,8 +4,10 @@
 fcos_config = {
     'fcos18': {
         # input
-        'min_size': 800,
-        'max_size': 1333,
+        'train_min_size': 800,
+        'train_max_size': 1333,
+        'test_min_size': 800,
+        'test_max_size': 1333,
         'format': 'RGB',
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],
@@ -85,8 +87,10 @@ fcos_config = {
 
     'fcos50': {
         # input
-        'min_size': 800,
-        'max_size': 1333,
+        'train_min_size': 800,
+        'train_max_size': 1333,
+        'test_min_size': 800,
+        'test_max_size': 1333,
         'format': 'RGB',
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],
@@ -166,8 +170,10 @@ fcos_config = {
 
     'fcos50-ota': {
         # input
-        'min_size': 800,
-        'max_size': 1333,
+        'train_min_size': 800,
+        'train_max_size': 1333,
+        'test_min_size': 800,
+        'test_max_size': 1333,
         'format': 'RGB',
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],
@@ -247,8 +253,10 @@ fcos_config = {
 
     'fcos101': {
         # input
-        'min_size': 800,
-        'max_size': 1333,
+        'train_min_size': 800,
+        'train_max_size': 1333,
+        'test_min_size': 800,
+        'test_max_size': 1333,
         'format': 'RGB',
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],
@@ -328,8 +336,10 @@ fcos_config = {
 
     'fcos101-ota': {
         # input
-        'min_size': 800,
-        'max_size': 1333,
+        'train_min_size': 800,
+        'train_max_size': 1333,
+        'test_min_size': 800,
+        'test_max_size': 1333,
         'format': 'RGB',
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],
@@ -409,8 +419,10 @@ fcos_config = {
 
     'fcos-rt': { # Real Time fcos
         # input
-        'min_size': 512,
-        'max_size': 736,
+        'train_min_size': 608,
+        'train_max_size': 900,
+        'test_min_size': 512,
+        'test_max_size': 736,
         'format': 'RGB',
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],
@@ -494,8 +506,10 @@ fcos_config = {
 
     'fcos-rt-ota': { # Real Time FCOS with OTA
         # input
-        'min_size': 512,
-        'max_size': 736,
+        'train_min_size': 608,
+        'train_max_size': 900,
+        'test_min_size': 512,
+        'test_max_size': 736,
         'format': 'RGB',
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],

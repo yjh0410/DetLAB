@@ -4,8 +4,10 @@
 yolof_config = {
     'yolof18': {
         # input
-        'min_size': 800,
-        'max_size': 1333,
+        'train_min_size': 800,
+        'train_max_size': 1333,
+        'test_min_size': 800,
+        'test_max_size': 1333,
         'format': 'RGB',
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],
@@ -90,8 +92,10 @@ yolof_config = {
 
     'yolof50': {
         # input
-        'min_size': 800,
-        'max_size': 1333,
+        'train_min_size': 800,
+        'train_max_size': 1333,
+        'test_min_size': 800,
+        'test_max_size': 1333,
         'format': 'RGB',
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],
@@ -176,8 +180,10 @@ yolof_config = {
 
     'yolof50-DC5': {
         # input
-        'min_size': 800,
-        'max_size': 1333,
+        'train_min_size': 800,
+        'train_max_size': 1333,
+        'test_min_size': 800,
+        'test_max_size': 1333,
         'format': 'RGB',
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],
@@ -262,8 +268,10 @@ yolof_config = {
 
     'yolof101': {
         # input
-        'min_size': 800,
-        'max_size': 1333,
+        'train_min_size': 800,
+        'train_max_size': 1333,
+        'test_min_size': 800,
+        'test_max_size': 1333,
         'format': 'RGB',
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],
@@ -348,8 +356,10 @@ yolof_config = {
 
     'yolof101-DC5': {
         # input
-        'min_size': 800,
-        'max_size': 1333,
+        'train_min_size': 800,
+        'train_max_size': 1333,
+        'test_min_size': 800,
+        'test_max_size': 1333,
         'format': 'RGB',
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],
@@ -434,8 +444,10 @@ yolof_config = {
 
     'yolof-rt': {
         # input
-        'min_size': 640,
-        'max_size': 640,
+        'train_min_size': 640,
+        'train_max_size': 640,
+        'test_min_size': 640,
+        'test_max_size': 640,
         'format': 'RGB',
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],
