@@ -266,7 +266,7 @@ retinanet_config = {
     'retinanet-rt': { # Real Time RetinaNet
         # input
         'train_min_size': 608,
-        'train_max_size': 900,
+        'train_max_size': 608,
         'test_min_size': 512,
         'test_max_size': 736,
         'format': 'RGB',
