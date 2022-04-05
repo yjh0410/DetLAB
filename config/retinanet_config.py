@@ -266,7 +266,7 @@ retinanet_config = {
     'retinanet-rt': { # Real Time RetinaNet
         # input
         'train_min_size': 608,
-        'train_max_size': 608,
+        'train_max_size': 900,
         'test_min_size': 512,
         'test_max_size': 736,
         'format': 'RGB',
@@ -300,7 +300,7 @@ retinanet_config = {
         'norm_type': 'FrozeBN',
         'stride': [8, 16, 32],
         # neck
-        'fpn': 'basic_fpn',
+        'fpn': 'bifpn',
         'num_bifpn_layers': 6,
         'fuse_type': 'fast',
         'neck_norm': '',
