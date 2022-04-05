@@ -6,5 +6,5 @@ python train.py \
         -lr 0.01 \
         -lr_bk 0.01 \
         --batch_size 16 \
-        --schedule 4x \
+        --schedule 1x \
         --grad_clip_norm 4.0 \
