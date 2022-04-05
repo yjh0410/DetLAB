@@ -263,7 +263,7 @@ retinanet_config = {
     'retinanet-rt': { # Real Time RetinaNet
         # input
         'train_min_size': 608,
-        'train_max_size': 900,
+        'train_max_size': 608,
         'test_min_size': 512,
         'test_max_size': 736,
         'format': 'RGB',
@@ -345,10 +345,10 @@ retinanet_config = {
                     'multi_scale': None},
             '2x': {'max_epoch': 24, 
                     'lr_epoch': [16, 22], 
-                    'multi_scale': [480, 512, 544, 576, 608]},
+                    'multi_scale': [256, 288, 320, 352, 384, 416, 448, 480, 512, 544, 576, 608]},
             '4x': {'max_epoch': 48, 
                     'lr_epoch': [32, 44], 
-                    'multi_scale': [480, 512, 544, 576, 608]},
+                    'multi_scale': [256, 288, 320, 352, 384, 416, 448, 480, 512, 544, 576, 608]},
         },
     },
 
