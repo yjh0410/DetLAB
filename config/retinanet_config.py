@@ -301,7 +301,7 @@ retinanet_config = {
         'stride': [8, 16, 32],
         # neck
         'fpn': 'bifpn',
-        'num_bifpn_layers': 1,
+        'num_bifpn_layers': 6,
         'fuse_type': 'fast',
         'neck_norm': '',
         'memory_efficient': True,
@@ -310,7 +310,7 @@ retinanet_config = {
         'p7_feat': False,
         # head
         'head_dim': 160,
-        'head_norm': 'GN',
+        'head_norm': 'BN',
         'act_type': 'relu',
         'head': 'decoupled_head',
         'num_cls_head': 4,
