@@ -2,9 +2,9 @@ python train.py \
         --cuda \
         -d coco \
         --root /mnt/share/ssd2/dataset/ \
-        -v yolof-rt \
+        -v retinanet-rt \
         -lr 0.01 \
         -lr_bk 0.01 \
-        --batch_size 16 \
-        --schedule 3x \
+        --batch_size 8 \
+        --schedule 4x \
         --grad_clip_norm 4.0 \
