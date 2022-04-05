@@ -213,7 +213,7 @@ class FCOS(nn.Module):
             ctn_pred = ctn_pred[0].permute(1, 2, 0).contiguous().view(-1, 1)
 
             # scores
-            scores, labels = torch.max(cls_pred.sigmoid() * ctn_pred.sigmoid(), dim=-1)
+            scores, labels = torch.max(torch.sqrt(cls_pred.sigmoid() * ctn_pred.sigmoid()), dim=-1)
 
             # [M, 4]
             anchors = self.generate_anchors(level, fmp_size)

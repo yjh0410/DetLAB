@@ -25,8 +25,6 @@ def parse_args():
                         help='the min size of input image')
     parser.add_argument('--show', action='store_true', default=False,
                         help='show the visulization results.')
-    parser.add_argument('-vs', '--visual_threshold', default=0.35, type=float,
-                        help='Final confidence threshold')
     parser.add_argument('--cuda', action='store_true', default=False, 
                         help='use cuda.')
     parser.add_argument('--save_folder', default='det_results/', type=str,
@@ -37,10 +35,6 @@ def parse_args():
                         help='build yolof')
     parser.add_argument('--weight', default='weight/',
                         type=str, help='Trained state_dict file path to open')
-    parser.add_argument('--conf_thresh', default=0.1, type=float,
-                        help='NMS threshold')
-    parser.add_argument('--nms_thresh', default=0.45, type=float,
-                        help='NMS threshold')
     parser.add_argument('--topk', default=100, type=int,
                         help='NMS threshold')
     parser.add_argument('-bg', '--background', action='store_true', default=False,
@@ -234,7 +228,7 @@ if __name__ == '__main__':
         device=device, 
         dataset=dataset,
         transforms=transform,
-        vis_thresh=args.visual_threshold,
+        vis_thresh=cfg['test_score_thresh'],
         class_colors=class_colors,
         class_names=class_names,
         class_indexs=class_indexs,

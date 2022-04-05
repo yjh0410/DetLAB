@@ -51,6 +51,7 @@ retinanet_config = {
         # post process
         'conf_thresh': 0.05,
         'nms_thresh': 0.6,
+        'test_score_thresh': 0.35,
         # anchor box
         'anchor_config': {'basic_size': [[32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
                           'aspect_ratio': [0.5, 1.0, 2.0],
@@ -135,6 +136,7 @@ retinanet_config = {
         # post process
         'conf_thresh': 0.05,
         'nms_thresh': 0.6,
+        'test_score_thresh': 0.35,
         # anchor box
         'anchor_config': {'basic_size': [[32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
                           'aspect_ratio': [0.5, 1.0, 2.0],
@@ -219,6 +221,7 @@ retinanet_config = {
         # post process
         'conf_thresh': 0.05,
         'nms_thresh': 0.6,
+        'test_score_thresh': 0.35,
         # anchor box
         'anchor_config': {'basic_size': [[32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
                           'aspect_ratio': [0.5, 1.0, 2.0],
@@ -303,6 +306,7 @@ retinanet_config = {
         # post process
         'conf_thresh': 0.05,
         'nms_thresh': 0.6,
+        'test_score_thresh': 0.35,
         # anchor box
         'anchor_config': {'basic_size': [[32, 32], [64, 64], [128, 128]],
                           'aspect_ratio': [0.5, 1.0, 2.0],

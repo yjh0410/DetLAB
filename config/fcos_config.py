@@ -51,6 +51,7 @@ fcos_config = {
         # post process
         'conf_thresh': 0.05,
         'nms_thresh': 0.6,
+        'test_score_thresh': 0.5,
         # scale range
         'object_sizes_of_interest': [[-1, 64], [64, 128], [128, 256], [256, 512], [512, float('inf')]],
         # matcher
@@ -131,6 +132,7 @@ fcos_config = {
         # post process
         'conf_thresh': 0.05,
         'nms_thresh': 0.6,
+        'test_score_thresh': 0.5,
         # scale range
         'object_sizes_of_interest': [[-1, 64], [64, 128], [128, 256], [256, 512], [512, float('inf')]],
         # matcher
@@ -211,6 +213,7 @@ fcos_config = {
         # post process
         'conf_thresh': 0.05,
         'nms_thresh': 0.6,
+        'test_score_thresh': 0.5,
         # matcher
         'matcher': 'ota_matcher',
         'eps': 0.1, 
@@ -291,6 +294,7 @@ fcos_config = {
         # post process
         'conf_thresh': 0.05,
         'nms_thresh': 0.6,
+        'test_score_thresh': 0.5,
         # scale range
         'object_sizes_of_interest': [[-1, 64], [64, 128], [128, 256], [256, 512], [512, float('inf')]],
         # matcher
@@ -371,6 +375,7 @@ fcos_config = {
         # post process
         'conf_thresh': 0.05,
         'nms_thresh': 0.6,
+        'test_score_thresh': 0.5,
         # matcher
         'matcher': 'ota_matcher',
         'eps': 0.1, 
@@ -451,6 +456,7 @@ fcos_config = {
         # post process
         'conf_thresh': 0.05,
         'nms_thresh': 0.6,
+        'test_score_thresh': 0.5,
         # scale range
         'object_sizes_of_interest': [[-1, 64], [64, 128], [128, float('inf')]],
         # matcher
@@ -534,6 +540,7 @@ fcos_config = {
         # post process
         'conf_thresh': 0.05,
         'nms_thresh': 0.6,
+        'test_score_thresh': 0.5,
         # matcher
         'matcher': 'ota_matcher',
         'eps': 0.1, 

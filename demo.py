@@ -35,18 +35,12 @@ def parse_args():
                         type=str, help='The path to save the detection results')
     parser.add_argument('--path_to_saveVid', default='data/videos/result.avi',
                         type=str, help='The path to save the detection results video')
-    parser.add_argument('-vs', '--visual_threshold', default=0.3,
-                        type=float, help='visual threshold')
 
     # model
     parser.add_argument('-v', '--version', default='yolof50', type=str,
                         help='build yolof')
     parser.add_argument('--weight', default='weight/',
                         type=str, help='Trained state_dict file path to open')
-    parser.add_argument('--conf_thresh', default=0.1, type=float,
-                        help='NMS threshold')
-    parser.add_argument('--nms_thresh', default=0.45, type=float,
-                        help='NMS threshold')
     parser.add_argument('--topk', default=100, type=int,
                         help='NMS threshold')
     
@@ -259,7 +253,7 @@ def run():
             path_to_img=args.path_to_img,
             path_to_vid=args.path_to_vid,
             path_to_save=args.path_to_save,
-            vis_thresh=args.visual_threshold)
+            vis_thresh=cfg['test_score_thresh'])
 
 
 if __name__ == '__main__':
