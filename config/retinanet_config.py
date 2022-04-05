@@ -209,7 +209,7 @@ retinanet_config = {
                   {'name': 'Normalize'},
                   {'name': 'PadImage'}]},
         # model
-        'backbone': 'resnet101',
+        'backbone': 'basic_fpn',
         'norm_type': 'FrozeBN',
         'stride': [8, 16, 32, 64, 128],
         # neck
