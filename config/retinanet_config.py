@@ -301,7 +301,7 @@ retinanet_config = {
         'stride': [8, 16, 32],
         # neck
         'fpn': 'bifpn',
-        'num_bifpn_layers': 6,
+        'num_bifpn_layers': 1,
         'fuse_type': 'fast',
         'neck_norm': '',
         'memory_efficient': True,
