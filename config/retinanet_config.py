@@ -301,15 +301,15 @@ retinanet_config = {
         'stride': [8, 16, 32],
         # neck
         'fpn': 'bifpn',
-        'num_bifpn_layers': 1,
+        'num_bifpn_layers': 6,
         'fuse_type': 'fast',
-        'norm_type': 'BN',
+        'neck_norm': '',
         'memory_efficient': True,
         'from_c5': False,
         'p6_feat': False,
         'p7_feat': False,
         # head
-        'head_dim': 256,
+        'head_dim': 160,
         'head_norm': 'BN',
         'act_type': 'relu',
         'head': 'decoupled_head',

@@ -37,7 +37,7 @@ def build_fpn(cfg, in_dims, out_dim, from_c5=False, p6_feat=False, p7_feat=False
                         out_dim=out_dim, 
                         num_bifpn_layers=cfg['num_bifpn_layers'],
                         fuse_type=cfg['fuse_type'], 
-                        norm_type=cfg['norm_type'], 
+                        norm_type=cfg['neck_norm'], 
                         memory_efficient=cfg['memory_efficient'],
                         p6_feat=p6_feat,
                         p7_feat=p7_feat)
