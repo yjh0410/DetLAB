@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ..basic.conv import Conv, MemoryEfficientSwish, Swish, MaxPool2dSamePadding, Upsample
+from ..basic.conv import Conv, MemoryEfficientSwish, Swish, MaxPool2dSamePadding
 
 
 class BiFPNLayer(nn.Module):
@@ -37,29 +37,12 @@ class BiFPNLayer(nn.Module):
         assert fuse_type in ("fast", "softmax", "sum"), f"Unknown fuse method: {fuse_type}." \
             " Please select in [fast, sotfmax, sum]."
 
-        self.in_dims = in_dims
         self.fuse_type = fuse_type
         self.p6_feat = p6_feat
         self.p7_feat = p7_feat
         self.num_out_feats = len(in_dims)
         self.act = MemoryEfficientSwish() if memory_efficient else Swish()
         self.down_sampling = MaxPool2dSamePadding(kernel_size=3, stride=2, padding="SAME")
-        self.up_sampling = Upsample(scale_factor=2, mode='nearest')
-
-        # input proj layers
-        self.input_projs = nn.ModuleList()
-        for in_dim in in_dims:
-            self.input_projs.append(Conv(in_dim, out_dim, k=1, p=0, s=1, norm_type=norm_type, act_type=None))
-
-        if p6_feat:
-            self.p6_layer = nn.Sequential(
-                Conv(in_dim[-1], out_dim, k=1, p=0, s=1, norm_type=norm_type, act_type=None),
-                MaxPool2dSamePadding(kernel_size=3, stride=2, padding="SAME")
-            )
-            self.num_out_feats += 1
-        if p7_feat:
-            self.p7_layer = MaxPool2dSamePadding(kernel_size=3, stride=2, padding="SAME")
-            self.num_out_feats += 1
 
         # top down
         self.top_down_combine_weights = nn.ParameterList()
@@ -77,48 +60,94 @@ class BiFPNLayer(nn.Module):
             else:
                 raise ValueError("Unknown fuse method: {}".format(self.fuse_type))
             self.top_down_combine_weights.append(weights_i)
-            combine_conv = Conv(out_dim, out_dim, k=3, p=1, s=1, padding_mode="SAME", norm_type=norm_type, act_type=None)
+            combine_conv = Conv(out_dim, out_dim, k=3, p=1, s=1, padding_mode="SAME", norm_type=norm_type, act_type=None, depthwise=True)
             self.top_down_combine_convs.append(combine_conv)
         # bottom up
         self.bottom_up_combine_weights = nn.ParameterList()
         self.bottom_up_combine_convs = nn.ModuleList()
-        for _ in range(self.num_out_feats - 1):
-            # combine weight
-            if fuse_type == "fast" or fuse_type == "softmax":
-                weights_i = nn.Parameter(
-                    torch.ones(3, dtype=torch.float32), requires_grad=True,
-                )
-            elif fuse_type == "sum":
-                weights_i = nn.Parameter(
-                    torch.ones(3, dtype=torch.float32), requires_grad=False,
-                )
+        for j in range(self.num_out_feats - 1):
+            if j == self.num_out_feats - 2:
+                # combine weight
+                if fuse_type == "fast" or fuse_type == "softmax":
+                    weights_i = nn.Parameter(
+                        torch.ones(2, dtype=torch.float32), requires_grad=True,
+                    )
+                elif fuse_type == "sum":
+                    weights_i = nn.Parameter(
+                        torch.ones(2, dtype=torch.float32), requires_grad=False,
+                    )
+                else:
+                    raise ValueError("Unknown fuse method: {}".format(self.fuse_type))
+                self.bottom_up_combine_weights.append(weights_i)
+                combine_conv = Conv(out_dim, out_dim, k=3, p=1, s=1, padding_mode="SAME", norm_type=norm_type, act_type=None, depthwise=True)
+                self.bottom_up_combine_convs.append(combine_conv)
             else:
-                raise ValueError("Unknown fuse method: {}".format(self.fuse_type))
-            self.bottom_up_combine_weights.append(weights_i)
-            combine_conv = Conv(out_dim, out_dim, k=3, p=1, s=1, padding_mode="SAME", norm_type=norm_type, act_type=None)
-            self.bottom_up_combine_convs.append(combine_conv)
+                # combine weight
+                if fuse_type == "fast" or fuse_type == "softmax":
+                    weights_i = nn.Parameter(
+                        torch.ones(3, dtype=torch.float32), requires_grad=True,
+                    )
+                elif fuse_type == "sum":
+                    weights_i = nn.Parameter(
+                        torch.ones(3, dtype=torch.float32), requires_grad=False,
+                    )
+                else:
+                    raise ValueError("Unknown fuse method: {}".format(self.fuse_type))
+                self.bottom_up_combine_weights.append(weights_i)
+                combine_conv = Conv(out_dim, out_dim, k=3, p=1, s=1, padding_mode="SAME", norm_type=norm_type, act_type=None)
+                self.bottom_up_combine_convs.append(combine_conv)
 
 
-    def forward(self, feats):
-        # input projection
-        in_feats = []
-        for feat, layer in zip(feats, self.input_projs):
-            in_feats.append(layer(feat))
-        if self.p6_feat:
-            p6_feat = self.p6_layer(in_feats[-1])
-            in_feats.append(p6_feat)
-        if self.p7_feat:
-            p7_feat = self.p7_layer(in_feats[-1])
-            in_feats.append(p7_feat)
-
+    def forward(self, in_feats):
         # top down fpn
         inter_feats = []
-        # TO DO:
+        # [P3, P4, P5, P6, P7] -> [P7, P6, P5, P4, P3]
+        in_feats = in_feats[::-1]
+        top_level_feat = in_feats[0]
+        prev_feat = top_level_feat
+        inter_feats.append(prev_feat)
+
+        for feat, weights_i, smooth in zip(in_feats[1:], self.top_down_combine_weights, self.top_down_combine_convs):
+            # edge weights
+            if self.fuse_type == "fast":
+                weights_i = F.relu(weights_i)
+            elif self.fuse_type == "softmax":
+                weights_i = weights_i.softmax(dim=0)
+            elif self.fuse_type == "sum":
+                weights_i = weights_i
+            weights = torch.div(weights_i, weights_i.sum() + 1e-4)
+            top_down_feat = F.interpolate(prev_feat, size=feat.shape[2:], mode='nearest')
+            prev_feat = weights[0] * feat + weights[1] * top_down_feat
+            inter_feats.insert(0, smooth(self.act(prev_feat)))
         
+        # Finally, inter_feats contains [P3_inter, P4_inter, P5_inter, P6_inter, P7_inter]
+        # [P7, P6, P5, P4, P3] -> [P3, P4, P5, P6, P7]
+        in_feats = in_feats[::-1]
         # bottom up fpn
         out_feats = []
-        # TO DO:
-        
+        bottom_level_feat = inter_feats[0]
+        prev_feat = bottom_level_feat
+        out_feats.append(prev_feat)
+        for idx, (orig_feat, inter_feat, weights_i, smooth) in enumerate(zip(in_feats[1:], 
+                                                                           inter_feats[1:],
+                                                                           self.bottom_up_combine_weights,
+                                                                           self.bottom_up_combine_convs)):
+            # edge weights
+            if self.fuse_type == "fast":
+                weights_i = F.relu(weights_i)
+            elif self.fuse_type == "softmax":
+                weights_i = weights_i.softmax(dim=0)
+            elif self.fuse_type == "sum":
+                weights_i = weights_i
+            weights = torch.div(weights_i, weights_i.sum() + 1e-4)
+            bottom_up_feat = self.down_sampling(prev_feat)
+            if idx == len(in_feats[1:]) - 1:
+                prev_feat = weights[0] * inter_feat + weights[1] * bottom_up_feat
+                out_feats.append(smooth(self.act(prev_feat)))
+            else:
+                prev_feat = weights[0] * orig_feat + weights[1] * inter_feat + weights[2] * bottom_up_feat
+                out_feats.append(smooth(self.act(prev_feat)))
+
         return out_feats
         
 
@@ -132,36 +161,13 @@ class BiFPN(nn.Module):
                  in_dims, # [..., C3, C4, C5, ...]
                  out_dim, 
                  num_bifpn_layers=1,
-                 fuse_type="weighted_sum", 
+                 fuse_type="fast", 
                  norm_type="BN", 
                  bn_momentum=0.01, 
                  bn_eps=1e-3,
                  memory_efficient=True,
                  p6_feat=False,
                  p7_feat=False):
-        """
-        bottom_up (Backbone): module representing the bottom up subnetwork.
-            Must be a subclass of :class:`Backbone`. The multi-scale feature
-            maps generated by the bottom up network, and listed in `in_features`,
-            are used to generate FPN levels.
-        in_features (list[str]): names of the input feature maps coming
-            from the backbone to which FPN is attached. For example, if the
-            backbone produces ["res2", "res3", "res4"], any *contiguous* sublist
-            of these may be used; order must be from high to low resolution.
-        out_dim (int): the number of channels in the output feature maps.
-        num_bifpn_layers (str): the number of bifpn layer.
-        fuse_type (str): weighted feature fuse type. see: `BiFPNLayer`
-        top_block (nn.Module or None): if provided, an extra operation will
-            be performed on the output of the last (smallest resolution)
-            FPN output, and the result will extend the result list. The top_block
-            further downsamples the feature map. It must have an attribute
-            "num_levels", meaning the number of extra FPN levels added by
-            this block, and "in_feature", which is a string representing
-            its input feature (e.g., p5).
-        norm (str): the normalization to use.
-        bn_momentum (float): the `momentum` parameter of the norm module.
-        bn_eps (float): the `eps` parameter of the norm module.
-        """
         super(BiFPN, self).__init__()
         self.bn_momentum = bn_momentum
         self.bn_eps = bn_eps
@@ -169,16 +175,14 @@ class BiFPN(nn.Module):
         self.p7_feat = p7_feat
         self.num_out_feats = len(in_dims)
 
-        # latter layers
+        # input proj layers
         self.input_projs = nn.ModuleList()
-
         for in_dim in in_dims:
-            self.input_projs.append(nn.Conv2d(in_dim, out_dim, kernel_size=1))
+            self.input_projs.append(Conv(in_dim, out_dim, k=1, p=0, s=1, norm_type=norm_type, act_type=None))
 
-        # P6/P7
         if p6_feat:
             self.p6_layer = nn.Sequential(
-                Conv(in_dims[-1], out_dim, k=3, p=1, s=1, norm_type=norm_type, act_type=None),
+                Conv(in_dims[-1], out_dim, k=1, p=0, s=1, norm_type=norm_type, act_type=None),
                 MaxPool2dSamePadding(kernel_size=3, stride=2, padding="SAME")
             )
             self.num_out_feats += 1
@@ -194,6 +198,7 @@ class BiFPN(nn.Module):
             self.bifpn_layers.append(bifpn_layer)
 
         self._init_weights()
+
 
     def _init_weights(self):
         """
@@ -217,10 +222,16 @@ class BiFPN(nn.Module):
 
 
     def forward(self, feats):
+        # input projection
         results = []
         for feat, layer in zip(feats, self.input_projs):
-            in_feat = layer(feat)
-            results.append(in_feat)
+            results.append(layer(feat))
+        if self.p6_feat:
+            p6_feat = self.p6_layer(feats[-1])
+            results.append(p6_feat)
+        if self.p7_feat:
+            p7_feat = self.p7_layer(results[-1])
+            results.append(p7_feat)
 
         # build top-down and bottom-up path with stack
         for bifpn_layer in self.bifpn_layers:
@@ -230,18 +241,20 @@ class BiFPN(nn.Module):
 
 
 if __name__ == '__main__':
-    c3 = torch.randn(2, 32, 64, 64)
-    c4 = torch.randn(2, 64, 32, 32)
-    c5 = torch.randn(2, 128, 16, 16)
+    c3 = torch.randn(2, 32, 256, 256)
+    c4 = torch.randn(2, 64, 128, 128)
+    c5 = torch.randn(2, 128, 64, 64)
     bifpn = BiFPN(in_dims=[32, 64, 128],
                   out_dim=32, 
                   num_bifpn_layers=1,
-                  fuse_type="fast", 
+                  fuse_type="softmax", 
                   norm_type="BN", 
                   bn_momentum=0.01, 
                   bn_eps=1e-3,
                   memory_efficient=True,
-                  p6_feat=False,
-                  p7_feat=False)
+                  p6_feat=True,
+                  p7_feat=True)
 
     results = bifpn([c3, c4, c5])
+    for y in results:
+        print(y.shape)

@@ -162,27 +162,27 @@ class Conv(nn.Module):
                  act_type='',          # activation
                  norm_type='',         # normalization
                  padding_mode='ZERO',  # padding mode: "ZERO" or "SAME"
-                 depthwise=False,      # depthwise conv
-                 bias=False):          # bias in conv
+                 depthwise=False):
         super(Conv, self).__init__()
         convs = []
+        add_bias = False if norm_type else True
         if depthwise:
             assert c1 == c2, "In depthwise conv, the in_dim (c1) should be equal to out_dim (c2)."
-            convs.append(get_conv2d(c1, c2, k=k, p=p, s=s, d=d, g=c1, padding_mode=padding_mode, bias=bias))
+            convs.append(get_conv2d(c1, c2, k=k, p=p, s=s, d=d, g=c1, padding_mode=padding_mode, bias=add_bias))
             # depthwise conv
             if norm_type:
                 convs.append(get_norm(norm_type, c2))
             if act_type:
                 convs.append(get_activation(act_type))
             # pointwise conv
-            convs.append(get_conv2d(c1, c2, k=1, p=0, s=1, d=d, g=1, bias=bias))
+            convs.append(get_conv2d(c1, c2, k=1, p=0, s=1, d=d, g=1, bias=add_bias))
             if norm_type:
                 convs.append(get_norm(norm_type, c2))
             if act_type:
                 convs.append(get_activation(act_type))
 
         else:
-            convs.append(get_conv2d(c1, c2, k=k, p=p, s=s, d=d, g=1, padding_mode=padding_mode, bias=bias))
+            convs.append(get_conv2d(c1, c2, k=k, p=p, s=s, d=d, g=1, padding_mode=padding_mode, bias=add_bias))
             if norm_type:
                 convs.append(get_norm(norm_type, c2))
             if act_type:
@@ -259,20 +259,3 @@ class MaxPool2dSamePadding(torch.nn.MaxPool2d):
 
         x = super().forward(x)
         return x
-
-
-# Upsample
-class Upsample(nn.Module):
-    def __init__(self, size=None, scale_factor=None, mode='nearest', align_corners=None):
-        super().__init__()
-        self.size = size
-        self.scale_factor = scale_factor
-        self.mode = mode
-        self.align_corners = align_corners
-
-    def forward(self, x):
-        y = F.interpolate(input=x, 
-                          size=self.size, 
-                          scale_factor=self.scale_factor, 
-                          mode=self.mode, 
-                          align_corners=self.align_corners)
