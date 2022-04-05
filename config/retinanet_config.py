@@ -282,10 +282,13 @@ retinanet_config = {
                   {'name': 'Normalize'},
                   {'name': 'PadImage'}],
 
-            '4x':[
+            '4x':[{'name': 'DistortTransform',
+                   'hue': 0.1,
+                   'saturation': 1.5,
+                   'exposure': 1.5},
                   {'name': 'RandomHorizontalFlip'},
-                  {'name': 'RandomShift', 'max_shift': 32},
-                  {'name': 'JitterCrop', 'jitter_ratio': 0.3},
+                #   {'name': 'RandomShift', 'max_shift': 32},
+                #   {'name': 'JitterCrop', 'jitter_ratio': 0.3},
                   {'name': 'ToTensor'},
                   {'name': 'Resize'},
                   {'name': 'Normalize'},
