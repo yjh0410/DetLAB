@@ -159,6 +159,7 @@ class Criterion(object):
             num_bboxes = num_targets
         else: # OTA Matcher
             num_bboxes =  num_foreground
+        print(num_bboxes)
         loss_bboxes = self.loss_bboxes(
             pred_delta[foreground_idxs],
             gt_shifts_deltas[foreground_idxs],
