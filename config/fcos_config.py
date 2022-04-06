@@ -424,10 +424,10 @@ fcos_config = {
 
     'fcos-rt': { # Real Time fcos
         # input
-        'train_min_size': 640,
-        'train_max_size': 640,
-        'test_min_size': 640,
-        'test_max_size': 640,
+        'train_min_size': 608,
+        'train_max_size': 1024,
+        'test_min_size': 512,
+        'test_max_size': 854,
         'format': 'RGB',
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],
@@ -461,10 +461,6 @@ fcos_config = {
         'stride': [8, 16, 32],
         # neck
         'fpn': 'basic_fpn',
-        'num_bifpn_layers': 6,
-        'fuse_type': 'fast',
-        'neck_norm': '',
-        'memory_efficient': True,
         'from_c5': False,
         'p6_feat': False,
         'p7_feat': False,
