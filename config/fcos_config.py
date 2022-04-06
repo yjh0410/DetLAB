@@ -457,7 +457,7 @@ fcos_config = {
                   {'name': 'PadImage'}]},
         # model
         'backbone': 'resnet50',
-        'norm_type': 'FrozeBN',
+        'norm_type': 'BN',
         'stride': [8, 16, 32],
         # neck
         'fpn': 'bifpn',
@@ -470,7 +470,7 @@ fcos_config = {
         'p7_feat': False,
         # head
         'head_dim': 160,
-        'head_norm': 'BN',
+        'head_norm': 'GN',
         'act_type': 'relu',
         'head': 'decoupled_head',
         'num_cls_head': 4,
