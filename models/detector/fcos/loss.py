@@ -120,15 +120,11 @@ class Criterion(object):
                                                                        pred_deltas = outputs['pred_reg'], 
                                                                        targets = targets)
 
+        # List[B, M, C] -> [B, M, C] -> [BM, C]
         pred_cls = torch.cat(outputs['pred_cls'], dim=1).view(-1, self.num_classes)
         pred_delta = torch.cat(outputs['pred_reg'], dim=1).view(-1, 4)
         pred_ctn = torch.cat(outputs['pred_ctn'], dim=1).view(-1, 1)
         masks = torch.cat(outputs['mask'], dim=1).view(-1)
-
-        # [B, M, C] -> [BM, C]
-        pred_cls = outputs['pred_cls'].view(-1, self.num_classes)
-        pred_delta = outputs['pred_reg'].view(-1, 4)
-        pred_ctn = outputs['pred_ctn'].view(-1, 1)
 
         gt_classes = gt_classes.flatten().to(device)
         gt_shifts_deltas = gt_shifts_deltas.view(-1, 4).to(device)
