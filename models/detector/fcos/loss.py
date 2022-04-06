@@ -114,7 +114,11 @@ class Criterion(object):
         if self.cfg['matcher'] == 'matcher':
             gt_classes, gt_shifts_deltas, gt_centerness = self.matcher(fpn_strides, anchors, targets)
         elif self.cfg['matcher'] == 'ota_matcher':
-            gt_classes, gt_shifts_deltas, gt_centerness = self.matcher(fpn_strides, anchors, outputs['pred_cls'], outputs['pred_reg'], targets)
+            gt_classes, gt_shifts_deltas, gt_centerness = self.matcher(fpn_strides = fpn_strides, 
+                                                                       anchors = anchors, 
+                                                                       pred_cls_logits = outputs['pred_cls'], 
+                                                                       pred_deltas = outputs['pred_reg'], 
+                                                                       targets = targets)
 
         pred_cls = torch.cat(outputs['pred_cls'], dim=1).view(-1, self.num_classes)
         pred_delta = torch.cat(outputs['pred_reg'], dim=1).view(-1, 4)

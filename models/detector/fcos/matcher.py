@@ -250,6 +250,7 @@ class OTA_Matcher(object):
         gt_anchors_deltas = []
         gt_ious = []
         assigned_units = []
+        device = anchors[0].device
 
         # List[F, M, 2] -> [M, 2]
         anchors_over_all_feature_maps = torch.cat(anchors, dim=0)
@@ -259,8 +260,8 @@ class OTA_Matcher(object):
         pred_deltas = torch.cat(pred_deltas, dim=1)
 
         for tgt_per_image, pred_cls_per_image, pred_deltas_per_image in zip(targets, pred_cls_logits, pred_deltas):
-            tgt_labels_per_images = tgt_per_image["labels"]
-            tgt_bboxes_per_images = tgt_per_image["boxes"]
+            tgt_labels_per_images = tgt_per_image["labels"].to(device)
+            tgt_bboxes_per_images = tgt_per_image["boxes"].to(device)
 
             # [N, M, 4], N is the number of targets, M is the number of all anchors
             deltas = self.get_deltas(anchors_over_all_feature_maps, tgt_bboxes_per_images.unsqueeze(1))
