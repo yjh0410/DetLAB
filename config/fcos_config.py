@@ -508,10 +508,10 @@ fcos_config = {
 
     'fcos-rt-ota': { # Real Time FCOS with OTA
         # input
-        'train_min_size': 608,
-        'train_max_size': 1024,
-        'test_min_size': 512,
-        'test_max_size': 854,
+        'train_min_size': 640,
+        'train_max_size': 640,
+        'test_min_size': 640,
+        'test_max_size': 640,
         'format': 'RGB',
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],
@@ -549,7 +549,7 @@ fcos_config = {
         'p6_feat': False,
         'p7_feat': False,
         # head
-        'head_dim': 256,
+        'head_dim': 160,
         'head_norm': 'GN',
         'act_type': 'relu',
         'head': 'decoupled_head',

@@ -98,6 +98,7 @@ Plan to do for SSDv2:
 - [] `GIoU loss` for regression head
 - [] `IoU-Aware` branch for regression head
 - [] `Anchor free` for bounding box regression
+- [] `OTA` for dynamic label assignment
 
 ### Ablation studies of SSDv2
 Baseline: `FocalLoss` + `GIoU loss` + `FPN`
