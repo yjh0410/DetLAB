@@ -109,8 +109,7 @@ class Criterion(object):
                                  'orig_size': ...}, ...]
             anchors: (List of Tensor) List[Tensor[M, 4]], len(anchors) == num_fpn_levels
         """
-        bs = outputs['pred_cls'].shape[0]
-        device = outputs['pred_cls'].device
+        device = outputs['pred_cls'][0].device
         fpn_strides = outputs['strides']
         if self.cfg['matcher'] == 'matcher':
             gt_classes, gt_shifts_deltas, gt_centerness = self.matcher(fpn_strides, anchors, targets)
