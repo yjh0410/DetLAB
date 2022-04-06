@@ -61,8 +61,6 @@ At least, please make sure your torch is version 1.x.
 |--------------------------------|------------|---------|-------|
 | YOLOF_R_18_C5_1x               |  800,1333  |   31.6  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/yolof_r18_C5_1x_31.6.pth) |
 | YOLOF_R_50_C5_1x               |  800,1333  |   37.6  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/yolof_r50_C5_1x_37.6.pth) |
-| YOLOF_R_50_DC5_1x              |  800,1333  |         |       |
-| YOLOF_R_101_C5_1x              |  800,1333  |         |       |
 | YOLOF-RT_R_50_DC5_3x           |  640,640   |   38.1  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/yolof-rt_r50_DC5_1x_38.1.pth) |
 
 ## RetinaNet
@@ -80,8 +78,8 @@ In my RetinaNet:
 | FCOS_R_18_1x                   |  800,1333  |  30.4   | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/fcos_r18_1x_30.4.pth) |
 | FCOS_R_50_1x                   |  800,1333  |         |       |
 | FCOS_R_50_OTA_1x               |  800,1333  |         |       |
-| FCOS-RT_R_50_4x                |  512,854   |         |       |
-| FCOS-RT_R_50_OTA_4x            |  512,854   |         |       |
+| FCOS-RT_R_50_4x                |  640,640   |         |       |
+| FCOS-RT_R_50_OTA_4x            |  640,640   |         |       |
 
 In my FCOS:
 - For regression head, `GIoU loss` is deployed rather than `IoU loss`
@@ -89,16 +87,17 @@ In my FCOS:
 ## SSDv2
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| SSD_V2_VGG_16_320_3x           |  320,320   |         |       |
-| SSD_V2_VGG_16_512_3x           |  512,512   |         |       |
+| SSD_V2_VGG_16_320_4x           |  320,320   |         |       |
+| SSD_V2_VGG_16_512_4x           |  512,512   |         |       |
 
 Plan to do for SSDv2:
 - [] `C3`, `C4`, `C5` backbone features
 - [] `SPP` block for neck network
-- [] `BiFPN` for feature pyramid network
+- [] `FPN` for feature pyramid
 - [] `Focal loss` for classification head
 - [] `GIoU loss` for regression head
 - [] `IoU-Aware` branch for regression head
+- [] `Anchor free` for bounding box regression
 
 ### Ablation studies of SSDv2
 Baseline: `FocalLoss` + `GIoU loss` + `FPN`
