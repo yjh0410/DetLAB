@@ -298,11 +298,10 @@ class Resize(object):
             min_original_size = float(min(img_w0, img_h0))
             max_original_size = float(max(img_w0, img_h0))
 
-            if max_original_size / min_original_size * min_size > self.max_size:
-                min_size = int(round(min_original_size / max_original_size * self.max_size))
+            # if max_original_size / min_original_size * min_size > self.max_size:
+            #     min_size = int(round(min_original_size / max_original_size * self.max_size))
 
             image = F.resize(image, size=min_size, max_size=self.max_size)
-            print(self.max_size)
 
         # rescale bboxes
         if target is not None:
