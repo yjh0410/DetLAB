@@ -112,7 +112,9 @@ class Criterion(object):
         device = outputs['pred_cls'][0].device
         fpn_strides = outputs['strides']
         if self.cfg['matcher'] == 'matcher':
-            gt_classes, gt_shifts_deltas, gt_centerness = self.matcher(fpn_strides, anchors, targets)
+            gt_classes, gt_shifts_deltas, gt_centerness = self.matcher(fpn_strides = fpn_strides,
+                                                                       anchors = anchors,
+                                                                       targets = targets)
         elif self.cfg['matcher'] == 'ota_matcher':
             gt_classes, gt_shifts_deltas, gt_centerness = self.matcher(fpn_strides = fpn_strides, 
                                                                        anchors = anchors, 
