@@ -83,7 +83,7 @@ class Matcher(object):
         self.num_classes = num_classes
         self.center_sampling_radius = cfg['center_sampling_radius']
         self.object_sizes_of_interest = cfg['object_sizes_of_interest']
-        self.box_weights = box_weights
+        self.box_weightss = box_weights
 
 
     def get_deltas(self, anchors, boxes):
@@ -100,7 +100,7 @@ class Matcher(object):
         assert isinstance(anchors, torch.Tensor), type(anchors)
         assert isinstance(boxes, torch.Tensor), type(boxes)
         deltas = torch.cat((anchors - boxes[..., :2], boxes[..., 2:] - anchors),
-                           dim=-1) * anchors.new_tensor(self.box_weights)
+                           dim=-1) * anchors.new_tensor(self.box_weightss)
         return deltas
 
 
@@ -219,9 +219,9 @@ class OTA_Matcher(object):
     def __init__(self, 
                  cfg,
                  num_classes,
-                 box_weight=[1.0, 1.0, 1.0, 1.0]) -> None:
+                 box_weights=[1.0, 1.0, 1.0, 1.0]) -> None:
         self.num_classes = num_classes
-        self.box_weight = box_weight
+        self.box_weights = box_weights
         self.center_sampling_radius = cfg['center_sampling_radius']
         self.sinkhorn = SinkhornDistance(eps=cfg['eps'], max_iter=cfg['max_iter'])
 
@@ -240,7 +240,7 @@ class OTA_Matcher(object):
         assert isinstance(anchors, torch.Tensor), type(anchors)
 
         deltas = torch.cat((anchors - bboxes[..., :2], bboxes[..., 2:] - anchors),
-                           dim=-1) * anchors.new_tensor(self.box_weight)
+                           dim=-1) * anchors.new_tensor(self.box_weights)
         return deltas
 
 
