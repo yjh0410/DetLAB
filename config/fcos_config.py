@@ -457,7 +457,7 @@ fcos_config = {
                   {'name': 'PadImage'}]},
         # model
         'backbone': 'resnet50',
-        'norm_type': 'BN',
+        'norm_type': 'FrozeBN',
         'stride': [8, 16, 32],
         # neck
         'fpn': 'bifpn',
@@ -503,10 +503,10 @@ fcos_config = {
                     'multi_scale': None},
             '2x': {'max_epoch': 24, 
                     'lr_epoch': [16, 22], 
-                    'multi_scale': [256, 288, 320, 352, 384, 416, 448, 480, 512, 544, 576, 608]},
+                    'multi_scale': [320, 352, 384, 416, 448, 480, 512, 544, 576, 608]},
             '4x': {'max_epoch': 48, 
                     'lr_epoch': [32, 44], 
-                    'multi_scale': [256, 288, 320, 352, 384, 416, 448, 480, 512, 544, 576, 608]},
+                    'multi_scale': [320, 352, 384, 416, 448, 480, 512, 544, 576, 608]},
         },
     },
 
@@ -592,10 +592,10 @@ fcos_config = {
                     'multi_scale': None},
             '2x': {'max_epoch': 24, 
                     'lr_epoch': [16, 22], 
-                    'multi_scale': [256, 288, 320, 352, 384, 416, 448, 480, 512, 544, 576, 608]},
+                    'multi_scale': [320, 352, 384, 416, 448, 480, 512, 544, 576, 608]},
             '4x': {'max_epoch': 48, 
                     'lr_epoch': [32, 44], 
-                    'multi_scale': None},
+                    'multi_scale': [320, 352, 384, 416, 448, 480, 512, 544, 576, 608]},
         },
     },
 
