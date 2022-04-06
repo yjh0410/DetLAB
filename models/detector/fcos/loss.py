@@ -112,7 +112,15 @@ class Criterion(object):
         bs = outputs['pred_cls'].shape[0]
         device = outputs['pred_cls'].device
         fpn_strides = outputs['strides']
-        gt_classes, gt_shifts_deltas, gt_centerness = self.matcher(fpn_strides, anchors, targets)
+        if self.cfg['matcher'] == 'matcher':
+            gt_classes, gt_shifts_deltas, gt_centerness = self.matcher(fpn_strides, anchors, targets)
+        elif self.cfg['matcher'] == 'ota_matcher':
+            gt_classes, gt_shifts_deltas, gt_centerness = self.matcher(fpn_strides, anchors, outputs['pred_cls'], outputs['pred_reg'], targets)
+
+        pred_cls = torch.cat(outputs['pred_cls'], dim=1).view(-1, self.num_classes)
+        pred_delta = torch.cat(outputs['pred_reg'], dim=1).view(-1, 4)
+        pred_ctn = torch.cat(outputs['pred_ctn'], dim=1).view(-1, 1)
+        masks = torch.cat(outputs['mask'], dim=1).view(-1)
 
         # [B, M, C] -> [BM, C]
         pred_cls = outputs['pred_cls'].view(-1, self.num_classes)
@@ -139,7 +147,6 @@ class Criterion(object):
         gt_classes_target[foreground_idxs, gt_classes[foreground_idxs]] = 1
 
         # cls loss
-        masks = outputs['mask'].view(-1)
         valid_idxs = (gt_classes >= 0) & masks
         loss_labels = self.loss_labels(
             pred_cls[valid_idxs],

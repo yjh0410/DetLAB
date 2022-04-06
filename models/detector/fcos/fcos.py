@@ -318,17 +318,12 @@ class FCOS(nn.Module):
                 anchors = self.generate_anchors(level, fmp_size)
                 all_anchors.append(anchors)
             
-            all_cls_preds = torch.cat(all_cls_preds, dim=1)
-            all_reg_preds = torch.cat(all_reg_preds, dim=1)
-            all_ctn_preds = torch.cat(all_ctn_preds, dim=1)
-            all_masks = torch.cat(all_masks, dim=1)
-
-            # decode box: [M, 4]
-            outputs = {"pred_cls": all_cls_preds,
-                       "pred_reg": all_reg_preds,
-                       "pred_ctn": all_ctn_preds,
+            # output dict
+            outputs = {"pred_cls": all_cls_preds,  # List [B, M, C]
+                       "pred_reg": all_reg_preds,  # List [B, M, 4]
+                       "pred_ctn": all_ctn_preds,  # List [B, M, 1]
                        'strides': self.stride,
-                       "mask": all_masks}
+                       "mask": all_masks}          # List [B, M,]
 
             # loss
             loss_dict = self.criterion(outputs = outputs, 
