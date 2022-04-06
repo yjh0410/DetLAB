@@ -339,7 +339,7 @@ def build_dataset(cfg, args, device):
         data_dir = os.path.join(args.root, 'VOCdevkit')
         num_classes = 20
         # dataset
-        dataset = VOCDetection(img_size=cfg['train_min_size'],
+        dataset = VOCDetection(img_size=cfg['train_max_size'],
                                data_dir=data_dir, 
                                transform=train_transform,
                                color_augment=color_augment,
@@ -353,7 +353,7 @@ def build_dataset(cfg, args, device):
         data_dir = os.path.join(args.root, 'COCO')
         num_classes = 80
         # dataset
-        dataset = COCODataset(img_size=cfg['train_min_size'],
+        dataset = COCODataset(img_size=cfg['train_max_size'],
                               data_dir=data_dir,
                               image_set='train2017',
                               transform=train_transform,
