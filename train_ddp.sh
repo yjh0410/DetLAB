@@ -12,5 +12,5 @@ python -m torch.distributed.run --nproc_per_node=2 train.py \
                                                     --grad_clip_norm 4.0 \
                                                     --num_workers 4 \
                                                     --schedule 4x \
-                                                    --sybn
+                                                    # --sybn
                                                     # --mosaic
