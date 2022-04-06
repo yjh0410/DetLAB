@@ -2,7 +2,7 @@ python train.py \
         --cuda \
         -d coco \
         --root /mnt/share/ssd2/dataset/ \
-        -v retinanet-rt \
+        -v fcos-rt \
         -lr 0.01 \
         -lr_bk 0.01 \
         --batch_size 16 \
