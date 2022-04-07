@@ -1,6 +1,7 @@
 from .dilated_encoder import DilatedEncoder
 from .fpn import BasicFPN
 from .bifpn import BiFPN
+from .pafpn import PaFPN
 
 
 def build_neck(cfg, in_dim, out_dim):
@@ -41,7 +42,15 @@ def build_fpn(cfg, in_dims, out_dim, from_c5=False, p6_feat=False, p7_feat=False
                         memory_efficient=cfg['memory_efficient'],
                         p6_feat=p6_feat,
                         p7_feat=p7_feat)
-        
+
+    elif model == 'pafpn':
+        fpn_net = PaFPN(in_dims=in_dims,
+                        out_dim=out_dim, 
+                        norm_type=cfg['fpn_norm'], 
+                        p6_feat=p6_feat,
+                        p7_feat=p7_feat)
+
+                            
     elif model == 'yolo_fpn':
         fpn_net = None
 
