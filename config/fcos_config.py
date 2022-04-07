@@ -422,90 +422,6 @@ fcos_config = {
         },
     },
 
-    'fcos-rt': { # Real Time fcos
-        # input
-        'train_min_size': 640,
-        'train_max_size': 640,
-        'test_min_size': 640,
-        'test_max_size': 640,
-        'format': 'RGB',
-        'pixel_mean': [0.485, 0.456, 0.406],
-        'pixel_std': [0.229, 0.224, 0.225],
-        'transforms': {
-            '1x':[{'name': 'RandomHorizontalFlip'},
-                  {'name': 'ToTensor'},
-                  {'name': 'Resize'},
-                  {'name': 'Normalize'},
-                  {'name': 'PadImage'}],
-
-            '2x':[{'name': 'RandomHorizontalFlip'},
-                  {'name': 'ToTensor'},
-                  {'name': 'Resize'},
-                  {'name': 'Normalize'},
-                  {'name': 'PadImage'}],
-
-            '4x':[{'name': 'DistortTransform',
-                   'hue': 0.1,
-                   'saturation': 1.5,
-                   'exposure': 1.5},
-                  {'name': 'RandomHorizontalFlip'},
-                  {'name': 'JitterCrop', 'jitter_ratio': 0.3},
-                  {'name': 'RandomShift', 'max_shift': 32},
-                  {'name': 'ToTensor'},
-                  {'name': 'Resize'},
-                  {'name': 'Normalize'},
-                  {'name': 'PadImage'}]},
-        # model
-        'backbone': 'resnet50',
-        'norm_type': 'FrozeBN',
-        'stride': [8, 16, 32],
-        # neck
-        'fpn': 'basic_fpn',
-        'from_c5': False,
-        'p6_feat': False,
-        'p7_feat': False,
-        # head
-        'head_dim': 160,
-        'head_norm': 'GN',
-        'act_type': 'relu',
-        'head': 'decoupled_head',
-        'num_cls_head': 4,
-        'num_reg_head': 4,
-        # post process
-        'conf_thresh': 0.05,
-        'nms_thresh': 0.6,
-        'test_score_thresh': 0.5,
-        # scale range
-        'object_sizes_of_interest': [[-1, 64], [64, 128], [128, float('inf')]],
-        # matcher
-        'matcher': 'matcher',
-        'center_sampling_radius': 1.5,
-        # loss
-        'alpha': 0.25,
-        'gamma': 2.0,
-        'loss_cls_weight': 1.0,
-        'loss_reg_weight': 1.0,
-        'loss_ctn_weight': 1.0,
-        # optimizer
-        'optimizer': 'sgd',
-        'momentum': 0.9,
-        'weight_decay': 1e-4,
-        'warmup': 'linear',
-        'wp_iter': 1000,
-        'warmup_factor': 0.00066667,
-        'epoch': {
-            '1x': {'max_epoch': 12, 
-                    'lr_epoch': [8, 11], 
-                    'multi_scale': None},
-            '2x': {'max_epoch': 24, 
-                    'lr_epoch': [16, 22], 
-                    'multi_scale': [320, 352, 384, 416, 448, 480, 512, 544, 576, 608, 640]},
-            '4x': {'max_epoch': 48, 
-                    'lr_epoch': [32, 44], 
-                    'multi_scale': [320, 352, 384, 416, 448, 480, 512, 544, 576, 608, 640]},
-        },
-    },
-
     'fcos-rt-ota': { # Real Time FCOS with OTA
         # input
         'train_min_size': 640,
@@ -528,7 +444,7 @@ fcos_config = {
                   {'name': 'Normalize'},
                   {'name': 'PadImage'}],
 
-            '4x':[{'name': 'DistortTransform',
+            '3x':[{'name': 'DistortTransform',
                    'hue': 0.1,
                    'saturation': 1.5,
                    'exposure': 1.5},
@@ -550,7 +466,7 @@ fcos_config = {
         'p7_feat': False,
         # head
         'head_dim': 160,
-        'head_norm': 'GN',
+        'head_norm': '',
         'act_type': 'relu',
         'head': 'decoupled_head',
         'num_cls_head': 4,
@@ -585,8 +501,8 @@ fcos_config = {
             '2x': {'max_epoch': 24, 
                     'lr_epoch': [16, 22], 
                     'multi_scale': [320, 352, 384, 416, 448, 480, 512, 544, 576, 608, 640]},
-            '4x': {'max_epoch': 48, 
-                    'lr_epoch': [32, 44], 
+            '3x': {'max_epoch': 37, 
+                    'lr_epoch': [24, 33], 
                     'multi_scale': [320, 352, 384, 416, 448, 480, 512, 544, 576, 608, 640]},
         },
     },
