@@ -86,19 +86,21 @@ In my FCOS:
 ## SSDX
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| SSDX_VGG_16_320_3x             |  320,320   |         |       |
-| SSDX_VGG_16_512_3x             |  512,512   |         |       |
-| SSDX_VGG_16_512_3x             |  640,640   |         |       |
+| SSDX_VGG_16_320_3x             |  320,320   |         |   -   |
+| SSDX_VGG_16_512_3x             |  512,512   |         |   -   |
+| SSDX_VGG_16_640_3x             |  640,640   |         | [github]() |
 
 Plan to do for SSDX:
 - [] `C3`, `C4`, `C5` backbone features
 - [] `SPP` block for neck network
-- [] `FPN` for feature pyramid
+- [] `PaFPN` for feature pyramid
 - [] `Anchor free` for bounding box regression
 - [] `OTA` for dynamic label assignment
 - [] `Focal loss` for classification head
 - [] `GIoU loss` for regression head
 - [] `IoU-Aware` branch for regression head
+- [] `Multi scale` augmentation
+- [] `Mosaic` augmentation
 
 
 ## TTF-YOLO
@@ -115,6 +117,7 @@ Plan to do for TTF-YOLO:
 - [] `VariFocal loss` for classification head with `IoU-awareness`
 - [] `GIoU loss` for regression head
 - [] `3x` training schedule (~37 epochs) rather than 300 epochs
+- [] `Multi scale` augmentation
 - [] `Mosaic` augmentation
 
 ## Anchor-DeTR
