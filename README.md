@@ -78,8 +78,7 @@ In my RetinaNet:
 | FCOS_R_18_1x                   |  800,1333  |  30.4   | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/fcos_r18_1x_30.4.pth) |
 | FCOS_R_50_1x                   |  800,1333  |         |       |
 | FCOS_R_50_OTA_1x               |  800,1333  |         |       |
-| FCOS-RT_R_50_4x                |  640,640   |         |       |
-| FCOS-RT_R_50_OTA_4x            |  640,640   |         |       |
+| FCOS-RT_R_50_OTA_3x            |  640,640   |         |       |
 
 In my FCOS:
 - For regression head, `GIoU loss` is deployed rather than `IoU loss`
@@ -87,9 +86,9 @@ In my FCOS:
 ## SSDX
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| SSDX_VGG_16_320_4x             |  320,320   |         |       |
-| SSDX_VGG_16_512_4x             |  512,512   |         |       |
-| SSDX_VGG_16_512_4x             |  640,640   |         |       |
+| SSDX_VGG_16_320_3x             |  320,320   |         |       |
+| SSDX_VGG_16_512_3x             |  512,512   |         |       |
+| SSDX_VGG_16_512_3x             |  640,640   |         |       |
 
 Plan to do for SSDX:
 - [] `C3`, `C4`, `C5` backbone features
@@ -105,8 +104,8 @@ Plan to do for SSDX:
 ## TTF-YOLO
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| TTF-YOLO_D_19_4x               |  640,640   |         |       |
-| TTF-YOLO_D_53_4x               |  640,640   |         |       |
+| TTF-YOLO_D_19_3x               |  640,640   |         |       |
+| TTF-YOLO_D_53_3x               |  640,640   |         |       |
 
 Plan to do for TTF-YOLO:
 - [] Based on YOLOv3 structure with `SPP` module
@@ -115,7 +114,7 @@ Plan to do for TTF-YOLO:
 - [] `OTA` for dynamic label assignment
 - [] `VariFocal loss` for classification head with `IoU-awareness`
 - [] `GIoU loss` for regression head
-- [] `4x` training schedule (~48 epochs) rather than 300 epochs
+- [] `3x` training schedule (~37 epochs) rather than 300 epochs
 - [] `Mosaic` augmentation
 
 ## Anchor-DeTR
