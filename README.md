@@ -25,9 +25,9 @@ weight files to complement this project. Thanks a lot.***
 
 # Coming soon
 - [x] YOLOF
-- [] RetinaNet
+- [x] RetinaNet
 - [] FCOS
-- [] SSDv2
+- [] SSDX
 - [] TTF-YOLO
 - [] Anchor DeTR
 - [] Dynamic Head
@@ -84,47 +84,39 @@ In my RetinaNet:
 In my FCOS:
 - For regression head, `GIoU loss` is deployed rather than `IoU loss`
 
-## SSDv2
+## SSDX
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| SSD_V2_VGG_16_320_4x           |  320,320   |         |       |
-| SSD_V2_VGG_16_512_4x           |  512,512   |         |       |
+| SSDX_VGG_16_320_4x             |  320,320   |         |       |
+| SSDX_VGG_16_512_4x             |  512,512   |         |       |
+| SSDX_VGG_16_512_4x             |  640,640   |         |       |
 
-Plan to do for SSDv2:
+Plan to do for SSDX:
 - [] `C3`, `C4`, `C5` backbone features
 - [] `SPP` block for neck network
 - [] `FPN` for feature pyramid
+- [] `Anchor free` for bounding box regression
+- [] `OTA` for dynamic label assignment
 - [] `Focal loss` for classification head
 - [] `GIoU loss` for regression head
 - [] `IoU-Aware` branch for regression head
-- [] `Anchor free` for bounding box regression
-- [] `OTA` for dynamic label assignment
 
-### Ablation studies of SSDv2
-Baseline: `FocalLoss` + `GIoU loss` + `FPN`
-
-| Model                          |  scale     |   mAP   |
-|--------------------------------|------------|---------|
-| Baseline                       |  512,512   |         |
-| + SPP                          |  512,512   |         |
-| + BiFPN                        |  512,512   |         |
-| + IoU-Aware                    |  512,512   |         |
-| + BiFPN                        |  512,512   |         |
 
 ## TTF-YOLO
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| TTF-YOLO_D_19_3x               |  640,640   |         |       |
-| TTF-YOLO_D_19_3x_Mosaic        |  640,640   |         |       |
-| TTF-YOLO_D_53_3x               |  640,640   |         |       |
-| TTF-YOLO_D_53_3x_Mosaic        |  640,640   |         |       |
+| TTF-YOLO_D_19_4x               |  640,640   |         |       |
+| TTF-YOLO_D_53_4x               |  640,640   |         |       |
 
 Plan to do for TTF-YOLO:
-- [] Based on YOLOv3 structure
-- [] Remove objectness head
+- [] Based on YOLOv3 structure with `SPP` module
+- [] Remove `objectness` head
+- [] `Anchor free` for bounding box regression
+- [] `OTA` for dynamic label assignment
 - [] `VariFocal loss` for classification head with `IoU-awareness`
 - [] `GIoU loss` for regression head
-- [] `3x` training schedule rather than 300 epochs
+- [] `4x` training schedule (~48 epochs) rather than 300 epochs
+- [] `Mosaic` augmentation
 
 ## Anchor-DeTR
 | Model                          |  scale     |   mAP   | Weight|

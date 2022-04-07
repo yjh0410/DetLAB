@@ -32,6 +32,8 @@ class VGG(nn.Module):
         if init_weights:
             self._initialize_weights()
 
+        self.freeze()
+        
     def _initialize_weights(self) -> None:
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -44,6 +46,17 @@ class VGG(nn.Module):
             elif isinstance(m, nn.Linear):
                 nn.init.normal_(m.weight, 0, 0.01)
                 nn.init.constant_(m.bias, 0)
+
+    
+    def freeze(self):
+        # freeze parameters pf one & two stage
+        for i, m in enumerate(self.features):
+            if i < 9:
+                for p in m.parameters():
+                    p.requires_grad = False
+            else:
+                break
+
 
     def forward(self, x):
         output = {}
