@@ -461,7 +461,7 @@ fcos_config = {
         'stride': [8, 16, 32],
         # neck
         'fpn': 'pafpn',
-        'fpn_norm': 'GN',
+        'fpn_norm': '',
         'from_c5': False,
         'p6_feat': False,
         'p7_feat': False,
