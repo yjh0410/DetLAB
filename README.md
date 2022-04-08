@@ -91,15 +91,15 @@ In my FCOS:
 | SSDX_VGG_16_640_3x             |  640,640   |         | [github]() |
 
 Plan to do for SSDX:
-- [] `C3`, `C4`, `C5` backbone features
-- [] `SPP` block for neck network
-- [] `PaFPN` for feature pyramid
-- [] `Anchor free` for bounding box regression
-- [] `OTA` for dynamic label assignment
-- [] `Focal loss` for classification head
-- [] `GIoU loss` for regression head
-- [] `IoU-Aware` branch for regression head
-- [] `Multi scale` augmentation
+- [x] `C3`, `C4`, `C5` backbone features
+- [x] `SPP` block for neck network
+- [x] `PaFPN` for feature pyramid
+- [x] `Anchor free` for bounding box regression
+- [x] `OTA` for dynamic label assignment
+- [x] `Focal loss` for classification head
+- [x] `GIoU loss` for regression head
+- [x] `IoU-Aware` branch for regression head
+- [x] `Multi scale` augmentation
 - [] `Mosaic` augmentation
 
 
