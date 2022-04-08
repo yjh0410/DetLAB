@@ -103,6 +103,7 @@ class FCOS(nn.Module):
                                        gamma=cfg['gamma'],
                                        loss_cls_weight=cfg['loss_cls_weight'],
                                        loss_reg_weight=cfg['loss_reg_weight'],
+                                       loss_ctn_weight=cfg['loss_ctn_weight'],
                                        num_classes=num_classes)
 
 
