@@ -1,19 +1,38 @@
-import enum
 import torch
 import math
 import numpy as np
 import torch.nn as nn
-import torch.nn as nn
+import torch.nn.functional as F
 from ...backbone import build_backbone
-from ...neck import build_fpn
+from ...neck import build_fpn, build_neck
 from ...head.decoupled_head import DecoupledHead
 from .loss import Criterion
 
 DEFAULT_SCALE_CLAMP = math.log(1000.0 / 16)
 
 
+class Scale(nn.Module):
+    """
+    Multiply the output regression range by a learnable constant value
+    """
+    def __init__(self, init_value=1.0):
+        """
+        init_value : initial value for the scalar
+        """
+        super().__init__()
+        self.scale = nn.Parameter(
+            torch.tensor(init_value, dtype=torch.float32),
+            requires_grad=True
+        )
 
-class SSDv2(nn.Module):
+    def forward(self, x):
+        """
+        input -> scale * input
+        """
+        return x * self.scale
+
+
+class SSDX(nn.Module):
     def __init__(self, 
                  cfg,
                  device, 
@@ -22,7 +41,7 @@ class SSDv2(nn.Module):
                  nms_thresh = 0.6,
                  trainable = False, 
                  topk = 1000):
-        super(SSDv2, self).__init__()
+        super(SSDX, self).__init__()
         self.cfg = cfg
         self.device = device
         self.stride = cfg['stride']
@@ -31,8 +50,6 @@ class SSDv2(nn.Module):
         self.conf_thresh = conf_thresh
         self.nms_thresh = nms_thresh
         self.topk = topk
-        self.anchor_size = self.generate_anchor_sizes(cfg)  # [S, KA, 2]
-        self.num_anchors = self.anchor_size.shape[1]
 
         # backbone
         self.backbone, bk_dim = build_backbone(model_name=cfg['backbone'], 
@@ -40,29 +57,39 @@ class SSDv2(nn.Module):
                                                norm_type=cfg['norm_type'])
 
         # neck
+        self.neck = build_neck(cfg=cfg, 
+                               in_dim=bk_dim[-1], 
+                               out_dim=bk_dim[-1])
         self.fpn = build_fpn(cfg=cfg, 
                              in_dims=bk_dim, 
                              out_dim=cfg['head_dim'],
-                             from_c5=cfg['from_c5'],
-                             p6_feat=cfg['p6_feat'],
-                             p7_feat=cfg['p7_feat'])
+                             from_c5=False,
+                             p6_feat=False,
+                             p7_feat=False)
                                      
         # head
-        self.head = DecoupledHead(head_dim=cfg['head_dim'],
-                                  num_cls_head=cfg['num_cls_head'],
-                                  num_reg_head=cfg['num_reg_head'],
-                                  act_type=cfg['act_type'],
-                                  norm_type=cfg['head_norm'])
+        self.head = nn.ModuleList([DecoupledHead(
+                                        head_dim=cfg['head_dim'],
+                                        num_cls_head=cfg['num_cls_head'],
+                                        num_reg_head=cfg['num_reg_head'],
+                                        act_type=cfg['act_type'],
+                                        norm_type=cfg['head_norm']) for _ in range(len(self.stride))]) 
 
         # pred
         self.cls_pred = nn.Conv2d(cfg['head_dim'], 
-                                  self.num_anchors * self.num_classes, 
+                                  self.num_classes, 
                                   kernel_size=3,
                                   padding=1)
         self.reg_pred = nn.Conv2d(cfg['head_dim'], 
-                                  self.num_anchors * 4, 
+                                  4, 
                                   kernel_size=3, 
                                   padding=1)
+        self.iou_pred = nn.Conv2d(cfg['head_dim'], 
+                                  1, 
+                                  kernel_size=3, 
+                                  padding=1)
+        # scale
+        self.scales = nn.ModuleList([Scale() for _ in range(len(self.stride))])
 
         if trainable:
             # init bias
@@ -88,26 +115,9 @@ class SSDv2(nn.Module):
         # init reg pred
         nn.init.normal_(self.reg_pred.weight, mean=0, std=0.01)
         nn.init.constant_(self.reg_pred.bias, 0.0)
-
-
-    def generate_anchor_sizes(self, cfg):
-        basic_anchor_size = cfg['anchor_config']['basic_size']
-        anchor_aspect_ratio = cfg['anchor_config']['aspect_ratio']
-        anchor_area_scale = cfg['anchor_config']['area_scale']
-
-        num_scales = len(basic_anchor_size)
-        num_anchors = len(anchor_aspect_ratio) * len(anchor_area_scale)
-        anchor_sizes = []
-        for size in basic_anchor_size:
-            for ar in anchor_aspect_ratio:
-                for s in anchor_area_scale:
-                    ah, aw = size
-                    area = ah * aw * s
-                    anchor_sizes.append([math.sqrt(ar * area), math.sqrt(area / ar)])
-        # [S * KA, 2] -> [S, KA, 2]
-        anchor_sizes = torch.as_tensor(anchor_sizes).view(num_scales, num_anchors, 2)
-
-        return anchor_sizes
+        # init ctn pred
+        nn.init.normal_(self.iou_pred.weight, mean=0, std=0.01)
+        nn.init.constant_(self.reg_pred.bias, 0.0)
 
 
     def generate_anchors(self, level, fmp_size):
@@ -116,50 +126,24 @@ class SSDv2(nn.Module):
         """
         # generate grid cells
         fmp_h, fmp_w = fmp_size
-        # [KA, 2]
-        anchor_size = self.anchor_size[level]
-
         anchor_y, anchor_x = torch.meshgrid([torch.arange(fmp_h), torch.arange(fmp_w)])
         # [H, W, 2] -> [HW, 2]
         anchor_xy = torch.stack([anchor_x, anchor_y], dim=-1).float().view(-1, 2) + 0.5
-        # [HW, 2] -> [HW, 1, 2] -> [HW, KA, 2] 
-        anchor_xy = anchor_xy[:, None, :].repeat(1, self.num_anchors, 1)
         anchor_xy *= self.stride[level]
+        anchors = anchor_xy.to(self.device)
 
-        # [KA, 2] -> [1, KA, 2] -> [HW, KA, 2]
-        anchor_wh = anchor_size[None, :, :].repeat(fmp_h*fmp_w, 1, 1)
-
-        # [HW, KA, 4] -> [M, 4], M = HW x KA
-        anchor_boxes = torch.cat([anchor_xy, anchor_wh], dim=-1)
-        anchor_boxes = anchor_boxes.view(-1, 4).to(self.device)
-
-        return anchor_boxes
+        return anchors
         
 
-    def decode_boxes(self, anchor_boxes, pred_reg):
+    def decode_boxes(self, anchors, pred_deltas):
         """
-            anchor_boxes: (List[Tensor]) [1, M, 4] or [M, 4]
-            pred_reg:     (List[Tensor]) [B, M, 4] or [M, 4]
+            anchors:  (List[Tensor]) [1, M, 2] or [M, 2]
+            pred_reg: (List[Tensor]) [B, M, 4] or [M, 4] (l, t, r, b)
         """
-        # x = x_anchor + dx * w_anchor
-        # y = y_anchor + dy * h_anchor
-        pred_ctr_offset = pred_reg[..., :2] * anchor_boxes[..., 2:]
-        if self.cfg['ctr_clamp'] is not None:
-            pred_ctr_offset = torch.clamp(pred_ctr_offset,
-                                        max=self.cfg['ctr_clamp'],
-                                        min=-self.cfg['ctr_clamp'])
-        pred_ctr_xy = anchor_boxes[..., :2] + pred_ctr_offset
-
-        # w = w_anchor * exp(tw)
-        # h = h_anchor * exp(th)
-        pred_dwdh = pred_reg[..., 2:]
-        pred_dwdh = torch.clamp(pred_dwdh, 
-                                max=DEFAULT_SCALE_CLAMP)
-        pred_wh = anchor_boxes[..., 2:] * pred_dwdh.exp()
-
-        # convert [x, y, w, h] -> [x1, y1, x2, y2]
-        pred_x1y1 = pred_ctr_xy - 0.5 * pred_wh
-        pred_x2y2 = pred_ctr_xy + 0.5 * pred_wh
+        # x1 = x_anchor - l, x2 = x_anchor + r
+        # y1 = y_anchor - t, y2 = y_anchor + b
+        pred_x1y1 = anchors - pred_deltas[..., :2]
+        pred_x2y2 = anchors + pred_deltas[..., 2:]
         pred_box = torch.cat([pred_x1y1, pred_x2y2], dim=-1)
 
         return pred_box
@@ -202,7 +186,7 @@ class SSDv2(nn.Module):
         img_h, img_w = x.shape[2:]
         # backbone
         feats = self.backbone(x)
-        pyramid_feats = [feats['layer2'], feats['layer3'], feats['layer4']]
+        pyramid_feats = [feats['layer2'], feats['layer3'], self.neck(feats['layer4'])]
 
         # neck
         pyramid_feats = self.fpn(pyramid_feats)
@@ -211,42 +195,42 @@ class SSDv2(nn.Module):
         all_scores = []
         all_labels = []
         all_bboxes = []
-        for level, feat in enumerate(pyramid_feats):
-            cls_feat, reg_feat = self.head(feat)
+        for level, (feat, head) in enumerate(zip(pyramid_feats, self.head)):
+            cls_feat, reg_feat = head(feat)
 
-            # [1, KAxC, H, W]
+            # [1, C, H, W]
             cls_pred = self.cls_pred(cls_feat)
             reg_pred = self.reg_pred(reg_feat)
+            iou_pred = self.iou_pred(reg_feat)
 
             # decode box
             _, _, H, W = cls_pred.size()
             fmp_size = [H, W]
-            # [1, KAxC, H, W] -> [H, W, KAxC] -> [H, W, KA, C] -> [M, C]
-            cls_pred = cls_pred[0].permute(1, 2, 0).contiguous().view(H, W, self.num_anchors, -1).view(-1, self.num_classes)
-            reg_pred = reg_pred[0].permute(1, 2, 0).contiguous().view(H, W, self.num_anchors, -1).view(-1, 4)
+            # [1, C, H, W] -> [H, W, C] -> [M, C]
+            cls_pred = cls_pred[0].permute(1, 2, 0).contiguous().view(-1, self.num_classes)
+            reg_pred = reg_pred[0].permute(1, 2, 0).contiguous().view(-1, 4)
+            reg_pred = F.relu(self.scales[level](reg_pred)) * self.stride[level]
+            iou_pred = iou_pred[0].permute(1, 2, 0).contiguous().view(-1, 1)
 
             # scores
-            scores, labels = torch.max(cls_pred.sigmoid(), dim=-1)
+            scores, labels = torch.max(torch.sqrt(cls_pred.sigmoid() * iou_pred.sigmoid()), dim=-1)
+
+            # [M, 4]
+            anchors = self.generate_anchors(level, fmp_size)
 
             # topk
-            anchor_boxes = self.generate_anchors(level, fmp_size) # [M, 4]
             if scores.shape[0] > self.topk:
                 scores, indices = torch.topk(scores, self.topk)
                 labels = labels[indices]
                 reg_pred = reg_pred[indices]
-                anchor_boxes = anchor_boxes[indices]
+                anchors = anchors[indices]
 
             # decode box: [M, 4]
-            bboxes = self.decode_boxes(anchor_boxes, reg_pred)
-
+            bboxes = self.decode_boxes(anchors, reg_pred)
 
             all_scores.append(scores)
             all_labels.append(labels)
             all_bboxes.append(bboxes)
-
-        scores = torch.cat(all_scores)
-        labels = torch.cat(all_labels)
-        bboxes = torch.cat(all_bboxes)
 
         # to cpu
         scores = scores.cpu().numpy()
@@ -289,62 +273,60 @@ class SSDv2(nn.Module):
         else:
             # backbone
             feats = self.backbone(x)
-            pyramid_feats = [feats['layer2'], feats['layer3'], feats['layer4']]
+            pyramid_feats = [feats['layer2'], feats['layer3'], self.neck(feats['layer4'])]
 
             # neck
             pyramid_feats = self.fpn(pyramid_feats) # [P3, P4, P5, P6, P7]
 
             # shared head
-            all_anchor_boxes = []
+            all_anchors = []
             all_cls_preds = []
             all_reg_preds = []
+            all_iou_preds = []
             all_masks = []
-            for level, feat in enumerate(pyramid_feats):
-                cls_feat, reg_feat = self.head(feat)
-                # [B, KAxC, H, W]
+            for level, (feat, head) in enumerate(zip(pyramid_feats, self.head)):
+                # head
+                cls_feat, reg_feat = head(feat)
+                # [B, C, H, W]
                 cls_pred = self.cls_pred(cls_feat)
                 reg_pred = self.reg_pred(reg_feat)
+                iou_pred = self.iou_pred(reg_feat)
 
                 B, _, H, W = cls_pred.size()
                 fmp_size = [H, W]
-                # [B, KAxC, H, W] -> [B, H, W, KAxC] -> [B, H, W, KA, C] -> [B, M, C]
-                cls_pred = cls_pred.permute(0, 2, 3, 1).contiguous().view(B, H, W, self.num_anchors, -1).view(B, -1, self.num_classes)
-                reg_pred = reg_pred.permute(0, 2, 3, 1).contiguous().view(B, H, W, self.num_anchors, -1).view(B, -1, 4)
+                # generate anchor boxes: [M, 4]
+                anchors = self.generate_anchors(level, fmp_size)
+                # [B, C, H, W] -> [B, H, W, C] -> [B, M, C]
+                cls_pred = cls_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, self.num_classes)
+                reg_pred = reg_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, 4)
+                reg_pred = F.relu(self.scales[level](reg_pred)) * self.stride[level]
+                iou_pred = iou_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, 1)
 
                 all_cls_preds.append(cls_pred)
                 all_reg_preds.append(reg_pred)
+                all_iou_preds.append(iou_pred)
+                all_anchors.append(anchors)
 
                 if mask is not None:
                     # [B, H, W]
                     mask_i = torch.nn.functional.interpolate(mask[None], size=[H, W]).bool()[0]
-                    # [B, H, W] -> [B, HW]
+                    # [B, H, W] -> [B, M]
                     mask_i = mask_i.flatten(1)
-                    # [B, HW] -> [B, HW, KA] -> [B, M], M= HW x KA
-                    mask_i = mask_i[..., None].repeat(1, 1, self.num_anchors).flatten(1)
                     
                     all_masks.append(mask_i)
 
-                # generate anchor boxes: [M, 4]
-                anchor_boxes = self.generate_anchors(level, fmp_size)
-                all_anchor_boxes.append(anchor_boxes)
             
-            all_cls_preds = torch.cat(all_cls_preds, dim=1)
-            all_reg_preds = torch.cat(all_reg_preds, dim=1)
-            all_masks = torch.cat(all_masks, dim=1)
-
-            # decode box: [M, 4]
-            all_anchor_boxes = torch.cat(all_anchor_boxes)
-            all_box_preds = self.decode_boxes(all_anchor_boxes[None], all_reg_preds)
-
-            outputs = {"pred_cls": all_cls_preds,
-                       "pred_box": all_box_preds,
+            # output dict
+            outputs = {"pred_cls": all_cls_preds,  # List [B, M, C]
+                       "pred_reg": all_reg_preds,  # List [B, M, 4]
+                       "pred_ctn": all_iou_preds,  # List [B, M, 1]
                        'strides': self.stride,
-                       "mask": all_masks}
+                       "mask": all_masks}          # List [B, M,]
 
             # loss
             loss_dict = self.criterion(outputs = outputs, 
                                        targets = targets, 
-                                       anchor_boxes = all_anchor_boxes)
+                                       anchors = all_anchors)
 
             return loss_dict 
     

@@ -1,4 +1,5 @@
 from .dilated_encoder import DilatedEncoder
+from .spp import SPP, SPPBlock, SPPBlockCSP
 from .fpn import BasicFPN
 from .bifpn import BiFPN
 from .pafpn import PaFPN
@@ -16,7 +17,12 @@ def build_neck(cfg, in_dim, out_dim):
                               dilation_list=cfg['dilation_list'],
                               act_type=cfg['act_type'])
     elif model == 'spp':
-        neck = None
+        neck = SPP(in_dim, 
+                   out_dim, 
+                   e=cfg['expand_ratio'], 
+                   kernel_sizes=cfg['kernel_sizes'],
+                   norm_type=cfg['neck_norm'],
+                   act_type=cfg['neck_act'])
 
     return neck
 
