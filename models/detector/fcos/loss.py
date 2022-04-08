@@ -85,6 +85,7 @@ class Criterion(object):
         return loss_box.sum() / num_boxes
 
 
+    # The origin loss of FCOS
     def basic_losses(self,
                      outputs, 
                      targets, 
@@ -166,6 +167,7 @@ class Criterion(object):
         return loss_dict
     
 
+    # Compute loss of FCOS with OTA matcher
     def ota_losses(self,
                  outputs, 
                  targets, 
