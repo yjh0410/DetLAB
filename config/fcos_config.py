@@ -467,7 +467,7 @@ fcos_config = {
         'p7_feat': False,
         # head
         'head_dim': 160,
-        'head_norm': 'GN',
+        'head_norm': '',
         'act_type': 'relu',
         'head': 'decoupled_head',
         'num_cls_head': 4,
