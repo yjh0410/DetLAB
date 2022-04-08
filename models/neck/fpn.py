@@ -85,9 +85,3 @@ class BasicFPN(nn.Module):
 
         # [P3, P4, P5] or [P3, P4, P5, P6, P7]
         return outputs
-
-
-class YoloFPN(nn.Module):
-    def __init__(self):
-        super().__init__()
-
