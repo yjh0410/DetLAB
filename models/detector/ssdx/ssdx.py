@@ -67,7 +67,7 @@ class SSDX(nn.Module):
                              p6_feat=False,
                              p7_feat=False)
                                      
-        # head
+        # non-shared head
         self.head = nn.ModuleList([DecoupledHead(
                                         head_dim=cfg['head_dim'],
                                         num_cls_head=cfg['num_cls_head'],
