@@ -1,7 +1,6 @@
 from .yolof_config import yolof_config
 from .retinanet_config import retinanet_config
 from .fcos_config import fcos_config
-from .ssdx_config import ssdx_config
 
 
 def build_config(args):
