@@ -27,10 +27,8 @@ weight files to complement this project. Thanks a lot.***
 - [x] YOLOF
 - [x] RetinaNet
 - [] FCOS
-- [] SSDX
 - [] TTF-YOLO
 - [] Anchor DeTR
-- [] Dynamic Head
 
 More advanced detectors are coming soon ...
 
@@ -83,25 +81,6 @@ In my RetinaNet:
 In my FCOS:
 - For regression head, `GIoU loss` is deployed rather than `IoU loss`
 
-## SSDX
-| Model                          |  scale     |   mAP   | Weight|
-|--------------------------------|------------|---------|-------|
-| SSDX_VGG_16_320_3x             |  320,320   |         |   -   |
-| SSDX_VGG_16_512_3x             |  512,512   |         |   -   |
-| SSDX_VGG_16_640_3x             |  640,640   |         | [github]() |
-
-Plan to do for SSDX:
-- [x] `C3`, `C4`, `C5` backbone features
-- [x] `SPP` block for neck network
-- [x] `PaFPN` for feature pyramid
-- [x] `Anchor free` for bounding box regression
-- [x] `OTA` for dynamic label assignment
-- [x] `Focal loss` for classification head
-- [x] `GIoU loss` for regression head
-- [x] `IoU-Aware` branch for regression head
-- [x] `Multi scale` augmentation
-- [] `Mosaic` augmentation
-
 
 ## TTF-YOLO
 | Model                          |  scale     |   mAP   | Weight|
@@ -116,7 +95,7 @@ Plan to do for TTF-YOLO:
 - [] `OTA` for dynamic label assignment
 - [] `VariFocal loss` for classification head with `IoU-awareness`
 - [] `GIoU loss` for regression head
-- [] `3x` training schedule (~37 epochs) rather than 300 epochs
+- [] `4x` training schedule (~48 epochs) rather than 300 epochs
 - [] `Multi scale` augmentation
 - [] `Mosaic` augmentation
 
@@ -124,7 +103,7 @@ Plan to do for TTF-YOLO:
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
 | Anchor-DeTR_R_50_C5_4x         |  800,1333  |         |       |
-| Anchor-DeTR-RT_R_50_DC5_4x     |  512,736   |         |       |
+| Anchor-DeTR-RT_R_50_DC5_4x     |  640,640   |         |       |
 
 
 # Train
