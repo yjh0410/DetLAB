@@ -16,7 +16,4 @@ def build_config(args):
     elif 'fcos' in args.version:
         cfg = fcos_config[args.version]
 
-    elif 'ssd' in args.version:
-        cfg = ssdx_config[args.version]
-
     return cfg
