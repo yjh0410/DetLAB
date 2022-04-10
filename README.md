@@ -75,17 +75,18 @@ In my RetinaNet:
 | FCOS_R_18_1x                   |  800,1333  |  31.3   | [github](https://github.com/yjh0410/DetLAB/releases/download/object-detection-benchmark-weight/fcos_r18_1x_31.3.pth) |
 | FCOS_R_50_1x                   |  800,1333  |         |       |
 | FCOS_R_50_OTA_1x               |  800,1333  |         |       |
-| FCOS-RT_R_50_OTA_3x            |  640,640   |         |       |
+| FCOS-RT_R_50_OTA_3x            |  640,640   |  36.7   | [github](https://github.com/yjh0410/DetLAB/releases/download/object-detection-benchmark-weight/fcos-rt-ota_r50_3x_36.7.pth) |
 
 In my FCOS:
 - For regression head, `GIoU loss` is deployed rather than `IoU loss`
+- For real-time FCOS, the `PaFPN` is deployed for fpn
 
 
 ## TTF-YOLO
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| TTF-YOLO_D_19_3x               |  640,640   |         |       |
-| TTF-YOLO_D_53_3x               |  640,640   |         |       |
+| TTF-YOLO_D_19_4x               |  640,640   |         |       |
+| TTF-YOLO_D_53_4x               |  640,640   |         |       |
 
 Plan to do for TTF-YOLO:
 - [] Based on YOLOv3 structure with `SPP` module
