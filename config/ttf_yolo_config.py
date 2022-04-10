@@ -27,8 +27,10 @@ ttf_yolo_config = {
         'norm_type': 'BN',
         'stride': [8, 16, 32],
         # neck
+        'use_spp': True,
         'fpn': 'yolofpn',
         'fpn_norm': 'BN',
+        'fpn_act': 'lrelu',
         # head
         'head_dim': 256,
         'head_norm': 'BN',
@@ -92,6 +94,7 @@ ttf_yolo_config = {
         # neck
         'fpn': 'yolofpn',
         'fpn_norm': 'BN',
+        'fpn_act': 'lrelu',
         # head
         'head_dim': 256,
         'head_norm': 'BN',

@@ -3,6 +3,8 @@ from .spp import SPP, SPPBlock, SPPBlockCSP
 from .fpn import BasicFPN
 from .bifpn import BiFPN
 from .pafpn import PaFPN
+from .yolofpn import YoloFPN
+from .yolopafpn import YoloPaFPN
 
 
 def build_neck(cfg, in_dim, out_dim):
@@ -58,7 +60,11 @@ def build_fpn(cfg, in_dims, out_dim, from_c5=False, p6_feat=False, p7_feat=False
 
                             
     elif model == 'yolo_fpn':
-        fpn_net = None
+        fpn_net = YoloFPN(in_dims=in_dims,
+                          norm_type=cfg['fpn_norm'],
+                          act_type=cfg['fpn_act'],
+                          spp=cfg['use_spp'],
+                          out_dim=cfg['head_dim'])
 
     elif model == 'yolo_pafpn':
         fpn_net = None

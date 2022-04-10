@@ -26,8 +26,11 @@ class YoloFPN(nn.Module):
                  in_dims=[256, 512, 1024],
                  norm_type='BN',
                  act_type='lrelu',
-                 spp=False):
+                 spp=False,
+                 out_dim=None):
         super().__init__()
+        self.in_dims = in_dims
+        self.out_dim = out_dim
         c3, c4, c5 = in_dims
         # head
         # P3/8-small
@@ -47,6 +50,10 @@ class YoloFPN(nn.Module):
         self.head_convblock_2 = ConvBlocks(c3 + c3//2, c3//2, norm_type=norm_type, act_type=act_type)
         self.head_conv_4 = Conv(c3//2, c3, k=3, p=1, norm_type=norm_type, act_type=act_type)
 
+        # output proj layers
+        if out_dim is not None:
+            self.out_layers = nn.ModuleList([Conv(in_dim, out_dim, k=1, norm_type=norm_type, act_type=act_type) for in_dim in in_dims])
+
 
     def forward(self, features):
         c3, c4, c5 = features
@@ -65,5 +72,13 @@ class YoloFPN(nn.Module):
         p3 = self.head_convblock_2(torch.cat([c3, p4_up], dim=1))
         p3 = self.head_conv_4(p3)
 
-        return [p3, p4, p5]
+        out_feats = [p3, p4, p5]
+        # output proj layers
+        if self.out_dim is not None:
+            out_feats_proj = []
+            for feat, layer in zip(out_feats, self.out_layers):
+                out_feats_proj.append(layer(feat))
+            return out_feats_proj
+
+        return out_feats
 

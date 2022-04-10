@@ -28,7 +28,6 @@ weight files to complement this project. Thanks a lot.***
 - [x] RetinaNet
 - [] FCOS
 - [] TTF-YOLO
-- [] Anchor DeTR
 
 More advanced detectors are coming soon ...
 
@@ -98,12 +97,6 @@ Plan to do for TTF-YOLO:
 - [] `4x` training schedule (~48 epochs) rather than 300 epochs
 - [] `Multi scale` augmentation
 - [] `Mosaic` augmentation
-
-## Anchor-DeTR
-| Model                          |  scale     |   mAP   | Weight|
-|--------------------------------|------------|---------|-------|
-| Anchor-DeTR_R_50_C5_4x         |  800,1333  |         |       |
-| Anchor-DeTR-RT_R_50_DC5_4x     |  640,640   |         |       |
 
 
 # Train
