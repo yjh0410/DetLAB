@@ -3,6 +3,7 @@ import torch
 from .yolof.yolof import YOLOF
 from .retinanet.retinanet import RetinaNet
 from .fcos.fcos import FCOS
+from .ttf_yolo.yolo import YOLO
 
 
 # build object detector
@@ -33,6 +34,14 @@ def build_model(args,
                           topk=args.topk)
     elif 'fcos' in args.version:
         model = FCOS(cfg=cfg,
+                     device=device, 
+                     num_classes=num_classes, 
+                     trainable=trainable,
+                     conf_thresh=cfg['conf_thresh'],
+                     nms_thresh=cfg['nms_thresh'],
+                     topk=args.topk)
+    elif 'ttf_yolo' in args.version:
+        model = YOLO(cfg=cfg,
                      device=device, 
                      num_classes=num_classes, 
                      trainable=trainable,

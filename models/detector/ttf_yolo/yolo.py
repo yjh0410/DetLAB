@@ -1,3 +1,4 @@
+from matplotlib.pyplot import sca
 import torch
 import math
 import numpy as np
@@ -67,12 +68,11 @@ class YOLO(nn.Module):
                              p7_feat=False)
                                      
         # head
-        self.non_shared_heads = nn.ModuleList([
-            DecoupledHead(head_dim=cfg['head_dim'],
-                          num_cls_head=cfg['num_cls_head'],
-                          num_reg_head=cfg['num_reg_head'],
-                          act_type=cfg['act_type'],
-                          norm_type=cfg['head_norm']) for _ in range(self.stride)]) 
+        self.head = DecoupledHead(head_dim=cfg['head_dim'],
+                                  num_cls_head=cfg['num_cls_head'],
+                                  num_reg_head=cfg['num_reg_head'],
+                                  act_type=cfg['act_type'],
+                                  norm_type=cfg['head_norm'])
 
         # pred
         self.cls_pred = nn.Conv2d(cfg['head_dim'], 
@@ -99,7 +99,6 @@ class YOLO(nn.Module):
                                        gamma=cfg['gamma'],
                                        loss_cls_weight=cfg['loss_cls_weight'],
                                        loss_reg_weight=cfg['loss_reg_weight'],
-                                       loss_ctn_weight=cfg['loss_ctn_weight'],
                                        num_classes=num_classes)
 
 
@@ -129,16 +128,19 @@ class YOLO(nn.Module):
         return anchors
         
 
-    def decode_boxes(self, anchors, pred_deltas):
+    def decode_boxes(self, level, anchors, pred_deltas):
         """
             anchors:  (List[Tensor]) [1, M, 2] or [M, 2]
             pred_reg: (List[Tensor]) [B, M, 4] or [M, 4] (l, t, r, b)
         """
-        # x1 = x_anchor - l, x2 = x_anchor + r
-        # y1 = y_anchor - t, y2 = y_anchor + b
-        pred_x1y1 = anchors - pred_deltas[..., :2]
-        pred_x2y2 = anchors + pred_deltas[..., 2:]
-        pred_box = torch.cat([pred_x1y1, pred_x2y2], dim=-1)
+        pred_ctr_offset = pred_deltas[..., :2].sigmoid() * 3.0 - 1.5
+        pred_ctr = anchors + pred_ctr_offset
+
+        pred_box_wh = pred_deltas[..., 2:].exp()
+        pred_x1y1 = pred_ctr - pred_box_wh * 0.5
+        pred_x2y2 = pred_ctr + pred_box_wh * 0.5
+
+        pred_box = torch.cat([pred_x1y1, pred_x2y2], dim=-1) * self.stride[level]
 
         return pred_box
 
@@ -189,7 +191,7 @@ class YOLO(nn.Module):
         all_scores = []
         all_labels = []
         all_bboxes = []
-        for level, feat in enumerate(pyramid_feats):
+        for level, (feat, scale) in enumerate(zip(pyramid_feats, self.scales)):
             cls_feat, reg_feat = self.head(feat)
 
             # [1, C, H, W]
@@ -202,7 +204,7 @@ class YOLO(nn.Module):
             # [1, C, H, W] -> [H, W, C] -> [M, C]
             cls_pred = cls_pred[0].permute(1, 2, 0).contiguous().view(-1, self.num_classes)
             reg_pred = reg_pred[0].permute(1, 2, 0).contiguous().view(-1, 4)
-            reg_pred = F.relu(self.scales[level](reg_pred))
+            reg_pred[..., 2:] = scale(reg_pred[..., 2:])
 
             # scores
             scores, labels = torch.max(cls_pred.sigmoid(), dim=-1)
@@ -278,21 +280,22 @@ class YOLO(nn.Module):
             all_cls_preds = []
             all_box_preds = []
             all_masks = []
-            for level, feat, head, scale in enumerate(zip(pyramid_feats, self.non_shared_heads, self.scales)):
-                cls_feat, reg_feat = head(feat)
+            for level, (feat, scale) in enumerate(zip(pyramid_feats, self.scales)):
+                cls_feat, reg_feat = self.head(feat)
                 # [B, C, H, W]
                 cls_pred = self.cls_pred(cls_feat)
                 reg_pred = self.reg_pred(reg_feat)
 
                 B, _, H, W = cls_pred.size()
                 fmp_size = [H, W]
+                # generate anchor boxes: [M, 4]
+                anchors = self.generate_anchors(level, fmp_size)
                 # [B, C, H, W] -> [B, H, W, C] -> [B, M, C]
                 cls_pred = cls_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, self.num_classes)
                 reg_pred = reg_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, 4)
-                box_pred = self.decode_boxes(level, anchors, scale(reg_pred))
+                reg_pred[..., 2:] = scale(reg_pred[..., 2:])
+                box_pred = self.decode_boxes(level, anchors, reg_pred)
 
-                # generate anchor boxes: [M, 4]
-                anchors = self.generate_anchors(level, fmp_size)
                 all_anchors.append(anchors)
             
                 all_cls_preds.append(cls_pred)

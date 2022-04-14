@@ -24,16 +24,16 @@ ttf_yolo_config = {
                   {'name': 'PadImage'}]},
         # model
         'backbone': 'darknet19',
-        'norm_type': 'BN',
+        'norm_type': 'FrozeBN',
         'stride': [8, 16, 32],
         # neck
         'use_spp': True,
-        'fpn': 'yolofpn',
-        'fpn_norm': 'BN',
+        'fpn': 'yolo_fpn',
+        'fpn_norm': 'GN',
         'fpn_act': 'lrelu',
         # head
         'head_dim': 256,
-        'head_norm': 'BN',
+        'head_norm': 'GN',
         'act_type': 'lrelu',
         'head': 'decoupled_head',
         'num_cls_head': 2,
@@ -92,12 +92,12 @@ ttf_yolo_config = {
         'norm_type': 'BN',
         'stride': [8, 16, 32],
         # neck
-        'fpn': 'yolofpn',
-        'fpn_norm': 'BN',
+        'fpn': 'yolo_fpn',
+        'fpn_norm': 'GN',
         'fpn_act': 'lrelu',
         # head
         'head_dim': 256,
-        'head_norm': 'BN',
+        'head_norm': 'GN',
         'act_type': 'lrelu',
         'head': 'decoupled_head',
         'num_cls_head': 2,

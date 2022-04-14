@@ -7,14 +7,14 @@ from .spp import SPPBlock
 
 
 class ConvBlocks(nn.Module):
-    def __init__(self, in_dim, norm_type='BN', act_type='lrelu'):
+    def __init__(self, in_dim, out_dim, norm_type='BN', act_type='lrelu'):
         super().__init__()
         self.conv_blocks = nn.Sequential(
             Conv(in_dim, in_dim//2, k=1, act_type=act_type, norm_type=norm_type),
             Conv(in_dim//2, in_dim, k=3, p=1, s=1, act_type=act_type, norm_type=norm_type),
             Conv(in_dim, in_dim//2, k=1, act_type=act_type, norm_type=norm_type),
             Conv(in_dim//2, in_dim, k=3, p=1, s=1, act_type=act_type, norm_type=norm_type),
-            Conv(in_dim, in_dim//2, k=1, act_type=act_type, norm_type=norm_type)
+            Conv(in_dim, out_dim, k=1, act_type=act_type, norm_type=norm_type)
         )
 
     def forward(self, x):
