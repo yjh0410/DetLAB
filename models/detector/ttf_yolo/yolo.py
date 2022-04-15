@@ -134,13 +134,13 @@ class YOLO(nn.Module):
             pred_reg: (List[Tensor]) [B, M, 4] or [M, 4] (l, t, r, b)
         """
         ctr_offset = pred_ctr_offset.sigmoid() * 3.0 - 1.5
-        pred_ctr = anchors + ctr_offset
+        pred_ctr = anchors + ctr_offset * self.stride[level]
 
-        pred_box_wh = pred_size.exp()
+        pred_box_wh = pred_size.exp() * self.stride[level]
         pred_x1y1 = pred_ctr - pred_box_wh * 0.5
         pred_x2y2 = pred_ctr + pred_box_wh * 0.5
 
-        pred_box = torch.cat([pred_x1y1, pred_x2y2], dim=-1) * self.stride[level]
+        pred_box = torch.cat([pred_x1y1, pred_x2y2], dim=-1)
 
         return pred_box
 
