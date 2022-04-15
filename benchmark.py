@@ -137,7 +137,8 @@ if __name__ == '__main__':
                               max_size=cfg['test_max_size'],
                               pixel_mean=cfg['pixel_mean'],
                               pixel_std=cfg['pixel_std'],
-                              format=cfg['format'])
+                              format=cfg['format'],
+                              padding=cfg['val_padding'])
 
     # run
     test(net=model, 

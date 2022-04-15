@@ -421,17 +421,26 @@ class ValTransforms(object):
                  max_size=1333, 
                  pixel_mean=(0.485, 0.456, 0.406), 
                  pixel_std=(0.229, 0.224, 0.225),
-                 format='RGB'):
+                 format='RGB',
+                 padding=False):
         self.min_size = min_size
         self.max_size = max_size
         self.pixel_mean = pixel_mean
         self.pixel_std = pixel_std
         self.format = format
-        self.transforms = Compose([
-            ToTensor(),
-            Resize(min_size=min_size, max_size=max_size),
-            Normalize(pixel_mean, pixel_std)
-        ])
+        if not padding:
+            self.transforms = Compose([
+                ToTensor(),
+                Resize(min_size=min_size, max_size=max_size),
+                Normalize(pixel_mean, pixel_std)
+            ])
+        else:
+            self.transforms = Compose([
+                ToTensor(),
+                Resize(min_size=min_size, max_size=max_size),
+                Normalize(pixel_mean, pixel_std),
+                PadImage(max_size=max_size)
+            ])
 
 
     def __call__(self, image, target=None, mask=None):

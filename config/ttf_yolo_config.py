@@ -22,6 +22,7 @@ ttf_yolo_config = {
                   {'name': 'Resize'},
                   {'name': 'Normalize'},
                   {'name': 'PadImage'}]},
+        'val_padding': True,
         # model
         'backbone': 'darknet19',
         'norm_type': 'FrozeBN',
@@ -87,6 +88,7 @@ ttf_yolo_config = {
                   {'name': 'Resize'},
                   {'name': 'Normalize'},
                   {'name': 'PadImage'}]},
+        'val_padding': True,
         # model
         'backbone': 'darknet53',
         'norm_type': 'BN',

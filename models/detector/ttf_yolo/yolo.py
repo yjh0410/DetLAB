@@ -1,9 +1,7 @@
-from matplotlib.pyplot import sca
 import torch
 import math
 import numpy as np
 import torch.nn as nn
-import torch.nn.functional as F
 
 from ...backbone import build_backbone
 from ...neck import build_fpn

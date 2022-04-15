@@ -326,7 +326,8 @@ def build_dataset(cfg, args, device):
                                   max_size=cfg['test_max_size'],
                                   pixel_mean=cfg['pixel_mean'],
                                   pixel_std=cfg['pixel_std'],
-                                  format=cfg['format'])
+                                  format=cfg['format'],
+                                  padding=cfg['val_padding'])
     color_augment = BaseTransforms(min_size=cfg['train_min_size'],
                                    max_size=cfg['train_max_size'],
                                    random_size=cfg['epoch'][args.schedule]['multi_scale'],

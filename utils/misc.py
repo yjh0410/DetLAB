@@ -28,8 +28,8 @@ def sigmoid_focal_loss(logits, targets, alpha=0.25, gamma=2.0, reduction='none')
 def sigmoid_varifocal_loss(logits, targets, alpha=0.75, gamma=2.0, reduction='none'):
     p = torch.sigmoid(logits)
     ce_loss = F.binary_cross_entropy_with_logits(input=logits, 
-                                                    target=targets, 
-                                                    reduction="none")
+                                                 target=targets, 
+                                                 reduction="none")
     pos_mask = (targets > 0.).float()
     neg_mask = (targets == 0.).float()
     pos_loss = ce_loss * pos_mask

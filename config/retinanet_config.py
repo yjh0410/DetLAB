@@ -33,6 +33,7 @@ retinanet_config = {
                   {'name': 'Resize'},
                   {'name': 'Normalize'},
                   {'name': 'PadImage'}]},
+        'val_padding': False,
         # model
         'backbone': 'resnet18',
         'norm_type': 'FrozeBN',
@@ -119,6 +120,7 @@ retinanet_config = {
                   {'name': 'Resize'},
                   {'name': 'Normalize'},
                   {'name': 'PadImage'}]},
+        'val_padding': False,
         # model
         'backbone': 'resnet50',
         'norm_type': 'FrozeBN',
@@ -205,6 +207,7 @@ retinanet_config = {
                   {'name': 'Resize'},
                   {'name': 'Normalize'},
                   {'name': 'PadImage'}]},
+        'val_padding': False,
         # model
         'backbone': 'resnet101',
         'norm_type': 'FrozeBN',
