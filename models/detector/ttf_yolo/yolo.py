@@ -128,15 +128,15 @@ class YOLO(nn.Module):
         return anchors
         
 
-    def decode_boxes(self, level, anchors, pred_deltas):
+    def decode_boxes(self, level, anchors, pred_ctr_offset, pred_size):
         """
             anchors:  (List[Tensor]) [1, M, 2] or [M, 2]
             pred_reg: (List[Tensor]) [B, M, 4] or [M, 4] (l, t, r, b)
         """
-        pred_ctr_offset = pred_deltas[..., :2].sigmoid() * 3.0 - 1.5
-        pred_ctr = anchors + pred_ctr_offset
+        ctr_offset = pred_ctr_offset.sigmoid() * 3.0 - 1.5
+        pred_ctr = anchors + ctr_offset
 
-        pred_box_wh = pred_deltas[..., 2:].exp()
+        pred_box_wh = pred_size.exp()
         pred_x1y1 = pred_ctr - pred_box_wh * 0.5
         pred_x2y2 = pred_ctr + pred_box_wh * 0.5
 
@@ -204,7 +204,8 @@ class YOLO(nn.Module):
             # [1, C, H, W] -> [H, W, C] -> [M, C]
             cls_pred = cls_pred[0].permute(1, 2, 0).contiguous().view(-1, self.num_classes)
             reg_pred = reg_pred[0].permute(1, 2, 0).contiguous().view(-1, 4)
-            reg_pred[..., 2:] = scale(reg_pred[..., 2:])
+            pred_ctr_offset = reg_pred[..., :2]
+            pred_size = scale(reg_pred[..., 2:])
 
             # scores
             scores, labels = torch.max(cls_pred.sigmoid(), dim=-1)
@@ -215,11 +216,12 @@ class YOLO(nn.Module):
             if scores.shape[0] > self.topk:
                 scores, indices = torch.topk(scores, self.topk)
                 labels = labels[indices]
-                reg_pred = reg_pred[indices]
+                pred_ctr_offset = pred_ctr_offset[indices]
+                pred_size = pred_size[indices]
                 anchors = anchors[indices]
 
             # decode box: [M, 4]
-            bboxes = self.decode_boxes(level, anchors, reg_pred)
+            bboxes = self.decode_boxes(level, anchors, pred_ctr_offset, pred_size)
 
             all_scores.append(scores)
             all_labels.append(labels)
@@ -293,8 +295,9 @@ class YOLO(nn.Module):
                 # [B, C, H, W] -> [B, H, W, C] -> [B, M, C]
                 cls_pred = cls_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, self.num_classes)
                 reg_pred = reg_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, 4)
-                reg_pred[..., 2:] = scale(reg_pred[..., 2:])
-                box_pred = self.decode_boxes(level, anchors, reg_pred)
+                pred_ctr_offset = reg_pred[..., :2]
+                pred_size = scale(reg_pred[..., 2:])
+                box_pred = self.decode_boxes(level, anchors, pred_ctr_offset, pred_size)
 
                 all_anchors.append(anchors)
             

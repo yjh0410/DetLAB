@@ -1,7 +1,7 @@
 import torch
 from .matcher import OTA_Matcher
 from utils.box_ops import *
-from utils.misc import sigmoid_focal_loss
+from utils.misc import sigmoid_varifocal_loss
 from utils.distributed_utils import get_world_size, is_dist_avail_and_initialized
 
 
@@ -9,7 +9,7 @@ class Criterion(object):
     def __init__(self, 
                  cfg, 
                  device, 
-                 alpha=0.25,
+                 alpha=0.75,
                  gamma=2.0,
                  loss_cls_weight=1.0, 
                  loss_reg_weight=1.0,
@@ -32,7 +32,7 @@ class Criterion(object):
             tgt_cls:  (Tensor) [N, C]
         """
         # cls loss: [V, C]
-        loss_cls = sigmoid_focal_loss(pred_cls, tgt_cls, self.alpha, self.gamma, reduction='none')
+        loss_cls = sigmoid_varifocal_loss(pred_cls, tgt_cls, self.alpha, self.gamma, reduction='none')
 
         return loss_cls.sum() / num_boxes
 
@@ -72,10 +72,9 @@ class Criterion(object):
                                                       targets = targets)
 
         # [B, M, C] -> [BM, C]
-        pred_cls = outputs['pred_cls'].view(-1, self.num_classes)
-        pred_box = outputs['pred_box'].view(-1, 4)
-        pred_iou = outputs['pred_iou'].view(-1, 1)
-        masks = outputs['mask'].view(-1)
+        pred_cls =  torch.cat(outputs['pred_cls'], dim=1).view(-1, self.num_classes)
+        pred_box =  torch.cat(outputs['pred_box'], dim=1).view(-1, 4)
+        masks = torch.cat(outputs['mask'], dim=1).view(-1)
 
         gt_classes = gt_classes.flatten().to(device)
         gt_bboxes = gt_bboxes.view(-1, 4).to(device)

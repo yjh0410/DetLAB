@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
-import math
 
 
 def sigmoid_focal_loss(logits, targets, alpha=0.25, gamma=2.0, reduction='none'):
@@ -25,6 +24,26 @@ def sigmoid_focal_loss(logits, targets, alpha=0.25, gamma=2.0, reduction='none')
 
     return loss
 
+
+def sigmoid_varifocal_loss(logits, targets, alpha=0.75, gamma=2.0, reduction='none'):
+    p = torch.sigmoid(logits)
+    ce_loss = F.binary_cross_entropy_with_logits(input=logits, 
+                                                    target=targets, 
+                                                    reduction="none")
+    pos_mask = (targets > 0.).float()
+    neg_mask = (targets == 0.).float()
+    pos_loss = ce_loss * pos_mask
+    neg_loss = ce_loss * neg_mask
+
+    loss = targets * pos_loss + alpha * (p ** gamma) * neg_loss
+
+    if reduction == "mean":
+        loss = loss.mean()
+
+    elif reduction == "sum":
+        loss = loss.sum()
+
+    return loss
 
 def nms(dets, scores, nms_thresh=0.4):
     """"Pure Python NMS baseline."""
