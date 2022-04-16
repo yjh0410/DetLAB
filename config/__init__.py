@@ -1,7 +1,6 @@
 from .yolof_config import yolof_config
 from .retinanet_config import retinanet_config
 from .fcos_config import fcos_config
-from .ttf_yolo_config import ttf_yolo_config
 
 
 def build_config(args):
@@ -16,8 +15,5 @@ def build_config(args):
 
     elif 'fcos' in args.version:
         cfg = fcos_config[args.version]
-
-    elif 'ttf_yolo' in args.version:
-        cfg = ttf_yolo_config[args.version]
 
     return cfg

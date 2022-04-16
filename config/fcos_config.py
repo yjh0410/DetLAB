@@ -439,18 +439,6 @@ fcos_config = {
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],
         'transforms': {
-            '1x':[{'name': 'RandomHorizontalFlip'},
-                  {'name': 'ToTensor'},
-                  {'name': 'Resize'},
-                  {'name': 'Normalize'},
-                  {'name': 'PadImage'}],
-
-            '2x':[{'name': 'RandomHorizontalFlip'},
-                  {'name': 'ToTensor'},
-                  {'name': 'Resize'},
-                  {'name': 'Normalize'},
-                  {'name': 'PadImage'}],
-
             '3x':[{'name': 'DistortTransform',
                    'hue': 0.1,
                    'saturation': 1.5,
@@ -505,12 +493,6 @@ fcos_config = {
         'wp_iter': 1000,
         'warmup_factor': 0.00066667,
         'epoch': {
-            '1x': {'max_epoch': 12, 
-                    'lr_epoch': [8, 11], 
-                    'multi_scale': None},
-            '2x': {'max_epoch': 24, 
-                    'lr_epoch': [16, 22], 
-                    'multi_scale': [320, 352, 384, 416, 448, 480, 512, 544, 576, 608, 640]},
             '3x': {'max_epoch': 37, 
                     'lr_epoch': [24, 33], 
                     'multi_scale': [320, 352, 384, 416, 448, 480, 512, 544, 576, 608, 640]},

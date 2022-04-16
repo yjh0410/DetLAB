@@ -27,9 +27,6 @@ weight files to complement this project. Thanks a lot.***
 - [x] YOLOF
 - [x] RetinaNet
 - [] FCOS
-- [] TTF-YOLO
-
-More advanced detectors are coming soon ...
 
 
 # Requirements
@@ -80,24 +77,6 @@ In my RetinaNet:
 In my FCOS:
 - For regression head, `GIoU loss` is deployed rather than `IoU loss`
 - For real-time FCOS, the `PaFPN` is deployed for fpn
-
-
-## TTF-YOLO
-| Model                          |  scale     |   mAP   | Weight|
-|--------------------------------|------------|---------|-------|
-| TTF-YOLO_D_19_4x               |  640,640   |         |       |
-| TTF-YOLO_D_53_4x               |  640,640   |         |       |
-
-Plan to do for TTF-YOLO:
-- [] Based on YOLOv3 structure with `SPP` module
-- [] Remove `objectness` head
-- [] `Anchor free` for bounding box regression
-- [] `OTA` for dynamic label assignment
-- [] `VariFocal loss` for classification head with `IoU-awareness`
-- [] `GIoU loss` for regression head
-- [] `4x` training schedule (~48 epochs) rather than 300 epochs
-- [] `Multi scale` augmentation
-- [] `Mosaic` augmentation
 
 
 # Train
