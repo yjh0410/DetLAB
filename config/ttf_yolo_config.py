@@ -25,12 +25,12 @@ ttf_yolo_config = {
         'val_padding': True,
         # model
         'backbone': 'darknet19',
-        'norm_type': 'FrozeBN',
+        'norm_type': 'BN',
         'stride': [8, 16, 32],
         # neck
         'use_spp': True,
         'fpn': 'yolo_fpn',
-        'fpn_norm': 'GN',
+        'fpn_norm': 'BN',
         'fpn_act': 'lrelu',
         # head
         'head_dim': 256,
@@ -45,12 +45,13 @@ ttf_yolo_config = {
         'test_score_thresh': 0.5,
         # matcher
         'matcher': 'ota_matcher',
+        'topk_candidate': 10,
         'eps': 0.1, 
         'max_iter': 50,
         'ctr_clamp': None,
         'center_sampling_radius': 2.5,
         # loss
-        'alpha': 0.75,
+        'alpha': 0.25,
         'gamma': 2.0,
         'loss_cls_weight': 1.0,
         'loss_reg_weight': 1.0,
@@ -115,7 +116,7 @@ ttf_yolo_config = {
         'ctr_clamp': None,
         'center_sampling_radius': 2.5,
         # loss
-        'alpha': 0.25,
+        'alpha': 0.75,
         'gamma': 2.0,
         'loss_cls_weight': 1.0,
         'loss_reg_weight': 1.0,

@@ -2,6 +2,7 @@ import torch
 import math
 import numpy as np
 import torch.nn as nn
+import torch.nn.functional as F
 
 from ...backbone import build_backbone
 from ...neck import build_fpn
@@ -73,14 +74,9 @@ class YOLO(nn.Module):
                                   norm_type=cfg['head_norm'])
 
         # pred
-        self.cls_pred = nn.Conv2d(cfg['head_dim'], 
-                                  self.num_classes, 
-                                  kernel_size=3, 
-                                  padding=1)
-        self.reg_pred = nn.Conv2d(cfg['head_dim'], 
-                                  4, 
-                                  kernel_size=3, 
-                                  padding=1)
+        self.cls_pred = nn.Conv2d(cfg['head_dim'], self.num_classes, kernel_size=1)
+        self.reg_pred = nn.Conv2d(cfg['head_dim'], 4, kernel_size=1)
+        self.iou_pred = nn.Conv2d(cfg['head_dim'], 1, kernel_size=1)
 
         # scale
         self.scales = nn.ModuleList([Scale() for _ in range(len(self.stride))])
@@ -126,18 +122,15 @@ class YOLO(nn.Module):
         return anchors
         
 
-    def decode_boxes(self, level, anchors, pred_ctr_offset, pred_size):
+    def decode_boxes(self, anchors, pred_deltas):
         """
             anchors:  (List[Tensor]) [1, M, 2] or [M, 2]
             pred_reg: (List[Tensor]) [B, M, 4] or [M, 4] (l, t, r, b)
         """
-        ctr_offset = pred_ctr_offset.sigmoid() * 3.0 - 1.5
-        pred_ctr = anchors + ctr_offset * self.stride[level]
-
-        pred_box_wh = pred_size.exp() * self.stride[level]
-        pred_x1y1 = pred_ctr - pred_box_wh * 0.5
-        pred_x2y2 = pred_ctr + pred_box_wh * 0.5
-
+        # x1 = x_anchor - l, x2 = x_anchor + r
+        # y1 = y_anchor - t, y2 = y_anchor + b
+        pred_x1y1 = anchors - pred_deltas[..., :2]
+        pred_x2y2 = anchors + pred_deltas[..., 2:]
         pred_box = torch.cat([pred_x1y1, pred_x2y2], dim=-1)
 
         return pred_box
@@ -195,6 +188,7 @@ class YOLO(nn.Module):
             # [1, C, H, W]
             cls_pred = self.cls_pred(cls_feat)
             reg_pred = self.reg_pred(reg_feat)
+            iou_pred = self.iou_pred(reg_feat)
 
             # decode box
             _, _, H, W = cls_pred.size()
@@ -202,11 +196,11 @@ class YOLO(nn.Module):
             # [1, C, H, W] -> [H, W, C] -> [M, C]
             cls_pred = cls_pred[0].permute(1, 2, 0).contiguous().view(-1, self.num_classes)
             reg_pred = reg_pred[0].permute(1, 2, 0).contiguous().view(-1, 4)
-            pred_ctr_offset = reg_pred[..., :2]
-            pred_size = scale(reg_pred[..., 2:])
+            reg_pred = F.relu(scale(reg_pred)) * self.stride[level]
+            iou_pred = iou_pred[0].permute(1, 2, 0).contiguous().view(-1, 1)
 
             # scores
-            scores, labels = torch.max(cls_pred.sigmoid(), dim=-1)
+            scores, labels = torch.max(torch.sqrt(cls_pred.sigmoid() * iou_pred.sigmoid()), dim=-1)
 
             # [M, 4]
             anchors = self.generate_anchors(level, fmp_size)
@@ -214,12 +208,11 @@ class YOLO(nn.Module):
             if scores.shape[0] > self.topk:
                 scores, indices = torch.topk(scores, self.topk)
                 labels = labels[indices]
-                pred_ctr_offset = pred_ctr_offset[indices]
-                pred_size = pred_size[indices]
+                reg_pred = reg_pred[indices]
                 anchors = anchors[indices]
 
             # decode box: [M, 4]
-            bboxes = self.decode_boxes(level, anchors, pred_ctr_offset, pred_size)
+            bboxes = self.decode_boxes(anchors, reg_pred)
 
             all_scores.append(scores)
             all_labels.append(labels)
@@ -278,29 +271,27 @@ class YOLO(nn.Module):
             # shared head
             all_anchors = []
             all_cls_preds = []
-            all_box_preds = []
+            all_reg_preds = []
+            all_iou_preds = []
             all_masks = []
             for level, (feat, scale) in enumerate(zip(pyramid_feats, self.scales)):
                 cls_feat, reg_feat = self.head(feat)
                 # [B, C, H, W]
                 cls_pred = self.cls_pred(cls_feat)
                 reg_pred = self.reg_pred(reg_feat)
+                iou_pred = self.iou_pred(reg_feat)
 
                 B, _, H, W = cls_pred.size()
                 fmp_size = [H, W]
-                # generate anchor boxes: [M, 4]
-                anchors = self.generate_anchors(level, fmp_size)
                 # [B, C, H, W] -> [B, H, W, C] -> [B, M, C]
                 cls_pred = cls_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, self.num_classes)
                 reg_pred = reg_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, 4)
-                pred_ctr_offset = reg_pred[..., :2]
-                pred_size = scale(reg_pred[..., 2:])
-                box_pred = self.decode_boxes(level, anchors, pred_ctr_offset, pred_size)
+                reg_pred = F.relu(scale(reg_pred)) * self.stride[level]
+                iou_pred = iou_pred.permute(0, 2, 3, 1).contiguous().view(B, -1, 1)
 
-                all_anchors.append(anchors)
-            
                 all_cls_preds.append(cls_pred)
-                all_box_preds.append(box_pred)
+                all_reg_preds.append(reg_pred)
+                all_iou_preds.append(iou_pred)
 
                 if mask is not None:
                     # [B, H, W]
@@ -310,10 +301,15 @@ class YOLO(nn.Module):
                     
                     all_masks.append(mask_i)
 
+                # generate anchor boxes: [M, 4]
+                anchors = self.generate_anchors(level, fmp_size)
+                all_anchors.append(anchors)
+            
             # output dict
             outputs = {"pred_cls": all_cls_preds,  # List [B, M, C]
-                       "pred_box": all_box_preds,  # List [B, M, 4]
-                       'strides': self.stride,
+                       "pred_reg": all_reg_preds,  # List [B, M, 4]
+                       "pred_iou": all_iou_preds,  # List [B, M, 1]
+                       "strides": self.stride,
                        "mask": all_masks}          # List [B, M,]
 
             # loss

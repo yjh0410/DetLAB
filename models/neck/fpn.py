@@ -41,16 +41,9 @@ class BasicFPN(nn.Module):
 
 
     def _init_weight(self):
-        for m in self.input_projs:
-            weight_init.c2_xavier_fill(m)
-            weight_init.c2_xavier_fill(m)
-        for m in self.smooth_layers:
-            weight_init.c2_xavier_fill(m)
-            weight_init.c2_xavier_fill(m)
-        if self.p6_feat:
-            weight_init.c2_xavier_fill(self.p6_conv)
-        if self.p7_feat:
-            weight_init.c2_xavier_fill(self.p7_conv[1])
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                weight_init.c2_xavier_fill(m)
 
 
     def forward(self, feats):

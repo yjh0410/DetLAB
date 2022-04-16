@@ -228,6 +228,7 @@ fcos_config = {
         'test_score_thresh': 0.5,
         # matcher
         'matcher': 'ota_matcher',
+        'topk_candidate': 20,
         'eps': 0.1, 
         'max_iter': 50,
         'center_sampling_radius': 2.5,
@@ -398,6 +399,7 @@ fcos_config = {
         'test_score_thresh': 0.5,
         # matcher
         'matcher': 'ota_matcher',
+        'topk_candidate': 20,
         'eps': 0.1, 
         'max_iter': 50,
         'center_sampling_radius': 2.5,
@@ -484,6 +486,7 @@ fcos_config = {
         'test_score_thresh': 0.5,
         # matcher
         'matcher': 'ota_matcher',
+        'topk_candidate': 20,
         'eps': 0.1, 
         'max_iter': 50,
         'ctr_clamp': None,

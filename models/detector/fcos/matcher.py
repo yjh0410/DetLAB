@@ -224,6 +224,7 @@ class OTA_Matcher(object):
         self.box_weights = box_weights
         self.center_sampling_radius = cfg['center_sampling_radius']
         self.sinkhorn = SinkhornDistance(eps=cfg['eps'], max_iter=cfg['max_iter'])
+        self.topk_candidate = cfg['topk_candidate']
 
 
     def get_deltas(self, anchors, bboxes):
@@ -319,7 +320,7 @@ class OTA_Matcher(object):
                 loss = loss_cls + 3.0 * loss_delta + 1e6 * (1 - is_in_bboxes.float())
 
                 # Performing Dynamic k Estimation, top_candidates = 20
-                topk_ious, _ = torch.topk(ious * is_in_bboxes.float(), 20, dim=1)
+                topk_ious, _ = torch.topk(ious * is_in_bboxes.float(), self.topk_candidate, dim=1)
                 mu = ious.new_ones(num_gt + 1)
                 mu[:-1] = torch.clamp(topk_ious.sum(1).int(), min=1).float()
                 mu[-1] = num_anchor - mu[:-1].sum()

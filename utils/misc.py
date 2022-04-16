@@ -45,6 +45,7 @@ def sigmoid_varifocal_loss(logits, targets, alpha=0.75, gamma=2.0, reduction='no
 
     return loss
 
+
 def nms(dets, scores, nms_thresh=0.4):
     """"Pure Python NMS baseline."""
     x1 = dets[:, 0]  #xmin

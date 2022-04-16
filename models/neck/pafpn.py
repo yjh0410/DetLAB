@@ -67,23 +67,9 @@ class PaFPN(nn.Module):
 
 
     def _init_weight(self):
-        for m in self.input_projs:
+        for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 weight_init.c2_xavier_fill(m)
-        for m in self.top_down_smooth_layers:
-            if isinstance(m, nn.Conv2d):
-                weight_init.c2_xavier_fill(m)
-        for m in self.bottom_up_smooth_layers:
-            if isinstance(m, nn.Conv2d):
-                weight_init.c2_xavier_fill(m)
-        if self.p6_feat:
-            for m in self.p6_layer:
-                if isinstance(m, nn.Conv2d):
-                    weight_init.c2_xavier_fill(m)
-        if self.p7_feat:
-            for m in self.p7_layer:
-                if isinstance(m, nn.Conv2d):
-                    weight_init.c2_xavier_fill(m)
 
 
     def forward(self, feats):
