@@ -25,7 +25,7 @@ ttf_yolo_config = {
         'val_padding': True,
         # model
         'backbone': 'darknet19',
-        'norm_type': 'BN',
+        'norm_type': 'FrozeBN',
         'stride': [8, 16, 32],
         # neck
         'use_spp': True,
