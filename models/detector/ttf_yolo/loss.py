@@ -15,7 +15,7 @@ class Criterion(object):
                  gamma=2.0,
                  loss_cls_weight=1.0, 
                  loss_reg_weight=1.0,
-                 loss_ctn_weight=1.0,
+                 loss_iou_weight=1.0,
                  num_classes=80):
         self.cfg = cfg
         self.device = device
@@ -24,7 +24,7 @@ class Criterion(object):
         self.num_classes = num_classes
         self.loss_cls_weight = loss_cls_weight
         self.loss_reg_weight = loss_reg_weight
-        self.loss_ctn_weight = loss_ctn_weight
+        self.loss_iou_weight = loss_iou_weight
         self.matcher = OTA_Matcher(cfg, 
                                     num_classes, 
                                     box_weights=[1., 1., 1., 1.])
@@ -145,7 +145,7 @@ class Criterion(object):
         # total loss
         losses = self.loss_cls_weight * loss_labels + \
                  self.loss_reg_weight * loss_bboxes + \
-                 self.loss_ctn_weight * loss_ious
+                 self.loss_iou_weight * loss_ious
 
         loss_dict = dict(
                 loss_labels = loss_labels,

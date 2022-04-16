@@ -93,6 +93,7 @@ class YOLO(nn.Module):
                                        gamma=cfg['gamma'],
                                        loss_cls_weight=cfg['loss_cls_weight'],
                                        loss_reg_weight=cfg['loss_reg_weight'],
+                                       loss_iou_weight=cfg['loss_iou_weight'],
                                        num_classes=num_classes)
 
 

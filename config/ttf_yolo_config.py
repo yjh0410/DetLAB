@@ -54,7 +54,8 @@ ttf_yolo_config = {
         'alpha': 0.25,
         'gamma': 2.0,
         'loss_cls_weight': 1.0,
-        'loss_reg_weight': 1.0,
+        'loss_reg_weight': 2.0,
+        'loss_iou_weight': 0.5,
         # optimizer
         'optimizer': 'sgd',
         'momentum': 0.9,
@@ -119,7 +120,8 @@ ttf_yolo_config = {
         'alpha': 0.75,
         'gamma': 2.0,
         'loss_cls_weight': 1.0,
-        'loss_reg_weight': 1.0,
+        'loss_reg_weight': 2.0,
+        'loss_iou_weight': 0.5,
         # optimizer
         'optimizer': 'sgd',
         'momentum': 0.9,
