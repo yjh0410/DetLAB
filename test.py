@@ -135,7 +135,12 @@ def test(args,
         print("detection time used ", time.time() - t0, "s")
         
         # rescale
-        bboxes *= orig_size
+        if transforms.padding:
+            # The input image is padded with 0 on the short side, aligning with the long side.
+            bboxes *= max(h, w)
+        else:
+            # the input image is not padded.
+            bboxes *= orig_size
         bboxes[..., [0, 2]] = np.clip(bboxes[..., [0, 2]], a_min=0., a_max=w)
         bboxes[..., [1, 3]] = np.clip(bboxes[..., [1, 3]], a_min=0., a_max=h)
 

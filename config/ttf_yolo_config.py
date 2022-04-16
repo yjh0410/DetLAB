@@ -117,7 +117,7 @@ ttf_yolo_config = {
         'ctr_clamp': None,
         'center_sampling_radius': 2.5,
         # loss
-        'alpha': 0.75,
+        'alpha': 0.25,
         'gamma': 2.0,
         'loss_cls_weight': 1.0,
         'loss_reg_weight': 2.0,

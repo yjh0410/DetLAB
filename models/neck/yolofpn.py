@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from utils import weight_init
 from ..basic.conv import Conv
 from .spp import SPPBlock
 
