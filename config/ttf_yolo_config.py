@@ -30,7 +30,7 @@ ttf_yolo_config = {
         # neck
         'use_spp': True,
         'fpn': 'yolo_fpn',
-        'fpn_norm': 'BN',
+        'fpn_norm': 'GN',
         'fpn_act': 'lrelu',
         # head
         'head_dim': 256,
