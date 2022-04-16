@@ -67,7 +67,12 @@ class VOCAPIEvaluator():
             bboxes, scores, cls_inds = net(x)
             detect_time = time.time() - t0
             # rescale
-            bboxes *= orig_size
+            if self.transform.padding:
+                # The input image is padded with 0 on the short side, aligning with the long side.
+                bboxes *= max(h, w)
+            else:
+                # the input image is not padded.
+                bboxes *= orig_size
 
             for j in range(len(self.labelmap)):
                 inds = np.where(cls_inds == j)[0]

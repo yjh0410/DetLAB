@@ -428,6 +428,7 @@ class ValTransforms(object):
         self.pixel_mean = pixel_mean
         self.pixel_std = pixel_std
         self.format = format
+        self.padding = padding
         if not padding:
             self.transforms = Compose([
                 ToTensor(),

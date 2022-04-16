@@ -81,7 +81,12 @@ class COCOAPIEvaluator():
                 outputs = model(x)
                 bboxes, scores, cls_inds = outputs
                 # rescale
-                bboxes *= orig_size
+                if self.transform.padding:
+                    # The input image is padded with 0 on the short side, aligning with the long side.
+                    bboxes *= max(h, w)
+                else:
+                    # the input image is not padded.
+                    bboxes *= orig_size
 
             for i, box in enumerate(bboxes):
                 x1 = float(box[0])
