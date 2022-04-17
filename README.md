@@ -63,6 +63,7 @@ At least, please make sure your torch is version 1.x.
 |--------------------------------|------------|---------|-------|
 | RetinaNet_R_18_1x              |  800,1333  |   29.3  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/retinanet_r18_1x_29.3.pth) |
 | RetinaNet_R_50_1x              |  800,1333  |   35.8  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/retinanet_r50_1x_35.8.pth) |
+| RetinaNet-RT_R_50_3x           |  512,736   |     |  |
 
 In my RetinaNet:
 - For regression head, `GIoU Loss` is deployed rather than `SmoothL1Loss`
@@ -82,7 +83,7 @@ In my FCOS:
 ## SSDv2
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| SSDv2_VGG_16_320_3x            |  320,329   |         |       |
+| SSDv2_VGG_16_320_3x            |  320,320   |         |       |
 | SSDv2_VGG_16__5123x            |  512,512   |         |       |
 
 In SSDv2:
