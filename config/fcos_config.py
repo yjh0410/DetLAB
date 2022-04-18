@@ -54,8 +54,9 @@ fcos_config = {
         'num_reg_head': 4,
         # post process
         'conf_thresh': 0.05,
-        'nms_thresh': 0.6,
-        'test_score_thresh': 0.5,
+        'train_nms_thresh': 0.6,
+        'test_nms_thresh': 0.45,
+        'test_score_thresh': 0.35,
         # scale range
         'object_sizes_of_interest': [[-1, 64], [64, 128], [128, 256], [256, 512], [512, float('inf')]],
         # matcher
@@ -139,8 +140,9 @@ fcos_config = {
         'num_reg_head': 4,
         # post process
         'conf_thresh': 0.05,
-        'nms_thresh': 0.6,
-        'test_score_thresh': 0.5,
+        'train_nms_thresh': 0.6,
+        'test_nms_thresh': 0.45,
+        'test_score_thresh': 0.35,
         # scale range
         'object_sizes_of_interest': [[-1, 64], [64, 128], [128, 256], [256, 512], [512, float('inf')]],
         # matcher
@@ -224,8 +226,9 @@ fcos_config = {
         'num_reg_head': 4,
         # post process
         'conf_thresh': 0.05,
-        'nms_thresh': 0.6,
-        'test_score_thresh': 0.5,
+        'train_nms_thresh': 0.6,
+        'test_nms_thresh': 0.45,
+        'test_score_thresh': 0.35,
         # matcher
         'matcher': 'ota_matcher',
         'topk_candidate': 20,
@@ -310,8 +313,9 @@ fcos_config = {
         'num_reg_head': 4,
         # post process
         'conf_thresh': 0.05,
-        'nms_thresh': 0.6,
-        'test_score_thresh': 0.5,
+        'train_nms_thresh': 0.6,
+        'test_nms_thresh': 0.45,
+        'test_score_thresh': 0.35,
         # scale range
         'object_sizes_of_interest': [[-1, 64], [64, 128], [128, 256], [256, 512], [512, float('inf')]],
         # matcher
@@ -395,8 +399,9 @@ fcos_config = {
         'num_reg_head': 4,
         # post process
         'conf_thresh': 0.05,
-        'nms_thresh': 0.6,
-        'test_score_thresh': 0.5,
+        'train_nms_thresh': 0.6,
+        'test_nms_thresh': 0.45,
+        'test_score_thresh': 0.35,
         # matcher
         'matcher': 'ota_matcher',
         'topk_candidate': 20,
@@ -470,8 +475,9 @@ fcos_config = {
         'num_reg_head': 4,
         # post process
         'conf_thresh': 0.05,
-        'nms_thresh': 0.6,
-        'test_score_thresh': 0.5,
+        'train_nms_thresh': 0.6,
+        'test_nms_thresh': 0.45,
+        'test_score_thresh': 0.35,
         # matcher
         'matcher': 'ota_matcher',
         'topk_candidate': 20,

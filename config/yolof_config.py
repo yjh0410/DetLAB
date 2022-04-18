@@ -56,7 +56,8 @@ yolof_config = {
         'num_reg_head': 4,
         # post process
         'conf_thresh': 0.05,
-        'nms_thresh': 0.6,
+        'train_nms_thresh': 0.6,
+        'test_nms_thresh': 0.45,
         'test_score_thresh': 0.35,
         # anchor box
         'anchor_size': [[32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
@@ -145,7 +146,8 @@ yolof_config = {
         'num_reg_head': 4,
         # post process
         'conf_thresh': 0.05,
-        'nms_thresh': 0.6,
+        'train_nms_thresh': 0.6,
+        'test_nms_thresh': 0.45,
         'test_score_thresh': 0.35,
         # anchor box
         'anchor_size': [[32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
@@ -234,7 +236,8 @@ yolof_config = {
         'num_reg_head': 4,
         # post process
         'conf_thresh': 0.05,
-        'nms_thresh': 0.6,
+        'train_nms_thresh': 0.6,
+        'test_nms_thresh': 0.45,
         'test_score_thresh': 0.35,
         # anchor box
         'anchor_size': [[16, 16], [32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
@@ -323,7 +326,8 @@ yolof_config = {
         'num_reg_head': 4,
         # post process
         'conf_thresh': 0.05,
-        'nms_thresh': 0.6,
+        'train_nms_thresh': 0.6,
+        'test_nms_thresh': 0.45,
         'test_score_thresh': 0.35,
         # anchor box
         'anchor_size': [[32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
@@ -412,7 +416,8 @@ yolof_config = {
         'num_reg_head': 4,
         # post process
         'conf_thresh': 0.05,
-        'nms_thresh': 0.6,
+        'train_nms_thresh': 0.6,
+        'test_nms_thresh': 0.45,
         'test_score_thresh': 0.35,
         # anchor box
         'anchor_size': [[16, 16], [32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
@@ -501,7 +506,8 @@ yolof_config = {
         'num_reg_head': 4,
         # post process
         'conf_thresh': 0.05,
-        'nms_thresh': 0.6,
+        'train_nms_thresh': 0.6,
+        'test_nms_thresh': 0.45,
         'test_score_thresh': 0.35,
         # anchor box
         'anchor_size': [[16, 16], [32, 32], [64, 64], [128, 128], [256, 256], [512, 512]],
