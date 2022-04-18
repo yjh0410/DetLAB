@@ -36,8 +36,6 @@ def parse_args():
                         type=str, help='Trained state_dict file path to open')
     parser.add_argument('--topk', default=100, type=int,
                         help='NMS threshold')
-    parser.add_argument('-bg', '--background', action='store_true', default=False,
-                        help='add background class')
 
     # dataset
     parser.add_argument('--root', default='/mnt/share/ssd2/dataset',

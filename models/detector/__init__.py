@@ -21,7 +21,7 @@ def build_model(args,
                       num_classes=num_classes, 
                       trainable=trainable,
                       conf_thresh=cfg['conf_thresh'],
-                      nms_thresh=cfg['nms_thresh'],
+                      nms_thresh=cfg['train_nms_thresh'] if trainable else cfg['test_nms_thresh'],
                       topk=args.topk)
     elif 'retinanet' in args.version:
         model = RetinaNet(cfg=cfg,
@@ -29,7 +29,7 @@ def build_model(args,
                           num_classes=num_classes, 
                           trainable=trainable,
                           conf_thresh=cfg['conf_thresh'],
-                          nms_thresh=cfg['nms_thresh'],
+                          nms_thresh=cfg['train_nms_thresh'] if trainable else cfg['test_nms_thresh'],
                           topk=args.topk)
     elif 'fcos' in args.version:
         model = FCOS(cfg=cfg,
@@ -37,7 +37,7 @@ def build_model(args,
                      num_classes=num_classes, 
                      trainable=trainable,
                      conf_thresh=cfg['conf_thresh'],
-                     nms_thresh=cfg['nms_thresh'],
+                     nms_thresh=cfg['train_nms_thresh'] if trainable else cfg['test_nms_thresh'],
                      topk=args.topk)
 
 
