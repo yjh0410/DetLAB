@@ -315,7 +315,6 @@ class Resize(object):
             boxes_[:, [1, 3]] = boxes_[:, [1, 3]] / img_h0 * img_h
             target["boxes"] = boxes_
 
-        print(resized_image.shape)
         return resized_image, target, mask
 
 
