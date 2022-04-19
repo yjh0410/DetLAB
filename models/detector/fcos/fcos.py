@@ -6,7 +6,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from ...backbone import build_backbone
-from ...neck import build_fpn
+from ...neck import build_fpn, build_neck
 from ...head.decoupled_head import DecoupledHead
 from .loss import Criterion
 
@@ -58,6 +58,11 @@ class FCOS(nn.Module):
                                                norm_type=cfg['norm_type'])
 
         # neck
+        if cfg['neck'] is not None:
+            self.neck = build_neck(cfg=cfg,
+                                   in_dim=bk_dim[-1],
+                                   out_dim=bk_dim[-1])
+        # fpn neck
         self.fpn = build_fpn(cfg=cfg, 
                              in_dims=bk_dim, 
                              out_dim=cfg['head_dim'],
@@ -185,9 +190,13 @@ class FCOS(nn.Module):
         img_h, img_w = x.shape[2:]
         # backbone
         feats = self.backbone(x)
-        pyramid_feats = [feats['layer2'], feats['layer3'], feats['layer4']]
 
         # neck
+        if self.cfg['neck']:
+            feats['layer4'] = self.neck(feats['layer4'])
+
+        # fpn neck
+        pyramid_feats = [feats['layer2'], feats['layer3'], feats['layer4']]
         pyramid_feats = self.fpn(pyramid_feats)
 
         # shared head
@@ -275,9 +284,13 @@ class FCOS(nn.Module):
         else:
             # backbone
             feats = self.backbone(x)
-            pyramid_feats = [feats['layer2'], feats['layer3'], feats['layer4']]
 
             # neck
+            if self.cfg['neck']:
+                feats['layer4'] = self.neck(feats['layer4'])
+
+            # fpn neck
+            pyramid_feats = [feats['layer2'], feats['layer3'], feats['layer4']]
             pyramid_feats = self.fpn(pyramid_feats) # [P3, P4, P5, P6, P7]
 
             # shared head

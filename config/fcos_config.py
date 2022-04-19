@@ -41,6 +41,8 @@ fcos_config = {
         'norm_type': 'FrozeBN',
         'stride': [8, 16, 32, 64, 128],  # P3, P4, P5, P6, P7
         # neck
+        'neck': None,
+        # fpn neck
         'fpn': 'basic_fpn',
         'from_c5': False,
         'p6_feat': True,
@@ -127,6 +129,8 @@ fcos_config = {
         'norm_type': 'FrozeBN',
         'stride': [8, 16, 32, 64, 128],
         # neck
+        'neck': None,
+        # fpn neck
         'fpn': 'basic_fpn',
         'from_c5': False,
         'p6_feat': True,
@@ -213,6 +217,8 @@ fcos_config = {
         'norm_type': 'FrozeBN',
         'stride': [8, 16, 32, 64, 128],
         # neck
+        'neck': None,
+        # fpn neck
         'fpn': 'basic_fpn',
         'from_c5': False,
         'p6_feat': True,
@@ -300,6 +306,8 @@ fcos_config = {
         'norm_type': 'FrozeBN',
         'stride': [8, 16, 32, 64, 128],
         # neck
+        'neck': None,
+        # fpn neck
         'fpn': 'basic_fpn',
         'from_c5': False,
         'p6_feat': True,
@@ -386,6 +394,8 @@ fcos_config = {
         'norm_type': 'FrozeBN',
         'stride': [8, 16, 32, 64, 128],
         # neck
+        'neck': None,
+        # fpn neck
         'fpn': 'basic_fpn',
         'from_c5': False,
         'p6_feat': True,
@@ -436,15 +446,15 @@ fcos_config = {
 
     'fcos-rt-ota': { # Real Time FCOS with OTA
         # input
-        'train_min_size': 640,
-        'train_max_size': 640,
+        'train_min_size': 512,
+        'train_max_size': 900,
         'test_min_size': 512,
         'test_max_size': 736,
         'format': 'RGB',
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],
         'transforms': {
-            '3x':[{'name': 'DistortTransform',
+            '4x':[{'name': 'DistortTransform',
                    'hue': 0.1,
                    'saturation': 1.5,
                    'exposure': 1.5},
@@ -461,6 +471,12 @@ fcos_config = {
         'norm_type': 'FrozeBN',
         'stride': [8, 16, 32],
         # neck
+        'neck': 'spp',
+        'expand_ratio': 0.25,
+        'kernel_sizes': [5, 9, 13],
+        'neck_norm': 'GN',
+        'neck_act': 'relu',
+        # fpn neck
         'fpn': 'pafpn',
         'fpn_norm': 'GN',
         'from_c5': False,
@@ -499,9 +515,9 @@ fcos_config = {
         'wp_iter': 1000,
         'warmup_factor': 0.00066667,
         'epoch': {
-            '3x': {'max_epoch': 37, 
-                    'lr_epoch': [24, 33], 
-                    'multi_scale': [320, 352, 384, 416, 448, 480, 512, 544, 576, 608, 640]},
+            '4x': {'max_epoch': 48, 
+                    'lr_epoch': [32, 44], 
+                    'multi_scale': [320, 352, 384, 416, 448, 480, 512, 544, 576, 608]},
         },
     },
 
