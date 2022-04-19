@@ -11,8 +11,6 @@ from ...head.decoupled_head import DecoupledHead
 from .loss import Criterion
 
 
-DEFAULT_SCALE_CLAMP = math.log(1000.0 / 16)
-
 
 class Scale(nn.Module):
     """
