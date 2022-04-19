@@ -301,10 +301,7 @@ class Resize(object):
             if max_original_size / min_original_size * min_size > self.max_size:
                 min_size = int(round(min_original_size / max_original_size * self.max_size))
 
-
             resized_image = F.resize(image, size=min_size, max_size=self.max_size)
-
-            print(image.shape, resized_image.shape, min_size, self.max_size)
 
         # rescale bboxes
         if target is not None:
@@ -315,6 +312,7 @@ class Resize(object):
             boxes_[:, [1, 3]] = boxes_[:, [1, 3]] / img_h0 * img_h
             target["boxes"] = boxes_
 
+        print(resized_image.shape)
         return resized_image, target, mask
 
 
@@ -325,6 +323,7 @@ class PadImage(object):
 
     def __call__(self, image, target=None, mask=None):
         img_h0, img_w0 = image.shape[1:]
+        print(image.shape)
         pad_image = torch.zeros([image.size(0), self.max_size, self.max_size]).float()
         pad_image[:, :img_h0, :img_w0] = image
 
