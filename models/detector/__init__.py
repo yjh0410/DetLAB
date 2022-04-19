@@ -3,7 +3,6 @@ import torch
 from .yolof.yolof import YOLOF
 from .retinanet.retinanet import RetinaNet
 from .fcos.fcos import FCOS
-from .ssdv2.ssdv2 import SSDV2
 
 
 # build object detector
@@ -40,16 +39,6 @@ def build_model(args,
                      conf_thresh=cfg['conf_thresh'],
                      nms_thresh=cfg['train_nms_thresh'] if trainable else cfg['test_nms_thresh'],
                      topk=args.topk)
-
-    elif 'ssd' in args.version:
-        model = SSDV2(cfg=cfg,
-                      device=device, 
-                      num_classes=num_classes, 
-                      trainable=trainable,
-                      conf_thresh=cfg['conf_thresh'],
-                      nms_thresh=cfg['train_nms_thresh'] if trainable else cfg['test_nms_thresh'],
-                      topk=args.topk)
-
 
     print('==============================')
     print('Model Configuration: \n', cfg)

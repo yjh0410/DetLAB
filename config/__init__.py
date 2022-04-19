@@ -1,7 +1,6 @@
 from .yolof_config import yolof_config
 from .retinanet_config import retinanet_config
 from .fcos_config import fcos_config
-from .ssdv2_config import ssdv2_config
 
 
 def build_config(args):
@@ -16,8 +15,5 @@ def build_config(args):
 
     elif 'fcos' in args.version:
         cfg = fcos_config[args.version]
-
-    elif 'ssd' in args.version:
-        cfg = ssdv2_config[args.version]
 
     return cfg

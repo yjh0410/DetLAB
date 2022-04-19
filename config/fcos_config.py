@@ -471,7 +471,7 @@ fcos_config = {
         'norm_type': 'FrozeBN',
         'stride': [8, 16, 32],
         # neck
-        'neck': None,
+        'neck': 'spp',
         'expand_ratio': 0.25,
         'kernel_sizes': [5, 9, 13],
         'neck_norm': 'GN',

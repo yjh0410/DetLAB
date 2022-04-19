@@ -80,19 +80,6 @@ In my FCOS:
 - For regression head, `GIoU loss` is deployed rather than `IoU loss`
 - For real-time FCOS, the `PaFPN` is deployed for fpn
 
-## SSDv2
-| Model                          |  scale     |   mAP   | Weight|
-|--------------------------------|------------|---------|-------|
-| SSDv2_VGG_16_3x                |  320,320   |         |       |
-| SSDv2_VGG_16_3x                |  512,512   |         |       |
-| SSDv2_VGG_16_3x                |  640,640   |         |       |
-
-In SSDv2:
-- For classification head, `Focal loss` is deployed.
-- For regression head, `GIoU loss` is deployed.
-- For FPN neck, `PaFPN` is deployed.
-- `Anchor box` is remained.
-
 # Train
 ## Single GPU
 ```Shell
