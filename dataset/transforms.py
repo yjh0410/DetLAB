@@ -305,7 +305,7 @@ class Resize(object):
 
         # rescale bboxes
         if target is not None:
-            img_h, img_w = image.shape[1:]
+            img_h, img_w = resized_image.shape[1:]
             # rescale bbox
             boxes_ = target["boxes"].clone()
             boxes_[:, [0, 2]] = boxes_[:, [0, 2]] / img_w0 * img_w

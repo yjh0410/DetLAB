@@ -6,6 +6,6 @@ python train.py \
         -lr 0.01 \
         -lr_bk 0.01 \
         --batch_size 16 \
-        --schedule 3x \
+        --schedule 4x \
         --grad_clip_norm 4.0 \
         --mosaic
