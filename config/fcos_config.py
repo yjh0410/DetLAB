@@ -477,7 +477,7 @@ fcos_config = {
         'conf_thresh': 0.05,
         'train_nms_thresh': 0.6,
         'test_nms_thresh': 0.45,
-        'test_score_thresh': 0.35,
+        'test_score_thresh': 0.5,
         # matcher
         'matcher': 'ota_matcher',
         'topk_candidate': 20,
