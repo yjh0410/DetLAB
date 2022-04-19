@@ -8,4 +8,4 @@ python train.py \
         --batch_size 16 \
         --schedule 4x \
         --grad_clip_norm 4.0 \
-        --mosaic
+        # --mosaic
