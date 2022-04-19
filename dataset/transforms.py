@@ -299,9 +299,12 @@ class Resize(object):
             max_original_size = float(max(img_w0, img_h0))
 
             if max_original_size / min_original_size * min_size > self.max_size:
-                min_size = int(round(min_original_size / max_original_size * self.max_size))
+                min_size = int(min_original_size / max_original_size * self.max_size)
 
             resized_image = F.resize(image, size=min_size, max_size=self.max_size)
+
+            # check if the longest side exceeds max_size
+
 
         # rescale bboxes
         if target is not None:
