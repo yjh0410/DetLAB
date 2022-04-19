@@ -2,7 +2,7 @@ python train.py \
         --cuda \
         -d coco \
         --root /mnt/share/ssd2/dataset/ \
-        -v ssdv2_vgg16 \
+        -v fcos-rt-ota \
         -lr 0.01 \
         -lr_bk 0.01 \
         --batch_size 16 \
