@@ -275,7 +275,7 @@ class Resize(object):
 
             r = max_size / max(img_h0, img_w0)
             if r != 1: 
-                image = F.resize(image, (int(img_h0 * r), int(img_w0 * r)))
+                resized_image = F.resize(image, (int(img_h0 * r), int(img_w0 * r)))
 
         elif self.min_size == self.max_size:
             # Resize an image into a square image
@@ -285,7 +285,7 @@ class Resize(object):
                 min_size = self.min_size
             # donot keep aspect ratio
             img_h0, img_w0 = image.shape[1:]
-            image = F.resize(image, size=[min_size, min_size])
+            resized_image = F.resize(image, size=[min_size, min_size])
 
         else:
             # Resize the shortest side of the image to the specified max size
@@ -301,7 +301,7 @@ class Resize(object):
             if max_original_size / min_original_size * min_size > self.max_size:
                 min_size = int(round(min_original_size / max_original_size * self.max_size))
 
-            image = F.resize(image, size=min_size, max_size=self.max_size)
+            resized_image = F.resize(image, size=min_size, max_size=self.max_size)
 
         # rescale bboxes
         if target is not None:
@@ -312,7 +312,7 @@ class Resize(object):
             boxes_[:, [1, 3]] = boxes_[:, [1, 3]] / img_h0 * img_h
             target["boxes"] = boxes_
 
-        return image, target, mask
+        return resized_image, target, mask
 
 
 # Pad tensor image
