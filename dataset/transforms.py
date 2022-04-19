@@ -326,7 +326,6 @@ class PadImage(object):
 
     def __call__(self, image, target=None, mask=None):
         img_h0, img_w0 = image.shape[1:]
-        print(image.shape)
         pad_image = torch.zeros([image.size(0), self.max_size, self.max_size]).float()
         pad_image[:, :img_h0, :img_w0] = image
 
