@@ -6,7 +6,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from ...backbone import build_backbone
-from ...neck import build_fpn, build_neck
+from ...neck.fpn import build_fpn
 from ...head.decoupled_head import DecoupledHead
 from .loss import Criterion
 
@@ -57,11 +57,6 @@ class FCOS(nn.Module):
                                                pretrained=trainable,
                                                norm_type=cfg['norm_type'])
 
-        # neck
-        if cfg['neck'] is not None:
-            self.neck = build_neck(cfg=cfg,
-                                   in_dim=bk_dim[-1],
-                                   out_dim=bk_dim[-1])
         # fpn neck
         self.fpn = build_fpn(cfg=cfg, 
                              in_dims=bk_dim, 
@@ -191,10 +186,6 @@ class FCOS(nn.Module):
         # backbone
         feats = self.backbone(x)
 
-        # neck
-        if self.cfg['neck']:
-            feats['layer4'] = self.neck(feats['layer4'])
-
         # fpn neck
         pyramid_feats = [feats['layer2'], feats['layer3'], feats['layer4']]
         pyramid_feats = self.fpn(pyramid_feats)
@@ -284,10 +275,6 @@ class FCOS(nn.Module):
         else:
             # backbone
             feats = self.backbone(x)
-
-            # neck
-            if self.cfg['neck']:
-                feats['layer4'] = self.neck(feats['layer4'])
 
             # fpn neck
             pyramid_feats = [feats['layer2'], feats['layer3'], feats['layer4']]

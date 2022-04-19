@@ -3,7 +3,7 @@ import math
 import torch
 import torch.nn as nn
 from ...backbone import build_backbone
-from ...neck import build_neck
+from ...neck.extra_module import build_neck
 from ...head.decoupled_head import DecoupledHead
 from .loss import Criterion
 
