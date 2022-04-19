@@ -454,7 +454,7 @@ fcos_config = {
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],
         'transforms': {
-            '4x':[{'name': 'DistortTransform',
+            '3x':[{'name': 'DistortTransform',
                    'hue': 0.1,
                    'saturation': 1.5,
                    'exposure': 1.5},
@@ -514,9 +514,9 @@ fcos_config = {
         'wp_iter': 1000,
         'warmup_factor': 0.00066667,
         'epoch': {
-            '4x': {'max_epoch': 48, 
-                    'lr_epoch': [32, 44], 
-                    'multi_scale': [320, 352, 384, 416, 448, 480, 512, 544, 576, 608, 640]},
+            '3x': {'max_epoch': 37, 
+                    'lr_epoch': [24, 33], 
+                    'multi_scale': [320, 352, 384, 416, 448, 480, 512, 544, 576, 608]},
         },
     },
 
