@@ -28,31 +28,30 @@ retinanet_config = {
         'stride': [8, 16, 32, 64],  # P3, P4, P5, P6
         # neck
         'neck': 'spp',
-        'fpn': 'basic_fpn',
+        'fpn': 'pafpn',
+        'fpn_norm': 'GN',
         'from_c5': True,
         'p6_feat': True,
         'p7_feat': False,
         # head
         'head_dim': 256,
-        'head_norm': '',
+        'head_norm': 'GN',
         'act_type': 'relu',
         'head': 'decoupled_head',
         'num_cls_head': 2,
         'num_reg_head': 2,
         # post process
         'conf_thresh': 0.05,
-        'nms_thresh': 0.6,
+        'train_nms_thresh': 0.6,
+        'test_nms_thresh': 0.45,
         'test_score_thresh': 0.35,
-        # anchor box
-        'anchor_config': {'basic_size': [[20, 20], [40, 40], [80, 80]],
-                          'aspect_ratio': [0.5, 1.0, 2.0],
-                          'area_scale': [2 ** 0, 2 ** (1. / 3.), 2 ** (2. / 3.)]},
         # matcher
-        'matcher': 'matcher',
-        'iou_t': [0.4, 0.5],
-        'iou_labels': [0, -1, 1], # [negative sample, ignored sample, positive sample]
-        'allow_low_quality_matches': True,
+        'matcher': 'ota_matcher',
+        'topk_candidate': 10,
+        'eps': 0.1, 
+        'max_iter': 50,
         'ctr_clamp': None,
+        'center_sampling_radius': 2.5,
         # loss
         'alpha': 0.25,
         'gamma': 2.0,

@@ -54,16 +54,16 @@ At least, please make sure your torch is version 1.x.
 
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| YOLOF_R_18_C5_1x               |  800,1333  |   31.6  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/yolof_r18_C5_1x_31.6.pth) |
-| YOLOF_R_50_C5_1x               |  800,1333  |   37.6  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/yolof_r50_C5_1x_37.6.pth) |
-| YOLOF-RT_R_50_DC5_3x           |  640,640   |   38.1  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/yolof-rt_r50_DC5_1x_38.1.pth) |
+| YOLOF_R_18_C5_1x               |  800,1333  |   31.6  | [github](https://github.com/yjh0410/DetLAB/releases/download/object-detection-benchmark-weight/yolof_r18_C5_1x_31.6.pth) |
+| YOLOF_R_50_C5_1x               |  800,1333  |   37.6  | [github](https://github.com/yjh0410/DetLAB/releases/download/object-detection-benchmark-weight/yolof_r50_C5_1x_37.6.pth) |
+| YOLOF-RT_R_50_DC5_3x           |  640,640   |   38.1  | [github](https://github.com/yjh0410/DetLAB/releases/download/object-detection-benchmark-weight/yolof-rt_r50_DC5_1x_38.1.pth) |
 
 ## RetinaNet
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| RetinaNet_R_18_1x              |  800,1333  |   29.3  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/retinanet_r18_1x_29.3.pth) |
-| RetinaNet_R_50_1x              |  800,1333  |   35.8  | [github](https://github.com/yjh0410/ObjectDetectionBenchmark/releases/download/object-detection-benchmark-weight/retinanet_r50_1x_35.8.pth) |
-| RetinaNet-RT_R_50_3x           |  512,736   |     |  |
+| RetinaNet_R_18_1x              |  800,1333  |   29.3  | [github](https://github.com/yjh0410/DetLAB/releases/download/object-detection-benchmark-weight/retinanet_r18_1x_29.3.pth) |
+| RetinaNet_R_50_1x              |  800,1333  |   35.8  | [github](https://github.com/yjh0410/DetLAB/releases/download/object-detection-benchmark-weight/retinanet_r50_1x_35.8.pth) |
+| RetinaNet-RT_R_50_3x           |  512,736   |   32.0  | [github](https://github.com/yjh0410/DetLAB/releases/download/object-detection-benchmark-weight/retinanet-rt_r50_3x_32.0.pth) |
 
 In my RetinaNet:
 - For regression head, `GIoU Loss` is deployed rather than `SmoothL1Loss`

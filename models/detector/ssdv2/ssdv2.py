@@ -59,11 +59,15 @@ class SSDV2(nn.Module):
 
         # pred
         self.cls_pred = nn.Conv2d(cfg['head_dim'], 
-                                  self.num_anchors * self.num_classes, 
+                                  self.num_classes, 
                                   kernel_size=3,
                                   padding=1)
         self.reg_pred = nn.Conv2d(cfg['head_dim'], 
-                                  self.num_anchors * 4, 
+                                  4, 
+                                  kernel_size=3, 
+                                  padding=1)
+        self.iou_pred = nn.Conv2d(cfg['head_dim'], 
+                                  1, 
                                   kernel_size=3, 
                                   padding=1)
 
