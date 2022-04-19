@@ -83,8 +83,9 @@ In my FCOS:
 ## SSDv2
 | Model                          |  scale     |   mAP   | Weight|
 |--------------------------------|------------|---------|-------|
-| SSDv2_VGG_16_320_3x            |  320,320   |         |       |
-| SSDv2_VGG_16__5123x            |  512,512   |         |       |
+| SSDv2_VGG_16_3x                |  320,320   |         |       |
+| SSDv2_VGG_16_3x                |  512,512   |         |       |
+| SSDv2_VGG_16_3x                |  640,640   |         |       |
 
 In SSDv2:
 - For classification head, `Focal loss` is deployed.
