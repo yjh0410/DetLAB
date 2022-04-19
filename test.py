@@ -138,7 +138,7 @@ def test(args,
         else:
             # the input image is not padded.
             bboxes *= orig_size
-            print(x.shape)
+            print(x.shape, orig_size)
         bboxes[..., [0, 2]] = np.clip(bboxes[..., [0, 2]], a_min=0., a_max=w)
         bboxes[..., [1, 3]] = np.clip(bboxes[..., [1, 3]], a_min=0., a_max=h)
 
