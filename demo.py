@@ -98,8 +98,8 @@ def detect(net,
             if ret:
                 if cv2.waitKey(1) == ord('q'):
                     break
-                h, w, _ = frame.shape
-                orig_size = np.array([[w, h, w, h]])
+                orig_h, orig_w, _ = frame.shape
+                orig_size = np.array([[orig_w, orig_h, orig_w, orig_h]])
 
                 # prepare
                 x = transform(frame)[0]
@@ -111,9 +111,14 @@ def detect(net,
                 print("detection time used ", t1-t0, "s")
 
                 # rescale
-                bboxes *= orig_size
-                bboxes[..., [0, 2]] = np.clip(bboxes[..., [0, 2]], a_min=0., a_max=w)
-                bboxes[..., [1, 3]] = np.clip(bboxes[..., [1, 3]], a_min=0., a_max=h)
+                if transform.padding:
+                    # The input image is padded with 0 on the short side, aligning with the long side.
+                    bboxes *= max(orig_h, orig_w)
+                else:
+                    # the input image is not padded.
+                    bboxes *= orig_size
+                bboxes[..., [0, 2]] = np.clip(bboxes[..., [0, 2]], a_min=0., a_max=orig_w)
+                bboxes[..., [1, 3]] = np.clip(bboxes[..., [1, 3]], a_min=0., a_max=orig_h)
 
                 frame_processed = visualize(img=frame, 
                                             bboxes=bboxes,
@@ -132,8 +137,8 @@ def detect(net,
     elif mode == 'image':
         for i, img_id in enumerate(os.listdir(path_to_img)):
             image = cv2.imread(path_to_img + '/' + img_id, cv2.IMREAD_COLOR)
-            h, w, _ = image.shape
-            orig_size = np.array([[w, h, w, h]])
+            orig_h, orig_w, _ = image.shape
+            orig_size = np.array([[orig_w, orig_h, orig_w, orig_h]])
 
             # prepare
             x = transform(image)[0]
@@ -145,9 +150,14 @@ def detect(net,
             print("detection time used ", t1-t0, "s")
 
             # rescale
-            bboxes *= orig_size
-            bboxes[..., [0, 2]] = np.clip(bboxes[..., [0, 2]], a_min=0., a_max=w)
-            bboxes[..., [1, 3]] = np.clip(bboxes[..., [1, 3]], a_min=0., a_max=h)
+            if transform.padding:
+                # The input image is padded with 0 on the short side, aligning with the long side.
+                bboxes *= max(orig_h, orig_w)
+            else:
+                # the input image is not padded.
+                bboxes *= orig_size
+            bboxes[..., [0, 2]] = np.clip(bboxes[..., [0, 2]], a_min=0., a_max=orig_w)
+            bboxes[..., [1, 3]] = np.clip(bboxes[..., [1, 3]], a_min=0., a_max=orig_h)
 
             img_processed = visualize(img=image, 
                                       bboxes=bboxes,
@@ -174,8 +184,8 @@ def detect(net,
             
             if ret:
                 # ------------------------- Detection ---------------------------
-                h, w, _ = frame.shape
-                orig_size = np.array([[w, h, w, h]])
+                orig_h, orig_w, _ = frame.shape
+                orig_size = np.array([[orig_w, orig_h, orig_w, orig_h]])
 
                 # prepare
                 x = transform(frame)[0]
@@ -187,9 +197,14 @@ def detect(net,
                 print("detection time used ", t1-t0, "s")
 
                 # rescale
-                bboxes *= orig_size
-                bboxes[..., [0, 2]] = np.clip(bboxes[..., [0, 2]], a_min=0., a_max=w)
-                bboxes[..., [1, 3]] = np.clip(bboxes[..., [1, 3]], a_min=0., a_max=h)
+                if transform.padding:
+                    # The input image is padded with 0 on the short side, aligning with the long side.
+                    bboxes *= max(orig_h, orig_w)
+                else:
+                    # the input image is not padded.
+                    bboxes *= orig_size
+                bboxes[..., [0, 2]] = np.clip(bboxes[..., [0, 2]], a_min=0., a_max=orig_w)
+                bboxes[..., [1, 3]] = np.clip(bboxes[..., [1, 3]], a_min=0., a_max=orig_h)
 
                 frame_processed = visualize(img=frame, 
                                             bboxes=bboxes,

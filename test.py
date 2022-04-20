@@ -99,7 +99,7 @@ def test(args,
          net, 
          device, 
          dataset,
-         transforms=None,
+         transform=None,
          vis_thresh=0.4, 
          class_colors=None, 
          class_names=None, 
@@ -115,11 +115,11 @@ def test(args,
         print('Testing image {:d}/{:d}....'.format(index+1, num_images))
         image, _ = dataset.pull_image(index)
 
-        h, w, _ = image.shape
-        orig_size = np.array([[w, h, w, h]])
+        orig_h, orig_w, _ = image.shape
+        orig_size = np.array([[orig_w, orig_h, orig_w, orig_h]])
 
         # prepare
-        x = transforms(image)[0]
+        x = transform(image)[0]
         x = x.unsqueeze(0).to(device)
 
         t0 = time.time()
@@ -132,15 +132,14 @@ def test(args,
         print("detection time used ", time.time() - t0, "s")
         
         # rescale
-        if transforms.padding:
+        if transform.padding:
             # The input image is padded with 0 on the short side, aligning with the long side.
-            bboxes *= max(h, w)
+            bboxes *= max(orig_h, orig_w)
         else:
             # the input image is not padded.
             bboxes *= orig_size
-            print(x.shape, orig_size)
-        bboxes[..., [0, 2]] = np.clip(bboxes[..., [0, 2]], a_min=0., a_max=w)
-        bboxes[..., [1, 3]] = np.clip(bboxes[..., [1, 3]], a_min=0., a_max=h)
+        bboxes[..., [0, 2]] = np.clip(bboxes[..., [0, 2]], a_min=0., a_max=orig_w)
+        bboxes[..., [1, 3]] = np.clip(bboxes[..., [1, 3]], a_min=0., a_max=orig_h)
 
         # vis detection
         img_processed = visualize(
@@ -230,7 +229,7 @@ if __name__ == '__main__':
         net=model, 
         device=device, 
         dataset=dataset,
-        transforms=transform,
+        transform=transform,
         vis_thresh=cfg['test_score_thresh'],
         class_colors=class_colors,
         class_names=class_names,

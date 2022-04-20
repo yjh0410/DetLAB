@@ -61,8 +61,8 @@ def test(net, device, img_size, testset, transform):
                 print('Testing image {:d}/{:d}....'.format(index+1, num_images))
             image, _ = testset.pull_image(index)
 
-            h, w, _ = image.shape
-            orig_size = np.array([[w, h, w, h]])
+            orig_h, orig_w, _ = image.shape
+            orig_size = np.array([[orig_w, orig_h, orig_w, orig_h]])
 
             # prepare
             x = transform(image)[0]
@@ -76,7 +76,12 @@ def test(net, device, img_size, testset, transform):
             bboxes, scores, cls_inds = net(x)
             
             # rescale
-            bboxes *= orig_size
+            if transform.padding:
+                # The input image is padded with 0 on the short side, aligning with the long side.
+                bboxes *= max(orig_h, orig_w)
+            else:
+                # the input image is not padded.
+                bboxes *= orig_size
 
             # end time
             torch.cuda.synchronize()
