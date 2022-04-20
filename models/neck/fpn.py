@@ -9,7 +9,6 @@ from .extra_module import SPPBlock, SPPBlockCSP, build_neck
 
 class BasicFPN(nn.Module):
     def __init__(self, 
-                 cfg, 
                  in_dims=[512, 1024, 2048],
                  out_dim=256,
                  from_c5=False,
@@ -17,14 +16,9 @@ class BasicFPN(nn.Module):
                  p7_feat=False
                  ):
         super().__init__()
-        self.extra_module = cfg['neck']
         self.from_c5 = from_c5
         self.p6_feat = p6_feat
         self.p7_feat = p7_feat
-
-        # build extra module
-        if cfg['neck'] is not None:
-            self.neck = build_neck(cfg, out_dim, out_dim)
 
         # latter layers
         self.input_projs = nn.ModuleList()
@@ -64,8 +58,6 @@ class BasicFPN(nn.Module):
         feats = feats[::-1]
         top_level_feat = feats[0]
         prev_feat = self.input_projs[0](top_level_feat)
-        if self.extra_module is not None:
-            prev_feat = self.neck(prev_feat)
         outputs.append(self.smooth_layers[0](prev_feat))
 
         for feat, input_proj, smooth_layer in zip(feats[1:], self.input_projs[1:], self.smooth_layers[1:]):
@@ -93,7 +85,6 @@ class BasicFPN(nn.Module):
 
 class PaFPN(nn.Module):
     def __init__(self, 
-                 cfg,
                  in_dims=[512, 1024, 2048], # [..., C3, C4, C5, ...]
                  out_dim=256,
                  norm_type='',
@@ -101,14 +92,9 @@ class PaFPN(nn.Module):
                  p7_feat=False
                  ):
         super().__init__()
-        self.extra_module = cfg['neck']
         self.p6_feat = p6_feat
         self.p7_feat = p7_feat
         self.num_fpn_feats = len(in_dims)
-
-        # build extra module
-        if cfg['neck'] is not None:
-            self.neck = build_neck(cfg, out_dim, out_dim)
 
         # input projection layers
         self.input_projs = nn.ModuleList()
@@ -177,8 +163,6 @@ class PaFPN(nn.Module):
         in_feats = in_feats[::-1]    # [..., C3, C4, C5, ...] -> [..., C5, C4, C3, ...]
         top_level_feat = in_feats[0]
         prev_feat = top_level_feat
-        if self.extra_module is not None:
-            prev_feat = self.neck(prev_feat)
         inter_feats.append(self.top_down_smooth_layers[0](prev_feat))
 
         for feat, smooth in zip(in_feats[1:], self.top_down_smooth_layers[1:]):
@@ -355,16 +339,14 @@ def build_fpn(cfg, in_dims, out_dim, from_c5=False, p6_feat=False, p7_feat=False
     print('FPN: {}'.format(model))
     # build neck
     if model == 'basic_fpn':
-        fpn_net = BasicFPN(cfg=cfg,
-                           in_dims=in_dims, 
+        fpn_net = BasicFPN(in_dims=in_dims, 
                            out_dim=out_dim,
                            from_c5=from_c5, 
                            p6_feat=p6_feat,
                            p7_feat=p7_feat)
 
     elif model == 'pafpn':
-        fpn_net = PaFPN(cfg=cfg,
-                        in_dims=in_dims,
+        fpn_net = PaFPN(in_dims=in_dims,
                         out_dim=out_dim, 
                         norm_type=cfg['fpn_norm'], 
                         p6_feat=p6_feat,

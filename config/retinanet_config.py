@@ -38,8 +38,6 @@ retinanet_config = {
         'backbone': 'resnet18',
         'norm_type': 'FrozeBN',
         'stride': [8, 16, 32, 64, 128],  # P3, P4, P5, P6, P7
-        # neck
-        'neck': None,
         # fpn neck
         'fpn': 'basic_fpn',
         'from_c5': True,
@@ -128,8 +126,6 @@ retinanet_config = {
         'backbone': 'resnet50',
         'norm_type': 'FrozeBN',
         'stride': [8, 16, 32, 64, 128],
-        # neck
-        'neck': None,
         # fpn neck
         'fpn': 'basic_fpn',
         'from_c5': True,
@@ -218,8 +214,6 @@ retinanet_config = {
         'backbone': 'resnet101',
         'norm_type': 'FrozeBN',
         'stride': [8, 16, 32, 64, 128],
-        # neck
-        'neck': None,
         # fpn neck
         'fpn': 'basic_fpn',
         'from_c5': True,
@@ -296,8 +290,6 @@ retinanet_config = {
         'backbone': 'resnet50',
         'norm_type': 'FrozeBN',
         'stride': [8, 16, 32],
-        # neck
-        'neck': None,
         # fpn neck
         'fpn': 'pafpn',
         'fpn_norm': '',
