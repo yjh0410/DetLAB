@@ -26,8 +26,7 @@ weight files to complement this project. Thanks a lot.***
 # Coming soon
 - [x] YOLOF
 - [x] RetinaNet
-- [] FCOS
-- [] SSDv2
+- [x] FCOS
 
 
 # Requirements
@@ -75,7 +74,6 @@ In my RetinaNet:
 | FCOS_R_50_1x                   |  800,1333  |  37.6   | [github](https://github.com/yjh0410/DetLAB/releases/download/object-detection-benchmark-weight/fcos_r50_1x_37.6.pth) |
 | FCOS_R_50_OTA_1x               |  800,1333  |         |       |
 | FCOS-RT_R_50_OTA_3x            |  640,640   |  36.7   | [github](https://github.com/yjh0410/DetLAB/releases/download/object-detection-benchmark-weight/fcos-rt-ota_r50_3x_36.7.pth) |
-| FCOS-RT_R_50_OTA_4x_Mosaic     |  640,640   |     |  |
 
 In my FCOS:
 - For regression head, `GIoU loss` is deployed rather than `IoU loss`
