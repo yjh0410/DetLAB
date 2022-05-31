@@ -21,6 +21,7 @@ from utils import distributed_utils
 from utils.com_flops_params import FLOPs_and_Params
 from utils.misc import CollateFunc, get_total_grad_norm
 from utils.solver.optimizer import build_optimizer
+from utils.solver.lr_scheduler import build_lr_scheduler
 from utils.solver.warmup_schedule import build_warmup
 
 from evaluator.coco_evaluator import COCOAPIEvaluator
@@ -39,20 +40,24 @@ def parse_args():
                         help='Batch size on single GPU')
     parser.add_argument('--schedule', type=str, default='1x',
                         help='training schedule.')
+    parser.add_argument('--lr_scheduler', type=str, default='step',
+                        help='lr scheduler.')
     parser.add_argument('-lr', '--base_lr', type=float, default=0.01,
                         help='base learning rate')
     parser.add_argument('-lr_bk', '--backbone_lr', type=float, default=0.01,
                         help='backbone learning rate')
     parser.add_argument('--num_workers', default=4, type=int, 
                         help='Number of workers used in dataloading')
-    parser.add_argument('--eval_epoch', type=int,
-                            default=2, help='interval between evaluations')
     parser.add_argument('--grad_clip_norm', type=float, default=-1.,
                         help='grad clip.')
     parser.add_argument('--tfboard', action='store_true', default=False,
                         help='use tensorboard')
     parser.add_argument('--save_folder', default='weights/', type=str, 
                         help='path to save weight')
+    parser.add_argument('--start_epoch', default=0, type=int, 
+                        help='start epoch to train.')
+    parser.add_argument('--eval_epoch', type=int,
+                            default=2, help='interval between evaluations')
 
     # model
     parser.add_argument('-v', '--version', default='yolof18', type=str,
@@ -65,6 +70,8 @@ def parse_args():
                         help='NMS threshold')
     parser.add_argument('-p', '--coco_pretrained', default=None, type=str,
                         help='coco pretrained weight')
+    parser.add_argument('-r', '--resume', default=None, type=str,
+                        help='keep training')
 
     # dataset
     parser.add_argument('--root', default='/mnt/share/ssd2/dataset',
@@ -123,12 +130,14 @@ def train():
     dataloader = build_dataloader(args, dataset, CollateFunc())
 
     # build model
-    net = build_model(args=args, 
-                      cfg=cfg,
-                      device=device, 
-                      num_classes=num_classes, 
-                      trainable=True,
-                      coco_pretrained=args.coco_pretrained)
+    net = build_model(
+        args=args, 
+        cfg=cfg,
+        device=device, 
+        num_classes=num_classes, 
+        trainable=True,
+        coco_pretrained=args.coco_pretrained,
+        resume=args.resume)
     model = net
     model = model.to(device).train()
 
@@ -159,22 +168,31 @@ def train():
         dist.barrier()
 
     # optimizer
-    optimizer = build_optimizer(model=model_without_ddp,
-                                base_lr=args.base_lr,
-                                backbone_lr=args.backbone_lr,
-                                name=cfg['optimizer'],
-                                momentum=cfg['momentum'],
-                                weight_decay=cfg['weight_decay'])
+    optimizer = build_optimizer(
+        model=model_without_ddp,
+        base_lr=args.base_lr,
+        backbone_lr=args.backbone_lr,
+        name=cfg['optimizer'],
+        momentum=cfg['momentum'],
+        weight_decay=cfg['weight_decay']
+        )
     
     # lr scheduler
-    lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer=optimizer, 
-                                                        milestones=cfg['epoch'][args.schedule]['lr_epoch'])
+    lr_scheduler = build_lr_scheduler(
+        cfg=cfg,
+        args=args,
+        name=args.lr_scheduler,
+        optimizer=optimizer,
+        resume=args.resume
+    )
 
     # warmup scheduler
-    warmup_scheduler = build_warmup(name=cfg['warmup'],
-                                    base_lr=args.base_lr,
-                                    wp_iter=cfg['wp_iter'],
-                                    warmup_factor=cfg['warmup_factor'])
+    warmup_scheduler = build_warmup(
+        name=cfg['warmup'],
+        base_lr=args.base_lr,
+        wp_iter=cfg['wp_iter'],
+        warmup_factor=cfg['warmup_factor']
+        )
 
     # training configuration
     max_epoch = cfg['epoch'][args.schedule]['max_epoch']
@@ -184,7 +202,7 @@ def train():
 
     t0 = time.time()
     # start training loop
-    for epoch in range(max_epoch):
+    for epoch in range(args.start_epoch, max_epoch):
         if args.distributed:
             dataloader.batch_sampler.sampler.set_epoch(epoch)            
 

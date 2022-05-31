@@ -1,3 +1,4 @@
+import torch
 from torch import optim
 
 
@@ -6,7 +7,8 @@ def build_optimizer(model,
                     backbone_lr=0.0,
                     name='sgd',
                     momentum=0.,
-                    weight_decay=0.):
+                    weight_decay=0.,
+                    resume=None):
     print('==============================')
     print('Optimizer: {}'.format(name))
     print('--momentum: {}'.format(momentum))
@@ -35,5 +37,13 @@ def build_optimizer(model,
         optimizer = optim.AdamW(param_dicts, 
                                 lr=base_lr,
                                 weight_decay=weight_decay)
+    
+    if resume is not None:
+        print('keep training: ', resume)
+        checkpoint = torch.load(resume)
+        # checkpoint state dict
+        checkpoint_state_dict = checkpoint.pop("optimizer")
+        optimizer.load_state_dict(checkpoint_state_dict)
+                        
                                 
     return optimizer
