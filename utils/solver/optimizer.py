@@ -38,12 +38,14 @@ def build_optimizer(model,
                                 lr=base_lr,
                                 weight_decay=weight_decay)
     
+    start_epoch = 0
     if resume is not None:
         print('keep training: ', resume)
         checkpoint = torch.load(resume)
         # checkpoint state dict
         checkpoint_state_dict = checkpoint.pop("optimizer")
         optimizer.load_state_dict(checkpoint_state_dict)
+        start_epoch = checkpoint.pop("epoch")
                         
                                 
-    return optimizer
+    return optimizer, start_epoch
