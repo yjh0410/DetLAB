@@ -428,7 +428,7 @@ fcos_config = {
             '2x': {'max_epoch': 24, 
                     'lr_epoch': [16, 22], 
                     'multi_scale': [640, 672, 704, 736, 768, 800]},
-            '3x': {'max_epoch': 48, 
+            '3x': {'max_epoch': 36, 
                     'lr_epoch': [24, 33], 
                     'multi_scale': [640, 672, 704, 736, 768, 800]},
         },
@@ -498,7 +498,7 @@ fcos_config = {
         'wp_iter': 1000,
         'warmup_factor': 0.00066667,
         'epoch': {
-            '3x': {'max_epoch': 37, 
+            '3x': {'max_epoch': 48, 
                     'lr_epoch': [24, 33], 
                     'multi_scale': [256, 288, 320, 352, 384, 416, 448, 480, 512, 544, 576, 608]},
         },
