@@ -54,8 +54,6 @@ def parse_args():
                         help='use tensorboard')
     parser.add_argument('--save_folder', default='weights/', type=str, 
                         help='path to save weight')
-    parser.add_argument('--start_epoch', default=0, type=int, 
-                        help='start epoch to train.')
     parser.add_argument('--eval_epoch', type=int,
                             default=2, help='interval between evaluations')
 
@@ -168,7 +166,7 @@ def train():
         dist.barrier()
 
     # optimizer
-    optimizer = build_optimizer(
+    optimizer, start_epoch = build_optimizer(
         model=model_without_ddp,
         base_lr=args.base_lr,
         backbone_lr=args.backbone_lr,
@@ -202,7 +200,7 @@ def train():
 
     t0 = time.time()
     # start training loop
-    for epoch in range(args.start_epoch, max_epoch):
+    for epoch in range(start_epoch, max_epoch):
         if args.distributed:
             dataloader.batch_sampler.sampler.set_epoch(epoch)            
 
