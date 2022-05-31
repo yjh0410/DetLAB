@@ -172,7 +172,8 @@ def train():
         backbone_lr=args.backbone_lr,
         name=cfg['optimizer'],
         momentum=cfg['momentum'],
-        weight_decay=cfg['weight_decay']
+        weight_decay=cfg['weight_decay'],
+        resume=args.resume
         )
     
     # lr scheduler
