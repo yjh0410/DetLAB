@@ -94,6 +94,19 @@ sh train_ddp.sh
 
 You can change the configurations of `train_ddp.sh`, according to your own situation.
 
+
+**In the event of a training interruption**, you can pass `--resume` the latest training
+weight path (`None` by default) to resume training. For example:
+
+```Shell
+python train.py \
+        --cuda \
+        -lr 0.01 \
+        -lr_bk 0.01 \
+        --batch_size 16 \
+        --resume weights/coco/yolof18/yolof18_epoch_6_24.8.pth \
+```
+
 # Test
 ```Shell
 python test.py -d coco \
