@@ -147,7 +147,8 @@ if __name__ == '__main__':
                               padding=cfg['val_padding'])
 
     # run
-    test(net=model,
+    test(args=args,
+        net=model,
         device=device, 
         testset=dataset,
         transform=transform
