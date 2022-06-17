@@ -166,6 +166,10 @@ yolof_config = {
         'gamma': 2.0,
         'loss_cls_weight': 1.0,
         'loss_reg_weight': 1.0,
+        # training config
+        'batch_size': 16,
+        'base_lr': 0.12 / 64.,
+        'bk_lr_ratio': 1.0 / 3.0,
         # optimizer
         'optimizer': 'sgd',
         'momentum': 0.9,
@@ -256,6 +260,10 @@ yolof_config = {
         'gamma': 2.0,
         'loss_cls_weight': 1.0,
         'loss_reg_weight': 1.0,
+        # training config
+        'batch_size': 16,
+        'base_lr': 0.12 / 64.,
+        'bk_lr_ratio': 1.0 / 3.0,
         # optimizer
         'optimizer': 'sgd',
         'momentum': 0.9,
@@ -346,6 +354,10 @@ yolof_config = {
         'gamma': 2.0,
         'loss_cls_weight': 1.0,
         'loss_reg_weight': 1.0,
+        # training config
+        'batch_size': 16,
+        'base_lr': 0.12 / 64.,
+        'bk_lr_ratio': 1.0 / 3.0,
         # optimizer
         'optimizer': 'sgd',
         'momentum': 0.9,
@@ -436,6 +448,10 @@ yolof_config = {
         'gamma': 2.0,
         'loss_cls_weight': 1.0,
         'loss_reg_weight': 1.0,
+        # training config
+        'batch_size': 16,
+        'base_lr': 0.12 / 64.,
+        'bk_lr_ratio': 1.0 / 3.0,
         # optimizer
         'optimizer': 'sgd',
         'momentum': 0.9,
@@ -526,6 +542,10 @@ yolof_config = {
         'gamma': 2.0,
         'loss_cls_weight': 1.0,
         'loss_reg_weight': 1.0,
+        # training config
+        'batch_size': 16,
+        'base_lr': 0.12 / 64.,
+        'bk_lr_ratio': 1.0 / 3.0,
         # optimizer
         'optimizer': 'sgd',
         'momentum': 0.9,
