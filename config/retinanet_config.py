@@ -4,10 +4,10 @@
 retinanet_config = {
     'retinanet18': {
         # input
-        'train_min_size': 800,
-        'train_max_size': 1333,
-        'test_min_size': 800,
-        'test_max_size': 1333,
+        'train_min_size': 512,
+        'train_max_size': 512,
+        'test_min_size': 512,
+        'test_max_size': 512,
         'format': 'RGB',
         'pixel_mean': [0.485, 0.456, 0.406],
         'pixel_std': [0.229, 0.224, 0.225],
