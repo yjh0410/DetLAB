@@ -125,7 +125,7 @@ def train():
     dataset, evaluator, num_classes = build_dataset(cfg, args, device)
 
     # dataloader
-    dataloader = build_dataloader(args, dataset, CollateFunc())
+    dataloader = build_dataloader(args, cfg, dataset, CollateFunc())
 
     # build model
     net = build_model(
@@ -166,10 +166,12 @@ def train():
         dist.barrier()
 
     # optimizer
+    base_lr = cfg['base_lr'] * cfg['batch_size']
+    backbone_lr = base_lr * cfg['bk_lr_ratio']
     optimizer, start_epoch = build_optimizer(
         model=model_without_ddp,
-        base_lr=args.base_lr,
-        backbone_lr=args.backbone_lr,
+        base_lr=base_lr,
+        backbone_lr=backbone_lr,
         name=cfg['optimizer'],
         momentum=cfg['momentum'],
         weight_decay=cfg['weight_decay'],
@@ -188,7 +190,7 @@ def train():
     # warmup scheduler
     warmup_scheduler = build_warmup(
         name=cfg['warmup'],
-        base_lr=args.base_lr,
+        base_lr=base_lr,
         wp_iter=cfg['wp_iter'],
         warmup_factor=cfg['warmup_factor']
         )
@@ -216,7 +218,7 @@ def train():
                 # warmup is over
                 print('Warmup is over')
                 warmup = False
-                warmup_scheduler.set_lr(optimizer, args.base_lr, args.base_lr)
+                warmup_scheduler.set_lr(optimizer, base_lr, base_lr)
 
             # to device
             images = images.to(device)
@@ -392,21 +394,25 @@ def build_dataset(cfg, args, device):
     return dataset, evaluator, num_classes
 
 
-def build_dataloader(args, dataset, collate_fn=None):
+def build_dataloader(args, cfg, dataset, collate_fn=None):
     # distributed
     if args.distributed:
         sampler = torch.utils.data.distributed.DistributedSampler(dataset)
     else:
         sampler = torch.utils.data.RandomSampler(dataset)
 
-    batch_sampler_train = torch.utils.data.BatchSampler(sampler, 
-                                                        args.batch_size, 
-                                                        drop_last=True)
+    batch_sampler_train = torch.utils.data.BatchSampler(
+        sampler, 
+        cfg['batch_size'], 
+        drop_last=True
+        )
 
-    dataloader = torch.utils.data.DataLoader(dataset, 
-                                             batch_sampler=batch_sampler_train,
-                                             collate_fn=collate_fn, 
-                                             num_workers=args.num_workers)
+    dataloader = torch.utils.data.DataLoader(
+        dataset, 
+        batch_sampler=batch_sampler_train,
+        collate_fn=collate_fn, 
+        num_workers=args.num_workers
+        )
     
     return dataloader
     
